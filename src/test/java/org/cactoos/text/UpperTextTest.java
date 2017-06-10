@@ -23,9 +23,8 @@
  */
 package org.cactoos.text;
 
-import java.io.IOException;
+import org.cactoos.TextHasString;
 import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 
 /**
@@ -33,18 +32,16 @@ import org.junit.Test;
  * @author Yegor Bugayenko (yegor256@gmail.com)
  * @version $Id$
  * @since 0.1
+ * @checkstyle JavadocMethodCheck (500 lines)
  */
 public final class UpperTextTest {
 
-    /**
-     * UpperText can process text.
-     * @throws IOException If some problem inside
-     */
     @Test
-    public void convertsText() throws IOException {
+    public void convertsText() {
         MatcherAssert.assertThat(
-            new UpperText(new StringAsText("Hello!")).asString(),
-            Matchers.equalTo("HELLO!")
+            "Can't upper case a text",
+            new UpperText(new StringAsText("Hello!")),
+            new TextHasString("HELLO!")
         );
     }
 

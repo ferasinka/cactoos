@@ -24,7 +24,7 @@
 package org.cactoos.func;
 
 import java.io.IOException;
-import org.cactoos.Func;
+import org.cactoos.FuncApplies;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -35,38 +35,46 @@ import org.junit.Test;
  * @author Yegor Bugayenko (yegor256@gmail.com)
  * @version $Id$
  * @since 0.2
+ * @checkstyle JavadocMethodCheck (500 lines)
  */
 public final class FuncWithCallbackTest {
 
-    /**
-     * FuncWithCallback can use main func.
-     * @throws Exception If some problem inside
-     */
     @Test
     public void usesMainFunc() throws Exception {
         MatcherAssert.assertThat(
+            "Can't use the main function if no exception",
             new FuncWithCallback<>(
-                (Func<Integer, String>) input -> "It's success",
+                input -> "It's success",
                 ex -> "In case of failure..."
-            ).apply(1),
-            Matchers.containsString("success")
+            ),
+            new FuncApplies<>(1, Matchers.containsString("success"))
         );
     }
 
-    /**
-     * FuncWithCallback can use a callback.
-     * @throws Exception If some problem inside
-     */
     @Test
     public void usesCallback() throws Exception {
         MatcherAssert.assertThat(
+            "Can't use the callback in case of exception",
             new FuncWithCallback<>(
-                (Func<Integer, String>) input -> {
+                input -> {
                     throw new IOException("Failure");
                 },
                 ex -> "Never mind"
-            ).apply(1),
-            Matchers.containsString("Never")
+            ),
+            new FuncApplies<>(1, Matchers.containsString("Never"))
+        );
+    }
+
+    @Test
+    public void usesFollowUp() throws Exception {
+        MatcherAssert.assertThat(
+            "Can't use the follow-up func",
+            new FuncWithCallback<>(
+                input -> "works fine",
+                ex -> "won't happen",
+                input -> "follow up"
+            ),
+            new FuncApplies<>(1, Matchers.containsString("follow"))
         );
     }
 

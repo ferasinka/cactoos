@@ -25,8 +25,8 @@ package org.cactoos.text;
 
 import java.io.IOException;
 import org.cactoos.Text;
+import org.cactoos.io.BytesAsInput;
 import org.cactoos.io.InputAsBytes;
-import org.cactoos.io.TextAsInput;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -37,20 +37,19 @@ import org.junit.Test;
  * @author Vseslav Sekorin (vssekorin@gmail.com)
  * @version $Id$
  * @since 0.1
+ * @checkstyle JavadocMethodCheck (500 lines)
  */
 public final class TextAsBytesTest {
 
-    /**
-     * TextAsBytes can convert with default encoding.
-     *
-     * @throws IOException If some problem inside
-     */
     @Test
     public void asBytes() throws IOException {
         final Text text = new StringAsText("Hello!");
         MatcherAssert.assertThat(
+            "Can't convert text into bytes",
             new InputAsBytes(
-                new TextAsInput(text)
+                new BytesAsInput(
+                    new TextAsBytes(text)
+                )
             ).asBytes(),
             Matchers.equalTo(
                 new TextAsBytes(text).asBytes()

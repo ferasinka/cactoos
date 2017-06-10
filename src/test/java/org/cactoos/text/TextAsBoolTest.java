@@ -21,65 +21,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.cactoos.list;
+package org.cactoos.text;
 
-import java.util.Iterator;
+import java.io.IOException;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
+import org.junit.Test;
 
 /**
- * Repeat an element.
+ * Test case for {@link TextAsBool}.
  *
  * @author Kirill (g4s8.public@gmail.com)
  * @version $Id$
- * @param <T> Element type
- * @since 0.1
+ * @since 0.2
+ * @checkstyle JavadocMethodCheck (500 lines)
  */
-public final class Repeat<T> implements Iterable<T> {
+public final class TextAsBoolTest {
 
-    /**
-     * Element to repeat.
-     */
-    private final T element;
-
-    /**
-     * Repeat count.
-     */
-    private final int count;
-
-    /**
-     * Ctor.
-     *
-     * @param element To repeat
-     * @param count Count
-     */
-    public Repeat(final T element, final int count) {
-        this.element = element;
-        this.count = count;
+    @Test
+    public void trueTest() throws IOException {
+        MatcherAssert.assertThat(
+            "Can't parse 'true' string",
+            new TextAsBool("true").asValue(),
+            Matchers.equalTo(true)
+        );
     }
 
-    @Override
-    public Iterator<T> iterator() {
-        return new RepeatIterator();
-    }
-
-    /**
-     * An iterator.
-     */
-    private final class RepeatIterator implements Iterator<T> {
-
-        /**
-         * Current position.
-         */
-        private int cursor;
-
-        @Override
-        public boolean hasNext() {
-            return this.cursor < Repeat.this.count;
-        }
-
-        @Override
-        public T next() {
-            ++this.cursor;
-            return Repeat.this.element;
-        }
+    @Test
+    public void falseTest() throws IOException {
+        MatcherAssert.assertThat(
+            "Can't parse 'false' string",
+            new TextAsBool("false").asValue(),
+            Matchers.equalTo(false)
+        );
     }
 }

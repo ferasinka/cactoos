@@ -23,8 +23,8 @@
  */
 package org.cactoos.list;
 
+import org.cactoos.ScalarHasValue;
 import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 
 /**
@@ -32,25 +32,24 @@ import org.junit.Test;
  * @author Yegor Bugayenko (yegor256@gmail.com)
  * @version $Id$
  * @since 0.1
+ * @checkstyle JavadocMethodCheck (500 lines)
  */
 public final class ConcatenatedIterableTest {
 
-    /**
-     * ConcatenatedIterable can concatenate two lists.
-     */
     @Test
     @SuppressWarnings("unchecked")
     public void transformsList() {
         MatcherAssert.assertThat(
+            "Can't concatenate iterables together",
             new LengthOfIterable(
                 new ConcatenatedIterable<>(
                     new ArrayAsIterable<>("hello", "world", "друг"),
                     new ArrayAsIterable<>("how", "are", "you"),
                     new ArrayAsIterable<>("what's", "up")
                 )
-            ).asValue(),
+            ),
             // @checkstyle MagicNumber (1 line)
-            Matchers.equalTo(8)
+            new ScalarHasValue<>(8)
         );
     }
 

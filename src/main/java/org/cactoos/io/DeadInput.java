@@ -26,7 +26,7 @@ package org.cactoos.io;
 import java.io.IOException;
 import java.io.InputStream;
 import org.cactoos.Input;
-import org.cactoos.text.StringAsText;
+import org.cactoos.text.EmptyBytes;
 
 /**
  * Input with no data.
@@ -40,8 +40,8 @@ import org.cactoos.text.StringAsText;
 public final class DeadInput implements Input {
 
     @Override
-    public InputStream open() throws IOException {
-        return new TextAsInput(new StringAsText("")).open();
+    public InputStream stream() throws IOException {
+        return new BytesAsInput(new EmptyBytes()).stream();
     }
 
 }

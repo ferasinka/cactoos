@@ -21,37 +21,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.cactoos.func;
+package org.cactoos.io;
 
-import org.cactoos.Func;
+import java.io.IOException;
+import org.junit.Test;
 
 /**
- * Func as Runnable.
+ * Test case for {@link UncheckedBytes}.
  *
- * <p>There is no thread-safety guarantee.
- *
- * @author Yegor Bugayenko (yegor256@gmail.com)
+ * @author Fabricio Cabral (fabriciofx@gmail.com)
  * @version $Id$
- * @since 0.1
+ * @since 0.3
+ * @checkstyle JavadocMethodCheck (500 lines)
  */
-public final class FuncAsProc implements Func.Proc {
+public final class UncheckedBytesTest {
 
-    /**
-     * The func.
-     */
-    private final Func<?, ?> func;
-
-    /**
-     * Ctor.
-     * @param fnc The func
-     */
-    public FuncAsProc(final Func<?, ?> fnc) {
-        this.func = fnc;
-    }
-
-    @Override
-    public void exec() throws Exception {
-        this.func.apply(null);
+    @Test(expected = RuntimeException.class)
+    public void rethrowsCheckedToUncheckedException() {
+        new UncheckedBytes(
+            () -> {
+                throw new IOException("intended");
+            }
+        ).asBytes();
     }
 
 }

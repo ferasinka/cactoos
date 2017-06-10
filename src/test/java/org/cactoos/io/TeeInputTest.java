@@ -25,9 +25,15 @@ package org.cactoos.io;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import org.cactoos.TextHasString;
+import org.cactoos.func.FuncAsMatcher;
 import org.cactoos.text.BytesAsText;
+import org.cactoos.text.StringAsText;
+import org.cactoos.text.TextAsBytes;
 import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 
 /**
@@ -35,30 +41,64 @@ import org.junit.Test;
  * @author Yegor Bugayenko (yegor256@gmail.com)
  * @version $Id$
  * @since 0.1
+ * @checkstyle JavadocMethodCheck (500 lines)
+ * @checkstyle ClassDataAbstractionCouplingCheck (500 lines)
  */
 public final class TeeInputTest {
 
-    /**
-     * TeeInput can copy content.
-     * @throws IOException If some problem inside
-     */
     @Test
-    public void copiesContent() throws IOException {
+    public void copiesContent() {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final String content = "Hello, товарищ!";
         MatcherAssert.assertThat(
+            "Can't copy Input to Output and return Input",
             new BytesAsText(
                 new InputAsBytes(
                     new TeeInput(
-                        new TextAsInput("Hello, world!"),
+                        new BytesAsInput(
+                            new TextAsBytes(content)
+                        ),
                         new OutputStreamAsOutput(baos)
                     )
                 )
-            ).asString(),
-            Matchers.allOf(
-                Matchers.equalTo(new String(baos.toByteArray())),
-                Matchers.containsString("world")
+            ),
+            new TextHasString(
+                new FuncAsMatcher<>(
+                    str -> new String(
+                        baos.toByteArray(), StandardCharsets.UTF_8
+                    ).equals(str)
+                )
             )
         );
     }
 
+    @Test
+    public void copiesToFile() throws IOException {
+        final Path temp = Files.createTempFile("cactoos", "txt");
+        MatcherAssert.assertThat(
+            "Can't copy Input to File and return content",
+            new BytesAsText(
+                new InputAsBytes(
+                    new TeeInput(
+                        new BytesAsInput(
+                            new TextAsBytes(
+                                new StringAsText("Hello, друг!")
+                            )
+                        ),
+                        new PathAsOutput(temp)
+                    )
+                )
+            ),
+            new TextHasString(
+                new FuncAsMatcher<>(
+                    str -> str.equals(
+                        new String(
+                            Files.readAllBytes(temp),
+                            StandardCharsets.UTF_8
+                        )
+                    )
+                )
+            )
+        );
+    }
 }

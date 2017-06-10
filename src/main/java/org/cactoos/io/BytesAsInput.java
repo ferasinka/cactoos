@@ -21,56 +21,53 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.cactoos.list;
+package org.cactoos.io;
 
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
-import org.junit.Test;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import org.cactoos.Bytes;
+import org.cactoos.Input;
+import org.cactoos.text.TextAsBytes;
 
 /**
- * Test case for {@link Repeat}.
+ * Bytes as Input.
  *
- * @author Kirill (g4s8.public@gmail.com)
+ * <p>There is no thread-safety guarantee.
+ *
+ * @author Yegor Bugayenko (yegor256@gmail.com)
  * @version $Id$
  * @since 0.1
  */
-public final class RepeatTest {
+public final class BytesAsInput implements Input {
 
     /**
-     * Test all elements are same.
-     *
-     * @throws Exception if failed
+     * The source.
      */
-    @Test
-    public void allSameTest() throws Exception {
-        final int size = 42;
-        final int element = 11;
-        MatcherAssert.assertThat(
-            new LengthOfIterable(
-                new FilteredIterable<>(
-                    new Repeat<>(
-                        element,
-                        size
-                    ),
-                    input -> input == element
-                )
-            ).asValue(),
-            Matchers.equalTo(size)
-        );
+    private final Bytes source;
+
+    /**
+     * Ctor.
+     * @param text The text
+     * @since 0.4
+     */
+    public BytesAsInput(final String text) {
+        this(new TextAsBytes(text));
     }
 
     /**
-     * Test empty 'repeat' size.
-     *
-     * @throws Exception if failed
+     * Ctor.
+     * @param bytes The bytes
      */
-    @Test
-    public void emptyTest() throws Exception {
-        MatcherAssert.assertThat(
-            new LengthOfIterable(
-                new Repeat<>(0, 0)
-            ).asValue(),
-            Matchers.equalTo(0)
+    public BytesAsInput(final Bytes bytes) {
+        this.source = bytes;
+    }
+
+    @Override
+    public InputStream stream() throws IOException {
+        return new ByteArrayInputStream(
+            this.source.asBytes()
         );
     }
+
 }

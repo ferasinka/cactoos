@@ -23,8 +23,6 @@
  */
 package org.cactoos;
 
-import java.io.IOException;
-
 /**
  * Scalar.
  *
@@ -40,8 +38,8 @@ public interface Scalar<T> {
     /**
      * Convert it to the value.
      * @return The value
-     * @throws IOException If fails
+     * @throws Exception If fails
      */
-    T asValue() throws IOException;
+    T asValue() throws Exception;
 
 }

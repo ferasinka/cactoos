@@ -21,70 +21,51 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.cactoos.io;
+package org.cactoos.text;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
-import org.cactoos.Input;
 import org.cactoos.Text;
-import org.cactoos.text.StringAsText;
 
 /**
- * Text as Input.
+ * Replace the Text.
  *
- * <p>There is no thread-safety guarantee.
- *
- * @author Yegor Bugayenko (yegor256@gmail.com)
+ * @author Mehmet Yildirim (memoyil@gmail.com)
  * @version $Id$
- * @since 0.1
+ * @since 0.2
  */
-public final class TextAsInput implements Input {
+public final class ReplacedText implements Text {
 
     /**
-     * The source.
+     * The text.
      */
-    private final Text source;
+    private final Text origin;
 
     /**
-     * Text charset.
+     * The old char.
      */
-    private final Charset charset;
+    private final String needle;
 
     /**
-     * New {@link TextAsInput} with default charset.
-     *
-     * @param text The text
+     * The new char.
      */
-    public TextAsInput(final String text) {
-        this(new StringAsText(text));
-    }
+    private final String replacement;
 
     /**
      * Ctor.
      * @param text The text
+     * @param find The find one
+     * @param replace The replace one
      */
-    public TextAsInput(final Text text) {
-        this(text, Charset.defaultCharset());
-    }
-
-    /**
-     * New {@link TextAsInput} with specified charset.
-     *
-     * @param text The text
-     * @param charset Text charset
-     */
-    public TextAsInput(final Text text, final Charset charset) {
-        this.source = text;
-        this.charset = charset;
+    public ReplacedText(final Text text, final String find, final String
+        replace) {
+        this.origin = text;
+        this.needle = find;
+        this.replacement = replace;
     }
 
     @Override
-    public InputStream open() throws IOException {
-        return new ByteArrayInputStream(
-            this.source.asString().getBytes(this.charset)
-        );
+    public String asString() throws IOException {
+        return this.origin.asString().replace(this.needle, this.replacement);
     }
-
 }
+

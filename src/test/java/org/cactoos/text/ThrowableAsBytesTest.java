@@ -24,6 +24,7 @@
 package org.cactoos.text;
 
 import java.io.IOException;
+import org.cactoos.TextHasString;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -34,28 +35,28 @@ import org.junit.Test;
  * @author Yegor Bugayenko (yegor256@gmail.com)
  * @version $Id$
  * @since 0.2
+ * @checkstyle JavadocMethodCheck (500 lines)
  */
 public final class ThrowableAsBytesTest {
 
-    /**
-     * ThrowableAsBytes prints stacktrace.
-     * @throws IOException If fails
-     */
     @Test
-    public void printsStackTrace() throws IOException {
+    public void printsStackTrace() {
         MatcherAssert.assertThat(
+            "Can't print exception stacktrace",
             new BytesAsText(
                 new ThrowableAsBytes(
                     new IOException(
                         "It doesn't work at all"
                     )
                 )
-            ).asString(),
-            Matchers.allOf(
-                Matchers.containsString("java.io.IOException"),
-                Matchers.containsString("doesn't work at all"),
-                Matchers.containsString(
-                    "\tat org.cactoos.text.ThrowableAsBytesTest"
+            ),
+            new TextHasString(
+                Matchers.allOf(
+                    Matchers.containsString("java.io.IOException"),
+                    Matchers.containsString("doesn't work at all"),
+                    Matchers.containsString(
+                        "\tat org.cactoos.text.ThrowableAsBytesTest"
+                    )
                 )
             )
         );

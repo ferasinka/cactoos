@@ -21,37 +21,45 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.cactoos.func;
+package org.cactoos.list;
 
-import org.cactoos.Func;
+import org.cactoos.ScalarHasValue;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
+import org.junit.Test;
 
 /**
- * Runnable as a Func.
- *
- * <p>There is no thread-safety guarantee.
+ * Test case for {@link RepeatIterator}.
  *
  * @author Yegor Bugayenko (yegor256@gmail.com)
  * @version $Id$
- * @since 0.2
+ * @since 0.4
+ * @checkstyle JavadocMethodCheck (500 lines)
  */
-public final class RunnableAsProc implements Func.Proc {
+public final class RepeatIteratorTest {
 
-    /**
-     * The runnable.
-     */
-    private final Runnable runnable;
-
-    /**
-     * Ctor.
-     * @param rnbl The runnable
-     */
-    public RunnableAsProc(final Runnable rnbl) {
-        this.runnable = rnbl;
+    @Test
+    public void allSameTest() throws Exception {
+        final int size = 42;
+        final int element = 11;
+        MatcherAssert.assertThat(
+            "Can't generate an iterable with fixed size",
+            new LengthOfIterator(
+                new RepeatIterator<>(
+                    element,
+                    size
+                )
+            ),
+            new ScalarHasValue<>(size)
+        );
     }
 
-    @Override
-    public void exec() {
-        this.runnable.run();
+    @Test
+    public void emptyTest() throws Exception {
+        MatcherAssert.assertThat(
+            "Can't generate an empty iterator",
+            (Iterable<Integer>) () -> new RepeatIterator<>(0, 0),
+            Matchers.iterableWithSize(0)
+        );
     }
-
 }

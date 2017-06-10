@@ -23,8 +23,8 @@
  */
 package org.cactoos.list;
 
+import org.cactoos.ScalarHasValue;
 import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 
 /**
@@ -32,22 +32,21 @@ import org.junit.Test;
  * @author Yegor Bugayenko (yegor256@gmail.com)
  * @version $Id$
  * @since 0.1
+ * @checkstyle JavadocMethodCheck (500 lines)
  */
 public final class AnyOfTest {
 
-    /**
-     * AnyOf can test any item in the list.
-     */
     @Test
     public void iteratesList() {
         MatcherAssert.assertThat(
+            "Can't iterate a list",
             new AnyOf(
                 new TransformedIterable<>(
                     new ArrayAsIterable<>("a", "file", "is", "corrupt"),
                     txt -> txt.length() > 2
                 )
-            ).asValue(),
-            Matchers.equalTo(true)
+            ),
+            new ScalarHasValue<>(true)
         );
     }
 

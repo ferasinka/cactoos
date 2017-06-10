@@ -23,8 +23,8 @@
  */
 package org.cactoos.list;
 
+import org.cactoos.ScalarHasValue;
 import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 
 /**
@@ -32,15 +32,14 @@ import org.junit.Test;
  * @author Yegor Bugayenko (yegor256@gmail.com)
  * @version $Id$
  * @since 0.1
+ * @checkstyle JavadocMethodCheck (500 lines)
  */
 public final class FilteredIterableTest {
 
-    /**
-     * FilteredIterable can filter a list.
-     */
     @Test
     public void filtersList() {
         MatcherAssert.assertThat(
+            "Can't calculate the length of an iterable",
             new LengthOfIterable(
                 new FilteredIterable<>(
                     new ArrayAsIterable<>(
@@ -49,24 +48,22 @@ public final class FilteredIterableTest {
                     // @checkstyle MagicNumber (1 line)
                     input -> input.length() > 4
                 )
-            ).asValue(),
-            Matchers.equalTo(2)
+            ),
+            new ScalarHasValue<>(2)
         );
     }
 
-    /**
-     * FilteredIterable can filter an empty list.
-     */
     @Test
     public void filtersEmptyList() {
         MatcherAssert.assertThat(
+            "Can't calculate the length of an empty iterable",
             new LengthOfIterable(
                 new FilteredIterable<>(
                     new ArrayAsIterable<String>(),
                     input -> input.length() > 1
                 )
-            ).asValue(),
-            Matchers.equalTo(0)
+            ),
+            new ScalarHasValue<>(0)
         );
     }
 

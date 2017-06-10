@@ -24,6 +24,7 @@
 package org.cactoos.io;
 
 import java.io.IOException;
+import org.cactoos.TextHasString;
 import org.cactoos.text.BytesAsText;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -36,16 +37,14 @@ import org.takes.tk.TkHtml;
  * @author Yegor Bugayenko (yegor256@gmail.com)
  * @version $Id$
  * @since 0.1
+ * @checkstyle JavadocMethodCheck (500 lines)
  */
 public final class UrlAsInputTest {
 
-    /**
-     * UrlAsInput can read file content.
-     * @throws IOException If some problem inside
-     */
     @Test
     public void readsFileContent() throws IOException {
         MatcherAssert.assertThat(
+            "Can't read bytes from a file-system URL",
             new InputAsBytes(
                 new UrlAsInput(
                     this.getClass().getResource(
@@ -57,24 +56,23 @@ public final class UrlAsInputTest {
         );
     }
 
-    /**
-     * UrlAsInput can read real URL.
-     * @throws IOException If some problem inside
-     */
     @Test
     public void readsRealUrl() throws IOException {
         new FtRemote(new TkHtml("<html>How are you?</html>")).exec(
             home -> MatcherAssert.assertThat(
+                "Can't fetch bytes from the URL",
                 new BytesAsText(
                     new InputAsBytes(
                         new UrlAsInput(
                             home.toURL()
                         )
                     )
-                ).asString(),
-                Matchers.allOf(
-                    Matchers.startsWith("<html"),
-                    Matchers.endsWith("html>")
+                ),
+                new TextHasString(
+                    Matchers.allOf(
+                        Matchers.startsWith("<html"),
+                        Matchers.endsWith("html>")
+                    )
                 )
             )
         );

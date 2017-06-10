@@ -3,6 +3,7 @@
 [![DevOps By Rultor.com](http://www.rultor.com/b/yegor256/cactoos)](http://www.rultor.com/p/yegor256/cactoos)
 
 [![Build Status](https://travis-ci.org/yegor256/cactoos.svg?branch=master)](https://travis-ci.org/yegor256/cactoos)
+[![Build status](https://ci.appveyor.com/api/projects/status/8vs8huy61og6jwif?svg=true)](https://ci.appveyor.com/project/yegor256/cactoos)
 [![Javadoc](https://javadoc-emblem.rhcloud.com/doc/org.cactoos/cactoos/badge.svg?color=blue&prefix=v)](http://www.javadoc.io/doc/org.cactoos/cactoos)
 [![PDD status](http://www.0pdd.com/svg?name=yegor256/cactoos)](http://www.0pdd.com/p?name=yegor256/cactoos)
 [![Test Coverage](https://img.shields.io/codecov/c/github/yegor256/cactoos.svg)](https://codecov.io/github/yegor256/cactoos?branch=master)
@@ -69,8 +70,10 @@ To write a text into a file:
 ```java
 new LengthOfInput(
   new TeeInput(
-    new TextAsInput(
-      new StringAsText("Hello, world!")
+    new BytesAsInput(
+      new TextAsBytes(
+        new StringAsText("Hello, world!")
+      )
     ),
     new FileAsOutput(
       new File("/code/a.txt")
@@ -83,9 +86,7 @@ To read a binary file from classpath:
 
 ```java
 byte[] data = new InputAsBytes(
-  new UrlAsInput(
-    this.getClass().getResource("/foo/img.jpg")
-  )
+  new ResourceAsInput("/foo/img.jpg")
 ).asBytes();
 ```
 
@@ -187,6 +188,49 @@ int total = new LengthOfIterable(
 ).asValue();
 ```
 
+## Funcs and Procs
+
+This is a traditional `foreach` loop:
+
+```java
+for (String name : names) {
+  System.out.printf("Hello, %s!\n", name);
+}
+```
+
+This is its object-oriented alternative (no streams!):
+
+```java
+new IterableAsBoolean<>(
+  names,
+  new ProcAsFunc<>(
+    n -> {
+      System.out.printf("Hello, %s!\n", n);
+    }
+  )
+).asValue();
+```
+
+This is an endless `while/do` loop:
+
+```java
+while (!ready) {
+  System.out.prinln("Still waiting...");
+}
+```
+
+Here is its object-oriented alternative:
+
+```java
+new IterableAsBoolean<>(
+  new EndlessIterable<>(ready),
+  r -> {
+    System.out.prinln("Still waiting...");
+    return !ready;
+  }
+).asValue();
+```
+
 ## How to contribute?
 
 Just fork the repo and send us a pull request.
@@ -199,6 +243,15 @@ mvn clean install -Pqulice
 
 Note: [Checkstyle](https://en.wikipedia.org/wiki/Checkstyle) is used as a static code analyze tool with
 [checks list](http://checkstyle.sourceforge.net/checks.html) in GitHub precommits.
+
+## Contributors
+
+  - [Yegor Bugayenko](https://github.com/yegor256)
+  - [Kirill Che.](https://github.com/g4s8) g4s8.public@gmail.com
+  - [Fabrício Cabral](https://github.com/fabriciofx)
+  - [Andriy Kryvtsun](https://github.com/englishman)
+  - [Vseslav Sekorin](https://github.com/VsSekorin)
+  - [Andrey Valyaev](https://github.com/DronMDF)
 
 ## License (MIT)
 

@@ -26,7 +26,10 @@ package org.cactoos.list;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import org.cactoos.Func;
+import org.cactoos.Proc;
+import org.cactoos.ScalarHasValue;
+import org.cactoos.func.AlwaysTrueFunc;
+import org.cactoos.func.FuncAsMatcher;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -36,45 +39,52 @@ import org.junit.Test;
  * @author Yegor Bugayenko (yegor256@gmail.com)
  * @version $Id$
  * @since 0.1
+ * @checkstyle JavadocMethodCheck (500 lines)
  */
 public final class AllOfTest {
 
-    /**
-     * AllOf can test all items in the list.
-     */
     @Test
     public void iteratesList() {
         final List<String> list = new LinkedList<>();
         MatcherAssert.assertThat(
+            "Can't iterate a list with a procedure",
             new AllOf(
                 new TransformedIterable<>(
                     new ArrayAsIterable<>("hello", "world"),
-                    (Func.Quiet<String>) list::add
+                    list::add
                 )
-            ).asValue(),
-            Matchers.allOf(
-                Matchers.equalTo(true),
-                Matchers.equalTo(list.size() == 2)
+            ),
+            new ScalarHasValue<>(
+                Matchers.allOf(
+                    Matchers.equalTo(true),
+                    new FuncAsMatcher<>(
+                        value -> list.size() == 2
+                    )
+                )
             )
         );
     }
 
-    /**
-     * AllOf can test all items in the list.
-     */
     @Test
     public void iteratesEmptyList() {
         final List<String> list = new LinkedList<>();
         MatcherAssert.assertThat(
+            "Can't iterate a list",
             new AllOf(
                 new IterableAsBooleans<>(
                     Collections.emptyList(),
-                    (Func.Quiet<String>) list::add
+                    new AlwaysTrueFunc<>(
+                        (Proc<String>) list::add
+                    )
                 )
-            ).asValue(),
-            Matchers.allOf(
-                Matchers.equalTo(true),
-                Matchers.equalTo(list.isEmpty())
+            ),
+            new ScalarHasValue<>(
+                Matchers.allOf(
+                    Matchers.equalTo(true),
+                    new FuncAsMatcher<>(
+                        value -> list.isEmpty()
+                    )
+                )
             )
         );
     }

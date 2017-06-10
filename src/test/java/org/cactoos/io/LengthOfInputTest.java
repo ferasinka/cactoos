@@ -23,10 +23,11 @@
  */
 package org.cactoos.io;
 
-import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import org.cactoos.ScalarHasValue;
 import org.cactoos.text.StringAsText;
+import org.cactoos.text.TextAsBytes;
 import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 
 /**
@@ -34,35 +35,34 @@ import org.junit.Test;
  * @author Yegor Bugayenko (yegor256@gmail.com)
  * @version $Id$
  * @since 0.1
+ * @checkstyle JavadocMethodCheck (500 lines)
  */
 public final class LengthOfInputTest {
 
-    /**
-     * LengthOfInput can calculate length.
-     * @throws IOException If some problem inside
-     */
     @Test
-    public void calculatesLength() throws IOException {
+    public void calculatesLength() {
         final String text = "What's up, друг?";
         MatcherAssert.assertThat(
+            "Can't calculate the length of Input",
             new LengthOfInput(
-                new TextAsInput(
-                    new StringAsText(text)
+                new BytesAsInput(
+                    new TextAsBytes(
+                        new StringAsText(text)
+                    )
                 )
-            ).asValue(),
-            Matchers.equalTo((long) text.getBytes().length)
+            ),
+            new ScalarHasValue<>(
+                (long) text.getBytes(StandardCharsets.UTF_8).length
+            )
         );
     }
 
-    /**
-     * LengthOfInput can calculate zero length.
-     * @throws IOException If some problem inside
-     */
     @Test
-    public void calculatesZeroLength() throws IOException {
+    public void calculatesZeroLength() {
         MatcherAssert.assertThat(
-            new LengthOfInput(new DeadInput()).asValue(),
-            Matchers.equalTo(0L)
+            "Can't calculate the length of an empty input",
+            new LengthOfInput(new DeadInput()),
+            new ScalarHasValue<>(0L)
         );
     }
 

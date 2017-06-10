@@ -26,7 +26,10 @@ package org.cactoos.list;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
+import org.cactoos.func.StickyScalar;
+import org.cactoos.func.UncheckedScalar;
 import org.cactoos.text.FormattedText;
+import org.cactoos.text.UncheckedText;
 
 /**
  * Iterable as {@link List}.
@@ -52,12 +55,8 @@ public final class IterableAsList<T> extends AbstractList<T> {
 
     /**
      * Iterable length.
-     *
-     * @todo #39:30m Needs cached `LengthOfIterable` version
-     *  to improve `IterableAsList` performance. Now each call
-     *  to `size()` goes through all iterable to calculate the size.
      */
-    private final LengthOfIterable length;
+    private final UncheckedScalar<Integer> length;
 
     /**
      * Ctor.
@@ -68,18 +67,24 @@ public final class IterableAsList<T> extends AbstractList<T> {
         super();
         this.source = iterable;
         this.cache = new ArrayList<>(0);
-        this.length = new LengthOfIterable(iterable);
+        this.length = new UncheckedScalar<>(
+            new StickyScalar<>(
+                new LengthOfIterable(iterable)
+            )
+        );
     }
 
     @Override
     public T get(final int index) {
         if (index < 0 || index >= this.size()) {
             throw new IndexOutOfBoundsException(
-                new FormattedText(
-                    "index=%d, bounds=[%d; %d]",
-                    index,
-                    0,
-                    this.size()
+                new UncheckedText(
+                    new FormattedText(
+                        "index=%d, bounds=[%d; %d]",
+                        index,
+                        0,
+                        this.size()
+                    )
                 ).asString()
             );
         }

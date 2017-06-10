@@ -23,9 +23,8 @@
  */
 package org.cactoos.text;
 
-import java.io.IOException;
+import org.cactoos.ScalarHasValue;
 import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 
 /**
@@ -33,48 +32,40 @@ import org.junit.Test;
  * @author Andriy Kryvtsun (kontiky@gmail.com)
  * @version $Id$
  * @since 0.1
+ * @checkstyle JavadocMethodCheck (500 lines)
  */
 public final class IsBlankTest {
 
-    /**
-     * IsBlank can detect empty string.
-     * @throws IOException If some problem inside
-     */
     @Test
-    public void determinesEmptyText() throws IOException {
+    public void determinesEmptyText() {
         MatcherAssert.assertThat(
+            "Can't determine an empty text",
             new IsBlank(
                 new StringAsText("")
-            ).asValue(),
-            Matchers.is(Boolean.TRUE)
+            ),
+            new ScalarHasValue<>(Boolean.TRUE)
         );
     }
 
-    /**
-     * IsBlank can detect blank string.
-     * @throws IOException If some problem inside
-     */
     @Test
-    public void determinesBlankText() throws IOException {
+    public void determinesBlankText() {
         MatcherAssert.assertThat(
+            "Can't determine an empty text with spaces",
             new IsBlank(
                 new StringAsText("  ")
-            ).asValue(),
-            Matchers.is(Boolean.TRUE)
+            ),
+            new ScalarHasValue<>(Boolean.TRUE)
         );
     }
 
-    /**
-     * IsBlank can detect non blank string.
-     * @throws IOException If some problem inside
-     */
     @Test
-    public void determinesNotBlankText() throws IOException {
+    public void determinesNotBlankText() {
         MatcherAssert.assertThat(
+            "Can't detect a nonempty text",
             new IsBlank(
                 new StringAsText("not empty")
-            ).asValue(),
-            Matchers.is(Boolean.FALSE)
+            ),
+            new ScalarHasValue<>(Boolean.FALSE)
         );
     }
 }

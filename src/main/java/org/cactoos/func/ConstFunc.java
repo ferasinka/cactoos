@@ -26,7 +26,7 @@ package org.cactoos.func;
 import org.cactoos.Func;
 
 /**
- * Func that always returns the same result
+ * Func that always returns the same result.
  *
  * <p>There is no thread-safety guarantee.
  *
