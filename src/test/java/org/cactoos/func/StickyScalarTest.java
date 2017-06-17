@@ -21,42 +21,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.cactoos.list;
+package org.cactoos.func;
 
-import java.io.IOException;
-import java.util.Iterator;
+import java.security.SecureRandom;
 import org.cactoos.Scalar;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
+import org.junit.Test;
 
 /**
- * First element in {@link Iterable}.
+ * Test case for {@link StickyScalar}.
  *
- * @author Kirill (g4s8.public@gmail.com)
+ * @author Yegor Bugayenko (yegor256@gmail.com)
  * @version $Id$
- * @param <T> Scalar type
- * @since 0.1
+ * @since 0.4
+ * @checkstyle JavadocMethodCheck (500 lines)
  */
-public final class FirstOf<T> implements Scalar<T> {
+public final class StickyScalarTest {
 
-    /**
-     * Source iterable.
-     */
-    private final Iterable<T> source;
-
-    /**
-     * Ctor.
-     *
-     * @param source Iterable
-     */
-    public FirstOf(final Iterable<T> source) {
-        this.source = source;
+    @Test
+    public void cachesScalarResults() throws Exception {
+        final Scalar<Integer> scalar = new StickyScalar<>(
+            () -> new SecureRandom().nextInt()
+        );
+        MatcherAssert.assertThat(
+            scalar.asValue() + scalar.asValue(),
+            Matchers.equalTo(scalar.asValue() + scalar.asValue())
+        );
     }
 
-    @Override
-    public T asValue() throws IOException {
-        final Iterator<T> iterator = this.source.iterator();
-        if (!iterator.hasNext()) {
-            throw new IOException("Iterable is empty");
-        }
-        return iterator.next();
-    }
 }

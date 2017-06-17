@@ -23,46 +23,43 @@
  */
 package org.cactoos.func;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.cactoos.Func;
 import org.cactoos.Scalar;
 
 /**
  * Cached version of a Scalar.
  *
+ * <p>This {@link Scalar} decorator technically is an in-memory
+ * cache.</p>
+ *
  * <p>There is no thread-safety guarantee.
  *
  * @author Tim Hinkes (timmeey@timmeey.de)
+ * @author Yegor Bugayenko (yegor256@gmail.com)
  * @version $Id$
  * @param <T> Type of result
+ * @see StickyFunc
  * @since 0.3
  */
 public final class StickyScalar<T> implements Scalar<T> {
 
     /**
-     * The scalar to cache.
+     * Func.
      */
-    private final Scalar<T> source;
-
-    /**
-     * The list used as a optional value.
-     */
-    private final List<T> cache;
+    private final Func<Boolean, T> func;
 
     /**
      * Ctor.
      * @param src The Scalar to cache
      */
     public StickyScalar(final Scalar<T> src) {
-        this.source = src;
-        this.cache = new ArrayList<>(1);
+        this.func = new StickyFunc<>(
+            input -> src.asValue()
+        );
     }
 
     @Override
     public T asValue() throws Exception {
-        if (this.cache.isEmpty()) {
-            this.cache.add(this.source.asValue());
-        }
-        return this.cache.get(0);
+        return this.func.apply(true);
     }
 }

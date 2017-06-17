@@ -21,61 +21,61 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.cactoos.func;
+package org.cactoos.io;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import org.cactoos.FuncApplies;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
 /**
- * Test case for {@link FuncWithCallback}.
- *
+ * Test case for {@link TeeInputStream}.
  * @author Yegor Bugayenko (yegor256@gmail.com)
  * @version $Id$
- * @since 0.2
+ * @since 0.1
  * @checkstyle JavadocMethodCheck (500 lines)
+ * @checkstyle ClassDataAbstractionCouplingCheck (500 lines)
  */
-public final class FuncWithCallbackTest {
+public final class TeeInputStreamTest {
 
     @Test
-    public void usesMainFunc() throws Exception {
+    public void copiesContentByteByByte() throws IOException {
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final String content = "Hello, товарищ!";
         MatcherAssert.assertThat(
-            "Can't use the main function if no exception",
-            new FuncWithCallback<>(
-                input -> "It's success",
-                ex -> "In case of failure..."
+            "Can't copy InputStream to OutputStream byte by byte",
+            TeeInputStreamTest.asString(
+                new TeeInputStream(
+                    new ByteArrayInputStream(
+                        content.getBytes(StandardCharsets.UTF_8)
+                    ),
+                    baos
+                )
             ),
-            new FuncApplies<>(1, Matchers.containsString("success"))
+            Matchers.allOf(
+                Matchers.equalTo(content),
+                Matchers.equalTo(
+                    new String(baos.toByteArray(), StandardCharsets.UTF_8)
+                )
+            )
         );
     }
 
-    @Test
-    public void usesCallback() throws Exception {
-        MatcherAssert.assertThat(
-            "Can't use the callback in case of exception",
-            new FuncWithCallback<>(
-                input -> {
-                    throw new IOException("Failure");
-                },
-                ex -> "Never mind"
-            ),
-            new FuncApplies<>(1, Matchers.containsString("Never"))
-        );
-    }
-
-    @Test
-    public void usesFollowUp() throws Exception {
-        MatcherAssert.assertThat(
-            "Can't use the follow-up func",
-            new FuncWithCallback<>(
-                input -> "works fine",
-                ex -> "won't happen",
-                input -> "follow up"
-            ),
-            new FuncApplies<>(1, Matchers.containsString("follow"))
-        );
+    private static String asString(final InputStream input) throws IOException {
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        while (true) {
+            final int data = input.read();
+            if (data < 0) {
+                break;
+            }
+            baos.write(data);
+        }
+        input.close();
+        return new String(baos.toByteArray(), StandardCharsets.UTF_8);
     }
 
 }
