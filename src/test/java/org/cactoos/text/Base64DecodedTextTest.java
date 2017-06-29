@@ -21,23 +21,41 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.cactoos.io;
+package org.cactoos.text;
 
-import java.io.IOException;
+import org.cactoos.TextHasString;
+import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 
 /**
- * Test case for {@link NotNullInput}.
- * @author Fabricio Cabral (fabriciofx@gmail.com)
+ * Test case for {@link Base64DecodedText}.
+ *
+ * @author Mehmet Yildirim (memoyil@gmail.com)
  * @version $Id$
- * @since 0.3
+ * @since 0.9
  * @checkstyle JavadocMethodCheck (500 lines)
  */
-public final class NotNullInputTest {
+public final class Base64DecodedTextTest {
 
-    @Test(expected = IOException.class)
-    public void failForNullInput() throws IOException {
-        new NotNullInput(null).stream();
+    @Test
+    public void decodeText() {
+        MatcherAssert.assertThat(
+            "Can't decode a text",
+            new Base64DecodedText(
+                new StringAsText("SGVsbG8h")
+            ),
+            new TextHasString("Hello!")
+        );
     }
 
+    @Test
+    public void decodeString() {
+        MatcherAssert.assertThat(
+            "Can't decode a string",
+            new Base64DecodedText(
+                "Q2FjdG9vcw=="
+            ),
+            new TextHasString("Cactoos")
+        );
+    }
 }

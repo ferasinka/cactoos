@@ -21,33 +21,51 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.cactoos.list;
+package org.cactoos.text;
 
-import org.cactoos.ScalarHasValue;
-import org.hamcrest.MatcherAssert;
-import org.junit.Test;
+import java.io.IOException;
+import org.cactoos.Text;
 
 /**
- * Test case for {@link AnyOf}.
- * @author Yegor Bugayenko (yegor256@gmail.com)
+ * Normalize (replace sequences of whitespace characters by a single space)
+ * a Text.
+ *
+ * @author Fabricio Cabral (fabriciofx@gmail.com)
  * @version $Id$
- * @since 0.1
- * @checkstyle JavadocMethodCheck (500 lines)
+ * @since 0.9
  */
-public final class AnyOfTest {
+public final class NormalizedText implements Text {
 
-    @Test
-    public void iteratesList() {
-        MatcherAssert.assertThat(
-            "Can't iterate a list",
-            new AnyOf(
-                new MappedIterable<>(
-                    new ArrayAsIterable<>("a", "file", "is", "corrupt"),
-                    txt -> txt.length() > 2
-                )
-            ),
-            new ScalarHasValue<>(true)
-        );
+    /**
+     * The text.
+     */
+    private final Text origin;
+
+    /**
+     * Ctor.
+     * @param text A Text
+     */
+    public NormalizedText(final String text) {
+        this(new StringAsText(text));
+    }
+
+    /**
+     * Ctor.
+     * @param text A Text
+     */
+    public NormalizedText(final Text text) {
+        this.origin = text;
+    }
+
+    @Override
+    public String asString() throws IOException {
+        return new TrimmedText(this.origin).asString().replaceAll("\\s+", " ");
+    }
+
+    @Override
+    public int compareTo(final Text text) {
+        return new UncheckedText(this).compareTo(text);
     }
 
 }
+

@@ -23,42 +23,31 @@
  */
 package org.cactoos.list;
 
-import org.cactoos.Scalar;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
+import org.junit.Test;
 
 /**
- * Is {@code true} when any item in the collection is {@code true}.
- *
- * <p>There is no thread-safety guarantee.
- *
+ * Test case for {@link SkippedIterable}.
  * @author Yegor Bugayenko (yegor256@gmail.com)
  * @version $Id$
- * @since 0.1
+ * @since 0.9
+ * @checkstyle JavadocMethodCheck (500 lines)
+ * @checkstyle MagicNumberCheck (500 lines)
  */
-public final class AnyOf implements Scalar<Boolean> {
+public final class ReducedIterableTest {
 
-    /**
-     * Iterable.
-     */
-    private final Iterable<Boolean> iterable;
-
-    /**
-     * Ctor.
-     * @param src Source iterable
-     */
-    public AnyOf(final Iterable<Boolean> src) {
-        this.iterable = src;
-    }
-
-    @Override
-    public Boolean asValue() {
-        boolean success = false;
-        for (final Boolean item : this.iterable) {
-            if (item) {
-                success = true;
-                break;
-            }
-        }
-        return success;
+    @Test
+    public void skipIterable() throws Exception {
+        MatcherAssert.assertThat(
+            "Can't reduce elements in iterable",
+            new ReducedIterable<>(
+                new LimitedIterable<>(new NaturalNumbers(), 10),
+                0L,
+                (first, second) -> first + second
+            ).value(),
+            Matchers.equalTo(45L)
+        );
     }
 
 }

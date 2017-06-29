@@ -23,58 +23,49 @@
  */
 package org.cactoos.list;
 
-import org.cactoos.Func;
+import java.util.Iterator;
 import org.cactoos.Scalar;
 
 /**
- * Iterable into boolean.
- *
- * <p>You can use this class, for example, in order to iterate through
- * a collection of items:</p>
- *
- * <pre> new IterableAsBoolean&lt;&gt;(
- *   new IterableAsList&lt;String&gt;("hello", "world"),
- *   i -&gt; System.out.println(i)
- * ).asValue();</pre>
+ * Real total of numbers.
  *
  * <p>There is no thread-safety guarantee.
  *
- * @author Yegor Bugayenko (yegor256@gmail.com)
+ * @author Vseslav Sekorin (vssekorin@gmail.com)
  * @version $Id$
- * @param <X> Type of source item
- * @see IterableAsBooleans
- * @since 0.1
+ * @since 0.9
  */
-public final class IterableAsBoolean<X> implements Scalar<Boolean> {
+public final class SumOfReals implements Scalar<Double> {
 
     /**
-     * Iterable.
+     * The iterable.
      */
-    private final Iterable<X> iterable;
-
-    /**
-     * Proc.
-     */
-    private final Func<X, Boolean> func;
+    private final Iterable<Scalar<Number>> src;
 
     /**
      * Ctor.
-     * @param src Source iterable
-     * @param fnc Func
+     * @param src Numbers
      */
-    public IterableAsBoolean(final Iterable<X> src,
-        final Func<X, Boolean> fnc) {
-        this.iterable = src;
-        this.func = fnc;
+    @SafeVarargs
+    public SumOfReals(final Scalar<Number>... src) {
+        this(new ArrayAsIterable<>(src));
+    }
+
+    /**
+     * Ctor.
+     * @param src The iterable
+     */
+    public SumOfReals(final Iterable<Scalar<Number>> src) {
+        this.src = src;
     }
 
     @Override
-    public Boolean asValue() {
-        return new AllOf(
-            new IterableAsBooleans<>(
-                this.iterable,
-                this.func
-            )
-        ).asValue();
+    public Double value() throws Exception {
+        final Iterator<Scalar<Number>> numbers = this.src.iterator();
+        Double result =  0.;
+        while (numbers.hasNext()) {
+            result += numbers.next().value().doubleValue();
+        }
+        return result;
     }
 }

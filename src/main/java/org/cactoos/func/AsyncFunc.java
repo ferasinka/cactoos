@@ -23,11 +23,21 @@
  */
 package org.cactoos.func;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
 import org.cactoos.Func;
-import org.cactoos.text.FormattedText;
+import org.cactoos.Proc;
 
 /**
- * Func that will try a few times before throwing an exception.
+ * Func that runs in the background.
+ *
+ * <p>If you want your piece of code to be executed in the background,
+ * use {@link AsyncFunc} as following:</p>
+ *
+ * <pre> int length = new AsyncFunc(
+ *   input -&gt; input.length()
+ * ).apply("Hello, world!").get();</pre>
  *
  * <p>There is no thread-safety guarantee.
  *
@@ -35,63 +45,60 @@ import org.cactoos.text.FormattedText;
  * @version $Id$
  * @param <X> Type of input
  * @param <Y> Type of output
- * @since 0.8
+ * @since 0.10
  */
-public final class RetryFunc<X, Y> implements Func<X, Y> {
+public final class AsyncFunc<X, Y> implements Func<X, Future<Y>> {
 
     /**
-     * Original func.
+     * The func.
      */
     private final Func<X, Y> func;
 
     /**
-     * Maximum number of attempts to make.
+     * The threads.
      */
-    private final int max;
+    private final ThreadFactory factory;
 
     /**
      * Ctor.
-     * @param fnc Func original
+     * @param proc The proc
      */
-    public RetryFunc(final Func<X, Y> fnc) {
-        // @checkstyle MagicNumberCheck (1 line)
-        this(fnc, 3);
+    public AsyncFunc(final Proc<X> proc) {
+        this(new ProcAsFunc<>(proc));
     }
 
     /**
      * Ctor.
-     * @param fnc Func original
-     * @param attempts Maximum number of attempts
+     * @param fnc The func
      */
-    public RetryFunc(final Func<X, Y> fnc, final int attempts) {
+    public AsyncFunc(final Func<X, Y> fnc) {
+        this(fnc, Executors.defaultThreadFactory());
+    }
+
+    /**
+     * Ctor.
+     * @param proc The proc
+     * @param fct Factory
+     */
+    public AsyncFunc(final Proc<X> proc, final ThreadFactory fct) {
+        this(new ProcAsFunc<>(proc), fct);
+    }
+
+    /**
+     * Ctor.
+     * @param fnc The func
+     * @param fct Factory
+     */
+    public AsyncFunc(final Func<X, Y> fnc, final ThreadFactory fct) {
         this.func = fnc;
-        this.max = attempts;
+        this.factory = fct;
     }
 
     @Override
-    @SuppressWarnings("PMD.AvoidCatchingGenericException")
-    public Y apply(final X input) throws Exception {
-        int attempt = 0;
-        Exception error = new IllegalArgumentException(
-            new FormattedText(
-                "Maximum number of attempts is too small: %d",
-                this.max
-            ).asString()
+    public Future<Y> apply(final X input) {
+        return Executors.newSingleThreadExecutor(this.factory).submit(
+            () -> this.func.apply(input)
         );
-        while (attempt < this.max) {
-            try {
-                return this.func.apply(input);
-            } catch (final InterruptedException ex) {
-                Thread.currentThread().interrupt();
-                error = ex;
-                break;
-                // @checkstyle IllegalCatchCheck (1 line)
-            } catch (final Exception ex) {
-                error = ex;
-            }
-            ++attempt;
-        }
-        throw error;
     }
 
 }

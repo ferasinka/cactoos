@@ -21,42 +21,41 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.cactoos.io;
+package org.cactoos.func;
 
-import java.io.IOException;
-import java.io.InputStream;
-import org.cactoos.Input;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import org.cactoos.FuncApplies;
+import org.hamcrest.MatcherAssert;
+import org.junit.Test;
 
 /**
- * A safe Input.
+ * Test case for {@link AsyncFunc}.
  *
- * <p>There is no thread-safety guarantee.
- *
- * @author Fabricio Cabral (fabriciofx@gmail.com)
+ * @author Yegor Bugayenko (yegor256@gmail.com)
  * @version $Id$
- * @since 0.3
+ * @since 0.10
+ * @checkstyle JavadocMethodCheck (500 lines)
  */
-public final class NotNullInput implements Input {
+public final class AsyncFuncTest {
 
-    /**
-     * The input.
-     */
-    private final Input origin;
-
-    /**
-     * Ctor.
-     * @param input The input
-     */
-    public NotNullInput(final Input input) {
-        this.origin = input;
-    }
-
-    @Override
-    public InputStream stream() throws IOException {
-        if (this.origin == null) {
-            throw new IOException("invalid input (null)");
-        }
-        return this.origin.stream();
+    @Test
+    public void runsInBackground() {
+        MatcherAssert.assertThat(
+            "Can't run in the background",
+            new AsyncFunc<>(
+                input -> {
+                    TimeUnit.DAYS.sleep(1L);
+                    return "done!";
+                }
+            ),
+            new FuncApplies<>(
+                true,
+                new FuncAsMatcher<Future<String>>(
+                    input -> !input.isDone()
+                )
+            )
+        );
     }
 
 }

@@ -24,57 +24,63 @@
 package org.cactoos.func;
 
 import org.cactoos.Func;
-import org.cactoos.Proc;
+import org.cactoos.Scalar;
 
 /**
- * Func as that is always true.
- *
- * <p>You may want to use this decorator when you need
- * a procedure that returns boolean instead of a function:</p>
- *
- * <pre> List&lt;String&gt; list = new LinkedList&lt;&gt;();
- * new AllOf(
- *   new IterableAsBooleans&lt;String&gt;(
- *     Collections.emptyList(),
- *     new AlwaysTrueFunc&lt;&gt;(list::add)
- *   )
- * ).asValue();
- * </pre>
+ * Func that will try a few times before throwing an exception.
  *
  * <p>There is no thread-safety guarantee.
  *
  * @author Yegor Bugayenko (yegor256@gmail.com)
  * @version $Id$
- * @param <X> Type of input
- * @since 0.2
+ * @param <T> Type of output
+ * @since 0.9
  */
-public final class AlwaysTrueFunc<X> implements Func<X, Boolean> {
+public final class RetryScalar<T> implements Scalar<T> {
 
     /**
-     * Original func.
+     * Original scalar.
      */
-    private final Func<X, ?> func;
+    private final Scalar<T> scalar;
+
+    /**
+     * Exit condition.
+     */
+    private final Func<Integer, Boolean> exit;
 
     /**
      * Ctor.
-     * @param proc Encapsulated proc
+     * @param slr Scalar original
      */
-    public AlwaysTrueFunc(final Proc<X> proc) {
-        this(new ProcAsFunc<>(proc));
+    public RetryScalar(final Scalar<T> slr) {
+        // @checkstyle MagicNumberCheck (1 line)
+        this(slr, 3);
     }
 
     /**
      * Ctor.
-     * @param fnc Encapsulated func
+     * @param slr Scalar original
+     * @param attempts Maximum number of attempts
      */
-    public AlwaysTrueFunc(final Func<X, ?> fnc) {
-        this.func = fnc;
+    public RetryScalar(final Scalar<T> slr, final int attempts) {
+        this(slr, attempt -> attempt >= attempts);
+    }
+
+    /**
+     * Ctor.
+     * @param slr Func original
+     * @param ext Exit condition, returns TRUE if there is no more reason to try
+     */
+    public RetryScalar(final Scalar<T> slr, final Func<Integer, Boolean> ext) {
+        this.scalar = slr;
+        this.exit = ext;
     }
 
     @Override
-    public Boolean apply(final X input) throws Exception {
-        this.func.apply(input);
-        return true;
+    public T value() throws Exception {
+        return new RetryFunc<>(
+            (Func<Boolean, T>) input -> this.scalar.value(),
+            this.exit
+        ).apply(true);
     }
-
 }

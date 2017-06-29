@@ -23,40 +23,37 @@
  */
 package org.cactoos.io;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import org.cactoos.Output;
+import java.io.InputStream;
+import org.cactoos.Input;
+import org.cactoos.func.UncheckedScalar;
 
 /**
- * A safe Output.
+ * Input that doesn't throw checked {@link Exception}.
  *
  * <p>There is no thread-safety guarantee.
  *
- * @author Fabricio Cabral (fabriciofx@gmail.com)
+ * @author Yegor Bugayenko (yegor256@gmail.com)
  * @version $Id$
- * @since 0.3
+ * @since 0.9
  */
-public final class NotNullOutput implements Output {
+public final class UncheckedInput implements Input {
 
     /**
-     * The output.
+     * Original input.
      */
-    private final Output origin;
+    private final Input input;
 
     /**
      * Ctor.
-     * @param output The output
+     * @param ipt Input
      */
-    public NotNullOutput(final Output output) {
-        this.origin = output;
+    public UncheckedInput(final Input ipt) {
+        this.input = ipt;
     }
 
     @Override
-    public OutputStream stream() throws IOException {
-        if (this.origin == null) {
-            throw new IOException("invalid output (null)");
-        }
-        return this.origin.stream();
+    public InputStream stream() {
+        return new UncheckedScalar<>(this.input::stream).value();
     }
 
 }

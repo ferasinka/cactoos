@@ -24,60 +24,48 @@
 package org.cactoos.list;
 
 import java.util.Iterator;
-import org.cactoos.Func;
+import org.cactoos.Scalar;
 
 /**
- * Iterable into booleans.
- *
- * <p>You can use this class, for example, in order to iterate through
- * a collection of items, in combination with {@link AllOf}:</p>
- *
- * <pre> new AllOf(
- *   new IterableAsBooleans&lt;String&gt;(
- *     new IterableAsList&lt;String&gt;("hello", "world"),
- *     i -&gt; System.out.println(i)
- *   )
- * ).asValue();</pre>
- *
- * <p>Also, consider a much shorter version with {@link IterableAsBoolean}.</p>
+ * Int total of numbers.
  *
  * <p>There is no thread-safety guarantee.
  *
- * @author Yegor Bugayenko (yegor256@gmail.com)
+ * @author Vseslav Sekorin (vssekorin@gmail.com)
  * @version $Id$
- * @param <X> Type of source item
- * @see IterableAsBoolean
- * @since 0.1
+ * @since 0.9
  */
-public final class IterableAsBooleans<X> implements Iterable<Boolean> {
+public final class SumOfInts implements Scalar<Long> {
 
     /**
-     * Iterable.
+     * The iterable.
      */
-    private final Iterable<X> iterable;
-
-    /**
-     * Func.
-     */
-    private final Func<X, Boolean> func;
+    private final Iterable<Scalar<Number>> src;
 
     /**
      * Ctor.
-     * @param src Source iterable
-     * @param fnc Func
+     * @param src Numbers
      */
-    public IterableAsBooleans(final Iterable<X> src,
-        final Func<X, Boolean> fnc) {
-        this.iterable = src;
-        this.func = fnc;
+    @SafeVarargs
+    public SumOfInts(final Scalar<Number>... src) {
+        this(new ArrayAsIterable<>(src));
+    }
+
+    /**
+     * Ctor.
+     * @param src The iterable
+     */
+    public SumOfInts(final Iterable<Scalar<Number>> src) {
+        this.src = src;
     }
 
     @Override
-    public Iterator<Boolean> iterator() {
-        return new MappedIterator<>(
-            this.iterable.iterator(),
-            this.func
-        );
+    public Long value() throws Exception {
+        final Iterator<Scalar<Number>> numbers = this.src.iterator();
+        Long result =  0L;
+        while (numbers.hasNext()) {
+            result += numbers.next().value().longValue();
+        }
+        return result;
     }
-
 }
