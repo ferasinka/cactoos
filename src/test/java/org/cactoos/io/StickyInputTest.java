@@ -23,11 +23,15 @@
  */
 package org.cactoos.io;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import org.cactoos.Input;
+import org.cactoos.ScalarHasValue;
 import org.cactoos.TextHasString;
-import org.cactoos.func.FuncAsMatcher;
+import org.cactoos.func.MatcherOf;
 import org.cactoos.func.RepeatedFunc;
-import org.cactoos.text.BytesAsText;
+import org.cactoos.text.TextOf;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -47,16 +51,16 @@ public final class StickyInputTest {
         MatcherAssert.assertThat(
             "Can't read bytes from a file",
             new StickyInput(
-                new ResourceAsInput(
+                new ResourceOf(
                     "org/cactoos/large-text.txt"
                 )
             ),
-            new FuncAsMatcher<>(
+            new MatcherOf<>(
                 new RepeatedFunc<Input, Boolean>(
-                    input -> new InputAsBytes(
+                    input -> new BytesOf(
                         new TeeInput(input, new DeadOutput())
                     // @checkstyle MagicNumber (2 lines)
-                    ).asBytes().length == 73471,
+                    ).asBytes().length == 74536,
                     10
                 )
             )
@@ -64,13 +68,13 @@ public final class StickyInputTest {
     }
 
     @Test
-    public void readsRealUrl() {
+    public void readsRealUrl() throws MalformedURLException {
         MatcherAssert.assertThat(
             "Can't fetch text page from the URL",
-            new BytesAsText(
-                new InputAsBytes(
-                    new StickyInput(
-                        new UrlAsInput(
+            new TextOf(
+                new StickyInput(
+                    new InputOf(
+                        new URL(
                             // @checkstyle LineLength (1 line)
                             "file:src/test/resources/org/cactoos/large-text.txt"
                         )
@@ -80,6 +84,34 @@ public final class StickyInputTest {
             new TextHasString(
                 Matchers.endsWith("est laborum.\n")
             )
+        );
+    }
+
+    @Test
+    public void readsFileContentSlowlyAndCountsLength() {
+        final long size = 100_000L;
+        MatcherAssert.assertThat(
+            "Can't read bytes from a large source slowly and count length",
+            new LengthOf(
+                new StickyInput(
+                    new SlowInput(size)
+                )
+            ),
+            new ScalarHasValue<>(size)
+        );
+    }
+
+    @Test
+    public void readsFileContentSlowly() throws IOException {
+        final int size = 130_000;
+        MatcherAssert.assertThat(
+            "Can't read bytes from a large source slowly",
+            new BytesOf(
+                new StickyInput(
+                    new SlowInput(size)
+                )
+            ).asBytes().length,
+            Matchers.equalTo(size)
         );
     }
 

@@ -1,5 +1,6 @@
 <img src="http://cf.jare.io/?u=http%3A%2F%2Fwww.yegor256.com%2Fimages%2Fbooks%2Felegant-objects%2Fcactus.svg" height="100px" />
 
+[![Managed by Zerocracy](http://www.zerocracy.com/badge.svg)](http://www.zerocracy.com)
 [![DevOps By Rultor.com](http://www.rultor.com/b/yegor256/cactoos)](http://www.rultor.com/p/yegor256/cactoos)
 
 [![Build Status](https://travis-ci.org/yegor256/cactoos.svg?branch=master)](https://travis-ci.org/yegor256/cactoos)
@@ -12,7 +13,7 @@
 
 **ATTENTION**: We're still in a very early alpha version, the API
 may and _will_ change frequently. Please, use it at your own risk,
-until we release version 1.0 (July 2017).
+until we release version 1.0 (<del>July</del> August 2017).
 
 Cactoos is a collection of object-oriented Java primitives.
 
@@ -59,26 +60,20 @@ More about it here:
 To read a text file in UTF-8:
 
 ```java
-String text = new BytesAsText(
-  new InputAsBytes(
-    new FileAsInput(
-      new File("/code/a.txt")
-    )
-  )
+String text = new TextOf(
+  new File("/code/a.txt")
 ).asString();
 ```
 
 To write a text into a file:
 
 ```java
-new LengthOfInput(
+new LengthOf(
   new TeeInput(
-    new BytesAsInput(
-      new TextAsBytes(
-        new StringAsText("Hello, world!")
-      )
+    new InputOf(
+      "Hello, world!"
     ),
-    new FileAsOutput(
+    new OutputTo(
       new File("/code/a.txt")
     )
   )
@@ -88,8 +83,8 @@ new LengthOfInput(
 To read a binary file from classpath:
 
 ```java
-byte[] data = new InputAsBytes(
-  new ResourceAsInput("foo/img.jpg")
+byte[] data = new BytesOf(
+  new ResourceOf("foo/img.jpg")
 ).asBytes();
 ```
 
@@ -118,12 +113,12 @@ new UpperText("Hello");
 To filter a collection:
 
 ```java
-Collection<String> filtered = new IterableAsCollection<>(
-  new FilteredIterable<>(
-    new ArrayAsIterable<>("hello", "world", "dude"),
-    new Func<String, Boolean>() {
+Collection<String> filtered = new ListOf<>(
+  new Filtered<>(
+    new ArrayOf<>("hello", "world", "dude"),
+    new FuncOf<String, Boolean>() {
       @Override
-      public boolean apply(String s) {
+      public Boolean apply(String s) {
         return s.length() > 4;
       }
     }
@@ -134,9 +129,9 @@ Collection<String> filtered = new IterableAsCollection<>(
 With Lambda:
 
 ```java
-new IterableAsCollection<>(
-  new FilteredIterable<>(
-    new ArrayAsIterable<>("hello", "world", "dude"),
+new ListOf<>(
+  new Filtered<>(
+    new ArrayOf<>("hello", "world", "dude"),
     s -> s.length() > 4
   )
 );
@@ -146,9 +141,9 @@ To iterate a collection:
 
 ```java
 new And(
-  new MappedIterable<>(
-    new ArrayAsIterable<>("how", "are", "you"),
-    new ProcAsFunc<>(
+  new Mappped<>(
+    new ArrayOf<>("how", "are", "you"),
+    new FuncOf<>(
       input -> {
         System.out.printf("Item: %s\n", input);
       }
@@ -161,7 +156,7 @@ Or even more compact:
 
 ```java
 new And(
-  input -> System.out.printf("Item: %s\n", input),
+  (String input) -> System.out.printf("Item: %s\n", input),
   "how", "are", "you"
 ).value();
 ```
@@ -169,16 +164,13 @@ new And(
 To sort a list of words in the file:
 
 ```java
-List<String> sorted = new SortedList<>(
-  new IterableAsList<>(
+List<String> sorted = new ListOf<>(
+  new Sorted<>(
     new SplitText(
-      new BytesAsText(
-        new InputAsBytes(
-          new FileAsInput(
-            new File("/tmp/names.txt")
-          )
-        )
-      )
+      new TextOf(
+        new File("/tmp/names.txt")
+      ),
+      new TextOf("\\s+")
     )
   )
 );
@@ -187,7 +179,7 @@ List<String> sorted = new SortedList<>(
 To count elements in an iterable:
 
 ```java
-int total = new LengthOfIterable(
+int total = new LengthOf(
   "how", "are", "you"
 ).value();
 ```
@@ -205,7 +197,7 @@ for (String name : names) {
 This is its object-oriented alternative (no streams!):
 
 ```java
-new And<>(
+new And(
   names,
   n -> {
     System.out.printf("Hello, %s!\n", n);
@@ -224,8 +216,8 @@ while (!ready) {
 Here is its object-oriented alternative:
 
 ```java
-new And<>(
-  new EndlessIterable<>(ready),
+new And(
+  new Endless<>(ready),
   ready -> {
     System.out.prinln("Still waiting...");
     return !ready;
@@ -237,16 +229,27 @@ new And<>(
 
 Cactoos | Guava | Apache Commons | JDK 8
 ------ | ------ | ------ | ------
+`Filtered` | `Iterables.filter()` | ? | -
 `FormattedText` | - | - | `String.format()`
+`IsBlank` | - | `StringUtils.isBlank()`| -
 `JoinedText` | - | - | `String.join()`
-`LoweredText` | - | - | `String#toLowerCase()`
+`LengthOf` | - | - | `String#length()`
+`LowerText` | - | - | `String#toLowerCase()`
 `NormalizedText` | - | `StringUtils.normalize()` | -
-`StringAsUrl` | - | - | `URLEncoder.encode()`
-`UrlAsString` | - | - | `URLDecoder.decode()`
+`RepeatedText` | - | `StringUtils.repeat()` | -
+`ReplacedText` | - | - | `String#replace()`
+`ReversedText` | - | - | `StringBuilder#reverse()`
+`RotatedText` | - | `StringUtils.rotate()`| -
+`SplitText` | - | - | `String#split()`
 `StickyList` | ? | ? | `Arrays.asList()`
 `StickyList` | `Lists.newArrayList()` | ? | -
-`FilteredIterable` | `Iterables.filter()` | ? | -
-`BytesAsString` | ? | `IOUtils.toString()` | -
+`SubText` | - | - | `String#substring()`
+`SwappedCaseText` | - | `StringUtils.swapCase()` | -
+`TextOf` | ? | `IOUtils.toString()` | -
+`TrimmedLeftText` | - | `StringUtils.stripStart()` | -
+`TrimmedRightText` | - | `StringUtils.stripEnd()` | -
+`TrimmedText` | - | `StringUtils.stripAll()` | `String#trim()`
+`UpperText` | - | - | `String#toUpperCase()`
 
 ## How to contribute?
 
@@ -271,6 +274,9 @@ Note: [Checkstyle](https://en.wikipedia.org/wiki/Checkstyle) is used as a static
   - [@DronMDF](https://github.com/DronMDF) as Andrey Valyaev
   - [@dusan-rychnovsky](https://github.com/dusan-rychnovsky) as Dušan Rychnovský ([Blog](http://blog.dusanrychnovsky.cz/))
   - [@timmeey](https://github.com/timmeey) as Tim Hinkes ([Blog](https://blog.timmeey.de))
+  - [@alex-semenyuk](https://github.com/alex-semenyuk) as Alexey Semenyuk
+  - [@smallcreep](https://github.com/smallcreep) as Ilia Rogozhin
+  - [@memoyil](https://github.com/memoyil) as Mehmet Yildirim
 
 
 ## License (MIT)

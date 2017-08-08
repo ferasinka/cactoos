@@ -29,9 +29,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import org.cactoos.TextHasString;
-import org.cactoos.func.FuncAsMatcher;
-import org.cactoos.text.BytesAsText;
-import org.cactoos.text.TextAsBytes;
+import org.cactoos.func.MatcherOf;
+import org.cactoos.text.TextOf;
 import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 
@@ -51,21 +50,19 @@ public final class TeeInputTest {
         final String content = "Hello, товарищ!";
         MatcherAssert.assertThat(
             "Can't copy Input to Output and return Input",
-            new BytesAsText(
-                new InputAsBytes(
-                    new TeeInput(
-                        new BytesAsInput(
-                            new TextAsBytes(content)
-                        ),
-                        new OutputStreamAsOutput(baos)
-                    )
+            new TextOf(
+                new TeeInput(
+                    new InputOf(content),
+                    new OutputTo(baos)
                 )
             ),
             new TextHasString(
-                new FuncAsMatcher<>(
-                    str -> new String(
-                        baos.toByteArray(), StandardCharsets.UTF_8
-                    ).equals(str)
+                new MatcherOf<>(
+                    str -> {
+                        return new String(
+                            baos.toByteArray(), StandardCharsets.UTF_8
+                        ).equals(str);
+                    }
                 )
             )
         );
@@ -76,19 +73,21 @@ public final class TeeInputTest {
         final Path temp = Files.createTempFile("cactoos", "txt");
         MatcherAssert.assertThat(
             "Can't copy Input to File and return content",
-            new BytesAsText(
-                new InputAsBytes(
+            new TextOf(
+                new BytesOf(
                     new TeeInput("Hello, друг!", temp)
                 )
             ),
             new TextHasString(
-                new FuncAsMatcher<>(
-                    str -> str.equals(
-                        new String(
-                            Files.readAllBytes(temp),
-                            StandardCharsets.UTF_8
-                        )
-                    )
+                new MatcherOf<>(
+                    str -> {
+                        return str.equals(
+                            new String(
+                                Files.readAllBytes(temp),
+                                StandardCharsets.UTF_8
+                            )
+                        );
+                    }
                 )
             )
         );

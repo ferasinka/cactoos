@@ -23,6 +23,7 @@
  */
 package org.cactoos.func;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import org.cactoos.FuncApplies;
@@ -51,8 +52,29 @@ public final class AsyncFuncTest {
             ),
             new FuncApplies<>(
                 true,
-                new FuncAsMatcher<Future<String>>(
-                    input -> !input.isDone()
+                new MatcherOf<Future<String>>(
+                    future -> !future.isDone()
+                )
+            )
+        );
+    }
+
+    @Test
+    public void runsInBackgroundWithoutFuture() {
+        final CountDownLatch latch = new CountDownLatch(1);
+        MatcherAssert.assertThat(
+            "Can't run in the background without us touching the Future",
+            new AsyncFunc<>(
+                input -> {
+                    latch.countDown();
+                }
+            ),
+            new FuncApplies<>(
+                true,
+                new MatcherOf<Future<String>>(
+                    future -> {
+                        return latch.await(1L, TimeUnit.SECONDS);
+                    }
                 )
             )
         );
