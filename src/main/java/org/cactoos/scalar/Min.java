@@ -23,15 +23,19 @@
  */
 package org.cactoos.scalar;
 
-import java.util.Iterator;
-import java.util.NoSuchElementException;
 import org.cactoos.Scalar;
+import org.cactoos.func.MinFunc;
 import org.cactoos.iterable.IterableOf;
 
 /**
  * Find the smaller among items.
  *
  * <p>There is no thread-safety guarantee.
+ *
+ * <p>This class implements {@link Scalar}, which throws a checked
+ * {@link Exception}. This may not be convenient in many cases. To make
+ * it more convenient and get rid of the checked exception you can
+ * use {@link UncheckedScalar} or {@link IoCheckedScalar} decorators.</p>
  *
  * @author Fabricio Cabral (fabriciofx@gmail.com)
  * @version $Id$
@@ -43,7 +47,7 @@ public final class Min<T extends Comparable<T>> implements Scalar<T> {
     /**
      * Items.
      */
-    private final Iterable<Scalar<T>> items;
+    private final Scalar<T> result;
 
     /**
      * Ctor.
@@ -59,25 +63,15 @@ public final class Min<T extends Comparable<T>> implements Scalar<T> {
      * @param iterable The items
      */
     public Min(final Iterable<Scalar<T>> iterable) {
-        this.items = iterable;
+        this.result = new Folded<>(
+            new MinFunc<>(),
+            iterable
+        );
     }
 
     @Override
     public T value() throws Exception {
-        final Iterator<Scalar<T>> iter = this.items.iterator();
-        if (!iter.hasNext()) {
-            throw new NoSuchElementException(
-                "Can't find smaller element in an empty iterable"
-            );
-        }
-        T min = iter.next().value();
-        while (iter.hasNext()) {
-            final T next = iter.next().value();
-            if (next.compareTo(min) < 0) {
-                min = next;
-            }
-        }
-        return min;
+        return this.result.value();
     }
 
 }

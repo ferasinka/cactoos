@@ -36,23 +36,33 @@ import java.util.Iterator;
  * @param <T> Type of item
  * @since 0.8
  */
-public final class Cycled<T> implements Iterable<T> {
+public final class Cycled<T> extends IterableEnvelope<T> {
 
     /**
-     * Iterable.
+     * Ctor.
+     * @param itr Iterable
+     * @since 0.23
      */
-    private final Iterable<T> iterable;
+    @SafeVarargs
+    public Cycled(final T... itr) {
+        this(new IterableOf<T>(itr));
+    }
+
+    /**
+     * Ctor.
+     * @param itr Iterable
+     * @since 0.21
+     */
+    public Cycled(final Iterator<T> itr) {
+        this(new IterableOf<T>(itr));
+    }
 
     /**
      * Ctor.
      * @param itr Iterable
      */
     public Cycled(final Iterable<T> itr) {
-        this.iterable = itr;
+        super(() -> () -> new org.cactoos.iterator.Cycled<>(itr));
     }
 
-    @Override
-    public Iterator<T> iterator() {
-        return new org.cactoos.iterator.Cycled<>(this.iterable);
-    }
 }

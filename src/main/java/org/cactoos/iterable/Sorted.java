@@ -24,7 +24,6 @@
 package org.cactoos.iterable;
 
 import java.util.Comparator;
-import java.util.Iterator;
 
 /**
  * Sorted iterable.
@@ -36,18 +35,7 @@ import java.util.Iterator;
  * @param <T> Element type
  * @since 0.7
  */
-public final class Sorted<T extends Comparable<? super T>> implements
-    Iterable<T> {
-
-    /**
-     * Decorated iterable.
-     */
-    private final Iterable<T> iterable;
-
-    /**
-     * Comparator.
-     */
-    private final Comparator<T> comparator;
+public final class Sorted<T> extends IterableEnvelope<T> {
 
     /**
      * Ctor.
@@ -60,10 +48,16 @@ public final class Sorted<T extends Comparable<? super T>> implements
 
     /**
      * Ctor.
+     *
+     * <p>If you're using this ctor you must be sure that type {@code T}
+     * implements {@link Comparable} interface. Otherwise, there will be
+     * a type casting exception in runtime.</p>
+     *
      * @param src The underlying iterable
      */
+    @SuppressWarnings("unchecked")
     public Sorted(final Iterable<T> src) {
-        this(Comparator.naturalOrder(), src);
+        this((Comparator<T>) Comparator.naturalOrder(), src);
     }
 
     /**
@@ -82,14 +76,8 @@ public final class Sorted<T extends Comparable<? super T>> implements
      * @param cmp The comparator
      */
     public Sorted(final Comparator<T> cmp, final Iterable<T> src) {
-        this.iterable = src;
-        this.comparator = cmp;
-    }
-
-    @Override
-    public Iterator<T> iterator() {
-        return new org.cactoos.iterator.Sorted<>(
-            this.comparator, this.iterable.iterator()
-        );
+        super(() -> () -> new org.cactoos.iterator.Sorted<>(
+            cmp, src.iterator()
+        ));
     }
 }

@@ -146,7 +146,9 @@ public final class OutputStreamTo extends OutputStream {
      */
     private OutputStreamTo(final Scalar<OutputStream> tgt) {
         super();
-        this.target = new UncheckedScalar<>(new StickyScalar<>(tgt));
+        this.target = new UncheckedScalar<>(
+            new StickyScalar<>(tgt)
+        );
     }
 
     @Override
@@ -168,6 +170,11 @@ public final class OutputStreamTo extends OutputStream {
     @Override
     public void close() throws IOException {
         this.target.value().close();
+    }
+
+    @Override
+    public void flush() throws IOException {
+        this.target.value().flush();
     }
 
 }

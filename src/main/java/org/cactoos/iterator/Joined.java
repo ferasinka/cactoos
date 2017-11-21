@@ -25,7 +25,7 @@ package org.cactoos.iterator;
 
 import java.util.Iterator;
 import org.cactoos.iterable.Filtered;
-import org.cactoos.iterable.ListOf;
+import org.cactoos.list.ListOf;
 
 /**
  * A few Iterables joined together.
@@ -64,14 +64,14 @@ public final class Joined<T> implements Iterator<T> {
     @Override
     public boolean hasNext() {
         return new Filtered<>(
-            this.list, Iterator::hasNext
+            Iterator::hasNext, this.list
         ).iterator().hasNext();
     }
 
     @Override
     public T next() {
         return new Filtered<>(
-            this.list, Iterator::hasNext
+            Iterator::hasNext, this.list
         ).iterator().next().next();
     }
 }

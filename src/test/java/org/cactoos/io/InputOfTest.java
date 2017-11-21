@@ -305,9 +305,19 @@ public final class InputOfTest {
         MatcherAssert.assertThat(
             "Can't read array of bytes",
                 new InputAsBytes(
-                    new InputOf(bytes)
+                    new SyncInput(new InputOf(bytes))
             ).asBytes(),
             Matchers.equalTo(bytes)
+        );
+    }
+
+    @Test
+    public void makesDataAvailable() throws IOException {
+        final String content = "Hello,חבר!";
+        MatcherAssert.assertThat(
+            "Can't show that data is available",
+            new InputOf(content).stream().available(),
+            Matchers.greaterThan(0)
         );
     }
 

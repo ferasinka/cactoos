@@ -23,7 +23,6 @@
  */
 package org.cactoos.iterable;
 
-import java.util.Iterator;
 import org.cactoos.Scalar;
 import org.cactoos.scalar.UncheckedScalar;
 
@@ -38,51 +37,35 @@ import org.cactoos.scalar.UncheckedScalar;
  * @param <T> Element type
  * @since 0.1
  */
-public final class Repeated<T> implements Iterable<T> {
-
-    /**
-     * Element to repeat.
-     */
-    private final UncheckedScalar<T> element;
-
-    /**
-     * Repeat count.
-     */
-    private final int count;
+public final class Repeated<T> extends IterableEnvelope<T> {
 
     /**
      * Ctor.
-     * @param elm The element to repeat
      * @param total The total number of repetitions
+     * @param elm The element to repeat
      */
-    public Repeated(final T elm, final int total) {
-        this(() -> elm, total);
+    public Repeated(final int total, final T elm) {
+        this(total, () -> elm);
     }
 
     /**
      * Ctor.
-     * @param elm The element to repeat
      * @param total The total number of repetitions
+     * @param elm The element to repeat
      */
-    public Repeated(final Scalar<T> elm, final int total) {
-        this(new UncheckedScalar<T>(elm), total);
+    public Repeated(final int total, final Scalar<T> elm) {
+        this(total, new UncheckedScalar<T>(elm));
     }
 
     /**
      * Ctor.
-     * @param elm The element to repeat
      * @param total The total number of repetitions
+     * @param item The element to repeat
      */
-    public Repeated(final UncheckedScalar<T> elm, final int total) {
-        this.element = elm;
-        this.count = total;
-    }
-
-    @Override
-    public Iterator<T> iterator() {
-        return new org.cactoos.iterator.Repeated<>(
-            this.element, this.count
-        );
+    public Repeated(final int total, final UncheckedScalar<T> item) {
+        super(() -> () -> new org.cactoos.iterator.Repeated<>(
+            total, item
+        ));
     }
 
 }

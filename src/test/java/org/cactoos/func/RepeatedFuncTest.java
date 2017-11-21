@@ -23,9 +23,10 @@
  */
 package org.cactoos.func;
 
+import java.security.SecureRandom;
 import java.util.Iterator;
 import org.cactoos.Func;
-import org.cactoos.iterator.Sticky;
+import org.cactoos.iterator.StickyIterator;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -43,7 +44,7 @@ public final class RepeatedFuncTest {
 
     @Test
     public void runsFuncMultipleTimes() throws Exception {
-        final Iterator<Integer> iter = new Sticky<>(1, 2, 5, 6);
+        final Iterator<Integer> iter = new StickyIterator<>(1, 2, 5, 6);
         final Func<Boolean, Integer> func = new RepeatedFunc<>(
             input -> {
                 return iter.next();
@@ -53,6 +54,34 @@ public final class RepeatedFuncTest {
         MatcherAssert.assertThat(
             func.apply(true),
             Matchers.equalTo(5)
+        );
+    }
+
+    @Test
+    public void repeatsNullsResults() throws Exception {
+        final Func<Boolean, Integer> func = new RepeatedFunc<>(
+            input -> {
+                return null;
+            },
+            2
+        );
+        MatcherAssert.assertThat(
+            func.apply(true),
+            Matchers.equalTo(null)
+        );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void doesntRepeatAny() throws Exception {
+        final Func<Boolean, Integer> func = new RepeatedFunc<>(
+            input -> {
+                return new SecureRandom().nextInt();
+            },
+            0
+        );
+        MatcherAssert.assertThat(
+            func.apply(true),
+            Matchers.equalTo(func.apply(true))
         );
     }
 }

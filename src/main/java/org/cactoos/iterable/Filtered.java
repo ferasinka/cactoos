@@ -49,34 +49,38 @@ import org.cactoos.Func;
  * @see Filtered
  * @since 0.1
  */
-public final class Filtered<X> implements Iterable<X> {
-
-    /**
-     * Iterable.
-     */
-    private final Iterable<X> iterable;
-
-    /**
-     * Function.
-     */
-    private final Func<X, Boolean> func;
+public final class Filtered<X> extends IterableEnvelope<X> {
 
     /**
      * Ctor.
-     * @param src Source iterable
      * @param fnc Predicate
+     * @param src Source iterable
+     * @since 0.21
      */
-    public Filtered(final Iterable<X> src, final Func<X, Boolean> fnc) {
-        this.iterable = src;
-        this.func = fnc;
+    @SafeVarargs
+    public Filtered(final Func<X, Boolean> fnc, final X... src) {
+        this(fnc, new IterableOf<>(src));
     }
 
-    @Override
-    public Iterator<X> iterator() {
-        return new org.cactoos.iterator.Filtered<>(
-            this.iterable.iterator(),
-            this.func
-        );
+    /**
+     * Ctor.
+     * @param fnc Predicate
+     * @param src Source iterable
+     * @since 0.21
+     */
+    public Filtered(final Func<X, Boolean> fnc, final Iterator<X> src) {
+        this(fnc, new IterableOf<>(src));
+    }
+
+    /**
+     * Ctor.
+     * @param fnc Predicate
+     * @param src Source iterable
+     */
+    public Filtered(final Func<X, Boolean> fnc, final Iterable<X> src) {
+        super(() -> () -> new org.cactoos.iterator.Filtered<>(
+            fnc, src.iterator()
+        ));
     }
 
 }

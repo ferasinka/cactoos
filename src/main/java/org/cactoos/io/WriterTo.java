@@ -119,7 +119,9 @@ public final class WriterTo extends Writer {
      */
     private WriterTo(final Scalar<Writer> tgt) {
         super();
-        this.target = new UncheckedScalar<>(new StickyScalar<>(tgt));
+        this.target = new UncheckedScalar<>(
+            new StickyScalar<>(tgt)
+        );
     }
 
     @Override

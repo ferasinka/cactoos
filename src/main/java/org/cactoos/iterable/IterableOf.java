@@ -25,6 +25,7 @@ package org.cactoos.iterable;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import org.cactoos.Scalar;
 import org.cactoos.scalar.UncheckedScalar;
 
@@ -38,12 +39,7 @@ import org.cactoos.scalar.UncheckedScalar;
  * @param <X> Type of item
  * @since 0.12
  */
-public final class IterableOf<X> implements Iterable<X> {
-
-    /**
-     * The encapsulated iterator of X.
-     */
-    private final UncheckedScalar<Iterator<X>> scalar;
+public final class IterableOf<X> extends IterableEnvelope<X> {
 
     /**
      * Ctor.
@@ -56,15 +52,27 @@ public final class IterableOf<X> implements Iterable<X> {
 
     /**
      * Ctor.
+     * @param list The list
+     */
+    public IterableOf(final List<X> list) {
+        this(list::iterator);
+    }
+
+    /**
+     * Ctor.
+     * @param list The list
+     * @since 0.21
+     */
+    public IterableOf(final Iterator<X> list) {
+        this(() -> list);
+    }
+
+    /**
+     * Ctor.
      * @param sclr The encapsulated iterator of x
      */
     private IterableOf(final Scalar<Iterator<X>> sclr) {
-        this.scalar = new UncheckedScalar<>(sclr);
-    }
-
-    @Override
-    public Iterator<X> iterator() {
-        return this.scalar.value();
+        super(() -> () -> new UncheckedScalar<>(sclr).value());
     }
 
 }

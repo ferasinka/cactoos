@@ -24,10 +24,8 @@
 package org.cactoos.iterable;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import org.cactoos.scalar.StickyScalar;
-import org.cactoos.scalar.UncheckedScalar;
 
 /**
  * Iterable that returns the same set of elements, always.
@@ -39,19 +37,23 @@ import org.cactoos.scalar.UncheckedScalar;
  * @param <X> Type of item
  * @since 0.1
  */
-public final class StickyIterable<X> implements Iterable<X> {
+public final class StickyIterable<X> extends IterableEnvelope<X> {
 
     /**
-     * The gate.
+     * Ctor.
+     * @param src The underlying iterable
      */
-    private final UncheckedScalar<Iterable<X>> gate;
+    @SafeVarargs
+    public StickyIterable(final X... src) {
+        this(new IterableOf<>(src));
+    }
 
     /**
      * Ctor.
      * @param iterable The iterable
      */
     public StickyIterable(final Iterable<X> iterable) {
-        this.gate = new UncheckedScalar<>(
+        super(
             new StickyScalar<>(
                 () -> {
                     final Collection<X> temp = new LinkedList<>();
@@ -62,11 +64,6 @@ public final class StickyIterable<X> implements Iterable<X> {
                 }
             )
         );
-    }
-
-    @Override
-    public Iterator<X> iterator() {
-        return this.gate.value().iterator();
     }
 
 }

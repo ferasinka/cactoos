@@ -31,6 +31,8 @@ import org.cactoos.Input;
 import org.cactoos.Scalar;
 import org.cactoos.Text;
 import org.cactoos.io.InputOf;
+import org.cactoos.map.MapEntry;
+import org.cactoos.map.MapOf;
 import org.cactoos.scalar.IoCheckedScalar;
 import org.cactoos.text.TextOf;
 
@@ -89,13 +91,22 @@ public final class PropertiesOf implements Scalar<Properties> {
      * @param entries The map with properties
      */
     public PropertiesOf(final Map.Entry<?, ?>... entries) {
+        this(new IterableOf<>(entries));
+    }
+
+    /**
+     * Ctor.
+     * @param entries The map with properties
+     * @since 0.23
+     */
+    public PropertiesOf(final Iterable<Map.Entry<?, ?>> entries) {
         this(
             new MapOf<>(
                 new Mapped<Map.Entry<?, ?>, Map.Entry<String, String>>(
-                    new IterableOf<>(entries),
                     input -> new MapEntry<>(
                         input.getKey().toString(), input.getValue().toString()
-                    )
+                    ),
+                    entries
                 )
             )
         );

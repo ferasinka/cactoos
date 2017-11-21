@@ -290,7 +290,9 @@ public final class ReaderOf extends Reader {
      */
     private ReaderOf(final Scalar<Reader> src) {
         super();
-        this.source = new UncheckedScalar<>(new StickyScalar<>(src));
+        this.source = new UncheckedScalar<>(
+            new StickyScalar<>(src)
+        );
     }
 
     @Override

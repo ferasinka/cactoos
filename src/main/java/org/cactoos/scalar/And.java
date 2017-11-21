@@ -33,10 +33,27 @@ import org.cactoos.iterable.Mapped;
 /**
  * Logical conjunction.
  *
+ * <p>This class can be effectively used to iterate through
+ * a collection, just like
+ * {@link java.util.stream.Stream#forEach(java.util.function.Consumer)}
+ * works:</p>
+ *
+ * <pre> new And(
+ *   new IterableOf("Mary", "John", "William", "Napkin"),
+ *   name -> System.out.printf("The name: %s\n", name)
+ * ).value();</pre>
+ *
+ * <p>This class implements {@link Scalar}, which throws a checked
+ * {@link Exception}. This may not be convenient in many cases. To make
+ * it more convenient and get rid of the checked exception you can
+ * use {@link UncheckedScalar} or {@link IoCheckedScalar} decorators.</p>
+ *
  * <p>There is no thread-safety guarantee.
  *
  * @author Vseslav Sekorin (vssekorin@gmail.com)
  * @version $Id$
+ * @see UncheckedScalar
+ * @see IoCheckedScalar
  * @since 0.8
  */
 public final class And implements Scalar<Boolean> {
@@ -87,8 +104,7 @@ public final class And implements Scalar<Boolean> {
     public <X> And(final Iterable<X> src, final Func<X, Boolean> func) {
         this(
             new Mapped<>(
-                src,
-                item -> (Scalar<Boolean>) () -> func.apply(item)
+                item -> (Scalar<Boolean>) () -> func.apply(item), src
             )
         );
     }

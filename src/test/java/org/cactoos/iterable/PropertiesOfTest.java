@@ -30,6 +30,9 @@ import org.cactoos.ScalarHasValue;
 import org.cactoos.func.MatcherOf;
 import org.cactoos.io.InputOf;
 import org.cactoos.iterator.Repeated;
+import org.cactoos.map.MapEntry;
+import org.cactoos.map.MapOf;
+import org.cactoos.map.StickyMap;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -111,11 +114,10 @@ public final class PropertiesOfTest {
         final PropertiesOf props = new PropertiesOf(
             new MapOf<>(
                 () -> new Repeated<>(
-                    () -> new MapEntry<>(
+                    size.incrementAndGet(), () -> new MapEntry<>(
                         new SecureRandom().nextInt(),
                         1
-                    ),
-                    size.incrementAndGet()
+                    )
                 )
             )
         );

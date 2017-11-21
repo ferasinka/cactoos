@@ -37,33 +37,36 @@ import org.cactoos.Func;
  * @param <Y> Type of target item
  * @since 0.1
  */
-public final class Mapped<X, Y> implements Iterable<Y> {
-
-    /**
-     * Iterable.
-     */
-    private final Iterable<X> iterable;
-
-    /**
-     * Function.
-     */
-    private final Func<X, Y> func;
+public final class Mapped<X, Y> extends IterableEnvelope<Y> {
 
     /**
      * Ctor.
-     * @param src Source iterable
      * @param fnc Func
+     * @param src Source iterable
      */
-    public Mapped(final Iterable<X> src, final Func<X, Y> fnc) {
-        this.iterable = src;
-        this.func = fnc;
+    @SafeVarargs
+    public Mapped(final Func<X, Y> fnc, final X... src) {
+        this(fnc, new IterableOf<X>(src));
     }
 
-    @Override
-    public Iterator<Y> iterator() {
-        return new org.cactoos.iterator.Mapped<>(
-            this.iterable.iterator(), this.func
-        );
+    /**
+     * Ctor.
+     * @param fnc Func
+     * @param src Source iterable
+     */
+    public Mapped(final Func<X, Y> fnc, final Iterator<X> src) {
+        this(fnc, new IterableOf<X>(src));
+    }
+
+    /**
+     * Ctor.
+     * @param fnc Func
+     * @param src Source iterable
+     */
+    public Mapped(final Func<X, Y> fnc, final Iterable<X> src) {
+        super(() -> () -> new org.cactoos.iterator.Mapped<>(
+            fnc, src.iterator()
+        ));
     }
 
 }

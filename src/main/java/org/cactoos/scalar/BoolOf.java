@@ -33,6 +33,11 @@ import org.cactoos.text.TextOf;
  *
  * <p>There is no thread-safety guarantee.
  *
+ * <p>This class implements {@link Scalar}, which throws a checked
+ * {@link Exception}. This may not be convenient in many cases. To make
+ * it more convenient and get rid of the checked exception you can
+ * use {@link UncheckedScalar} or {@link IoCheckedScalar} decorators.</p>
+ *
  * @author Kirill (g4s8.public@gmail.com)
  * @version $Id$
  * @since 0.2
@@ -47,10 +52,10 @@ public final class BoolOf implements Scalar<Boolean> {
     /**
      * Ctor.
      *
-     * @param string True or false string
+     * @param txt True or false string
      */
-    public BoolOf(final String string) {
-        this(new TextOf(string));
+    public BoolOf(final String txt) {
+        this(new TextOf(txt));
     }
 
     /**

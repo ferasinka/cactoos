@@ -23,13 +23,22 @@
  */
 package org.cactoos.scalar;
 
+import org.cactoos.Func;
+import org.cactoos.Proc;
 import org.cactoos.Scalar;
+import org.cactoos.func.FuncOf;
 import org.cactoos.iterable.IterableOf;
+import org.cactoos.iterable.Mapped;
 
 /**
  * Logical disjunction.
  *
  * <p>There is no thread-safety guarantee.
+ *
+ * <p>This class implements {@link Scalar}, which throws a checked
+ * {@link Exception}. This may not be convenient in many cases. To make
+ * it more convenient and get rid of the checked exception you can
+ * use {@link UncheckedScalar} or {@link IoCheckedScalar} decorators.</p>
  *
  * @author Vseslav Sekorin (vssekorin@gmail.com)
  * @version $Id$
@@ -41,6 +50,52 @@ public final class Or implements Scalar<Boolean> {
      * The iterator.
      */
     private final Iterable<Scalar<Boolean>> origin;
+
+    /**
+     * Ctor.
+     * @param proc Proc to map
+     * @param src The iterable
+     * @param <X> Type of items in the iterable
+     */
+    @SafeVarargs
+    public <X> Or(final Proc<X> proc, final X... src) {
+        this(new FuncOf<>(proc, false), src);
+    }
+
+    /**
+     * Ctor.
+     * @param func Func to map
+     * @param src The iterable
+     * @param <X> Type of items in the iterable
+     */
+    @SafeVarargs
+    public <X> Or(final Func<X, Boolean> func, final X... src) {
+        this(new IterableOf<>(src), func);
+    }
+
+    /**
+     * Ctor.
+     * @param src The iterable
+     * @param proc Proc to use
+     * @param <X> Type of items in the iterable
+     */
+    public <X> Or(final Iterable<X> src, final Proc<X> proc) {
+        this(src, new FuncOf<>(proc, false));
+    }
+
+    /**
+     * Ctor.
+     * @param src The iterable
+     * @param func Func to map
+     * @param <X> Type of items in the iterable
+     */
+    public <X> Or(final Iterable<X> src, final Func<X, Boolean> func) {
+        this(
+            new Mapped<>(
+                item -> (Scalar<Boolean>) () -> func.apply(item), src
+            )
+        );
+    }
 
     /**
      * Ctor.
@@ -70,5 +125,4 @@ public final class Or implements Scalar<Boolean> {
         }
         return result;
     }
-
 }

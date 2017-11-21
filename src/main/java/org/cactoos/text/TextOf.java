@@ -26,6 +26,8 @@ package org.cactoos.text;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
+import java.net.URI;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -35,6 +37,7 @@ import org.cactoos.Scalar;
 import org.cactoos.Text;
 import org.cactoos.io.BytesOf;
 import org.cactoos.io.InputOf;
+import org.cactoos.iterable.Mapped;
 import org.cactoos.scalar.IoCheckedScalar;
 
 /**
@@ -60,6 +63,24 @@ public final class TextOf implements Text {
      */
     public TextOf(final Input input) {
         this(new BytesOf(input));
+    }
+
+    /**
+     * Ctor.
+     * @param url The URL
+     * @since 0.16
+     */
+    public TextOf(final URL url) {
+        this(new InputOf(url));
+    }
+
+    /**
+     * Ctor.
+     * @param uri The URI
+     * @since 0.16
+     */
+    public TextOf(final URI uri) {
+        this(new InputOf(uri));
     }
 
     /**
@@ -251,6 +272,23 @@ public final class TextOf implements Text {
      */
     public TextOf(final String input, final Charset cset) {
         this(() -> new String(input.getBytes(cset), cset));
+    }
+
+    /**
+     * Ctor.
+     * @param iterable The iterable to convert to string
+     * @since 0.21
+     */
+    public TextOf(final Iterable<?> iterable) {
+        this(
+            () -> new JoinedText(
+                ", ",
+                new Mapped<>(
+                    Object::toString,
+                    iterable
+                )
+            ).asString()
+        );
     }
 
     /**
