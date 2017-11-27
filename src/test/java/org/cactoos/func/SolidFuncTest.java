@@ -21,57 +21,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.cactoos.scalar;
+package org.cactoos.func;
 
-import org.cactoos.Scalar;
-import org.cactoos.func.MinFunc;
-import org.cactoos.iterable.IterableOf;
+import java.security.SecureRandom;
+import org.cactoos.Func;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
+import org.junit.Test;
 
 /**
- * Find the smaller among items.
+ * Test case for {@link SolidFunc}.
  *
- * <p>There is no thread-safety guarantee.
- *
- * <p>This class implements {@link Scalar}, which throws a checked
- * {@link Exception}. This may not be convenient in many cases. To make
- * it more convenient and get rid of the checked exception you can
- * use {@link UncheckedScalar} or {@link IoCheckedScalar} decorators.</p>
- *
- * @author Fabricio Cabral (fabriciofx@gmail.com)
+ * @author Yegor Bugayenko (yegor256@gmail.com)
  * @version $Id$
- * @param <T> Scalar type
- * @since 0.9
+ * @since 0.24
+ * @checkstyle JavadocMethodCheck (500 lines)
  */
-public final class Min<T extends Comparable<T>> implements Scalar<T> {
+public final class SolidFuncTest {
 
-    /**
-     * Items.
-     */
-    private final Scalar<T> result;
-
-    /**
-     * Ctor.
-     * @param scalars The items
-     */
-    @SafeVarargs
-    public Min(final Scalar<T>... scalars) {
-        this(new IterableOf<>(scalars));
-    }
-
-    /**
-     * Ctor.
-     * @param iterable The items
-     */
-    public Min(final Iterable<Scalar<T>> iterable) {
-        this.result = new Folded<>(
-            new MinFunc<>(),
-            iterable
+    @Test
+    public void cachesFuncResults() throws Exception {
+        final Func<Boolean, Integer> func = new SolidFunc<>(
+            input -> new SecureRandom().nextInt()
         );
-    }
-
-    @Override
-    public T value() throws Exception {
-        return this.result.value();
+        MatcherAssert.assertThat(
+            func.apply(true) + func.apply(true),
+            Matchers.equalTo(func.apply(true) + func.apply(true))
+        );
     }
 
 }

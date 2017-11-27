@@ -23,49 +23,44 @@
  */
 package org.cactoos.scalar;
 
-import java.util.Collections;
-import java.util.NoSuchElementException;
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
-import org.junit.Test;
+import org.cactoos.Func;
+import org.cactoos.Scalar;
+import org.cactoos.func.StickyFunc;
+import org.cactoos.func.SyncFunc;
 
 /**
- * Test case for {@link Min}.
+ * Cached and synchronized version of a Scalar.
  *
- * @author Fabricio Cabral (fabriciofx@gmail.com)
+ * <p>Objects of this class are thread safe.
+ *
+ * @author Yegor Bugayenko (yegor256@gmail.com)
  * @version $Id$
- * @since 0.10
- * @checkstyle JavadocMethodCheck (500 lines)
+ * @param <T> Type of result
+ * @see StickyScalar
+ * @see SyncScalar
+ * @since 0.24
  */
-public final class MinTest {
+public final class SolidScalar<T> implements Scalar<T> {
 
-    @Test(expected = NoSuchElementException.class)
-    public void minAmongEmptyTest() throws Exception {
-        new Min<>(() -> Collections.emptyIterator()).value();
-    }
+    /**
+     * Func.
+     */
+    private final Func<Boolean, T> func;
 
-    @Test
-    public void minAmongOneTest() throws Exception {
-        final int num = 10;
-        MatcherAssert.assertThat(
-            "Can't find the smaller among one",
-            new Min<Integer>(() -> new Integer(num)).value(),
-            Matchers.equalTo(num)
+    /**
+     * Ctor.
+     * @param scalar The Scalar to cache
+     */
+    public SolidScalar(final Scalar<T> scalar) {
+        this.func = new SyncFunc<>(
+            new StickyFunc<>(
+                input -> scalar.value()
+            )
         );
     }
 
-    @Test
-    public void minAmongManyTest() throws Exception {
-        final int num = -1;
-        MatcherAssert.assertThat(
-            "Can't find the smaller among many",
-            new Min<Integer>(
-                () -> new Integer(1),
-                () -> new Integer(0),
-                () -> new Integer(num),
-                () -> new Integer(2)
-             ).value(),
-            Matchers.equalTo(num)
-        );
+    @Override
+    public T value() throws Exception {
+        return this.func.apply(true);
     }
 }

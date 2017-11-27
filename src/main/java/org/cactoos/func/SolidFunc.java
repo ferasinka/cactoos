@@ -21,59 +21,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.cactoos.scalar;
+package org.cactoos.func;
 
-import org.cactoos.Scalar;
-import org.cactoos.func.MaxFunc;
-import org.cactoos.iterable.IterableOf;
+import org.cactoos.Func;
 
 /**
- * Find the greater among items.
+ * Func that is thread-safe and sticky.
  *
- * <p>This class implements {@link Scalar}, which throws a checked
- * {@link Exception}. This may not be convenient in many cases. To make
- * it more convenient and get rid of the checked exception you can
- * use {@link UncheckedScalar} or {@link IoCheckedScalar} decorators.</p>
+ * <p>Objects of this class are thread safe.</p>
  *
- * <p>There is no thread-safety guarantee.
- *
- * @author Fabricio Cabral (fabriciofx@gmail.com)
+ * @author Yegor Bugayenko (yegor256@gmail.com)
  * @version $Id$
- * @param <T> Scalar type
- * @see UncheckedScalar
- * @see IoCheckedScalar
- * @since 0.10
+ * @param <X> Type of input
+ * @param <Y> Type of output
+ * @since 0.24
  */
-public final class Max<T extends Comparable<T>> implements Scalar<T> {
+public final class SolidFunc<X, Y> implements Func<X, Y> {
 
     /**
-     * Items.
+     * Original func.
      */
-    private final Scalar<T> result;
-
-    /**
-     * Ctor.
-     * @param scalars The items
-     */
-    @SafeVarargs
-    public Max(final Scalar<T>... scalars) {
-        this(new IterableOf<>(scalars));
-    }
+    private final Func<X, Y> func;
 
     /**
      * Ctor.
-     * @param iterable The items
+     * @param fnc Original function
      */
-    public Max(final Iterable<Scalar<T>> iterable) {
-        this.result = new Folded<>(
-            new MaxFunc<>(),
-            iterable
-        );
+    public SolidFunc(final Func<X, Y> fnc) {
+        this.func = new SyncFunc<>(new StickyFunc<>(fnc));
     }
 
     @Override
-    public T value() throws Exception {
-        return this.result.value();
+    public Y apply(final X input) throws Exception {
+        return this.func.apply(input);
     }
-
 }
