@@ -21,25 +21,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.cactoos.func;
+package org.cactoos.iterable;
 
-import org.cactoos.BiFunc;
+import org.cactoos.RunsInThreads;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
+import org.junit.Test;
 
 /**
- * Function, finding max among two items.
- *
- * @author Alexander Dyadyushenko (gookven@gmail.com)
+ * Test Case for {@link SyncIterable}.
+ * @author Yegor Bugayenko (yegor256@gmail.com)
  * @version $Id$
- * @param <T> comparable type
- * @since 0.9
+ * @since 0.24
+ * @checkstyle JavadocMethodCheck (500 lines)
+ * @checkstyle MagicNumber (500 lines)
  */
-public final class MaxFunc<T extends Comparable<T>> implements BiFunc<T, T, T> {
-    @Override
-    public T apply(final T first, final T second) throws Exception {
-        T max = first;
-        if (second.compareTo(max) > 0) {
-            max = second;
-        }
-        return max;
+public final class SyncIterableTest {
+
+    @Test
+    public void worksInThreads() {
+        MatcherAssert.assertThat(
+            "Can't behave as an iterable in multiple threads",
+            list -> {
+                MatcherAssert.assertThat(
+                    list.iterator().next(),
+                    Matchers.equalTo(list.iterator().next())
+                );
+                return true;
+            },
+            new RunsInThreads<>(new SyncIterable<>(1, 0, -1, -1, 2))
+        );
     }
+
 }

@@ -218,6 +218,7 @@ new And(
 
 Cactoos | Guava | Apache Commons | JDK 8
 ------ | ------ | ------ | ------
+`And` | `Iterables.all()` | - | -
 `Filtered` | `Iterables.filter()` | ? | -
 `FormattedText` | - | - | `String.format()`
 `IsBlank` | - | `StringUtils.isBlank()`| -
@@ -225,13 +226,13 @@ Cactoos | Guava | Apache Commons | JDK 8
 `LengthOf` | - | - | `String#length()`
 `LowerText` | - | - | `String#toLowerCase()`
 `NormalizedText` | - | `StringUtils.normalize()` | -
+`Or` | `Iterables.any()` | - | -
 `RepeatedText` | - | `StringUtils.repeat()` | -
 `ReplacedText` | - | - | `String#replace()`
 `ReversedText` | - | - | `StringBuilder#reverse()`
 `RotatedText` | - | `StringUtils.rotate()`| -
 `SplitText` | - | - | `String#split()`
-`StickyList` | ? | ? | `Arrays.asList()`
-`StickyList` | `Lists.newArrayList()` | ? | -
+`StickyList` | `Lists.newArrayList()` | ? | `Arrays.asList()`
 `SubText` | - | - | `String#substring()`
 `SwappedCaseText` | - | `StringUtils.swapCase()` | -
 `TextOf` | ? | `IOUtils.toString()` | -
