@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,31 +23,23 @@
  */
 package org.cactoos.io;
 
-import java.io.IOException;
 import java.io.InputStream;
 import org.cactoos.Input;
-import org.cactoos.Scalar;
+import org.cactoos.scalar.NumberEnvelope;
 
 /**
  * Length of {@link Input}.
  *
  * <p>There is no thread-safety guarantee.
  *
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @since 0.1
  */
-public final class LengthOf implements Scalar<Long> {
+public final class LengthOf extends NumberEnvelope {
 
     /**
-     * The input.
+     * Serialization marker.
      */
-    private final Input source;
-
-    /**
-     * The buffer size.
-     */
-    private final int size;
+    private static final long serialVersionUID = 512027185282287675L;
 
     /**
      * Ctor.
@@ -63,27 +55,33 @@ public final class LengthOf implements Scalar<Long> {
      * @param input The input
      * @param max Buffer size
      */
-    public LengthOf(final Input input, final int max) {
-        this.source = input;
-        this.size = max;
-    }
-
-    @Override
-    public Long value() throws IOException {
-        try (final InputStream stream = this.source.stream()) {
-            final byte[] buf = new byte[this.size];
-            long length = 0L;
-            while (true) {
-                final int len = stream.read(buf);
-                if (len > 0) {
-                    length += (long) len;
-                }
-                if (len < 0) {
-                    break;
-                }
-            }
-            return length;
+    @SuppressWarnings(
+        {
+            "PMD.CallSuperInConstructor",
+            "PMD.ConstructorOnlyInitializesOrCallOtherConstructors"
         }
+    )
+    public LengthOf(final Input input, final int max) {
+        super(() -> {
+            if (max == 0) {
+                throw new IllegalArgumentException(
+                    "Cannot use a buffer limited to zero size"
+                );
+            }
+            try (final InputStream stream = input.stream()) {
+                final byte[] buf = new byte[max];
+                long length = 0L;
+                while (true) {
+                    final int len = stream.read(buf);
+                    if (len > 0) {
+                        length += (long) len;
+                    }
+                    if (len < 0) {
+                        break;
+                    }
+                }
+                return (double) length;
+            }
+        });
     }
-
 }

@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,17 +25,17 @@ package org.cactoos.io;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.atomic.AtomicBoolean;
+import org.cactoos.text.TextOf;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.hamcrest.core.IsEqual;
 import org.junit.Test;
 
 /**
  * Test case for {@link TeeInputStream}.
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @since 0.1
  * @checkstyle JavadocMethodCheck (500 lines)
  * @checkstyle ClassDataAbstractionCouplingCheck (500 lines)
@@ -43,19 +43,20 @@ import org.junit.Test;
 public final class TeeInputStreamTest {
 
     @Test
-    public void copiesContentByteByByte() throws IOException {
+    public void copiesContentByteByByte() throws Exception {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         final String content = "Hello, товарищ!";
         MatcherAssert.assertThat(
             "Can't copy InputStream to OutputStream byte by byte",
-            TeeInputStreamTest.asString(
-                new TeeInputStream(
-                    new ByteArrayInputStream(
-                        content.getBytes(StandardCharsets.UTF_8)
-                    ),
-                    baos
+            new TextOf(
+                new ReaderOf(
+                    new TeeInputStream(
+                        new ByteArrayInputStream(
+                            content.getBytes(StandardCharsets.UTF_8)
+                        ), baos
+                    )
                 )
-            ),
+            ).asString(),
             Matchers.allOf(
                 Matchers.equalTo(content),
                 Matchers.equalTo(
@@ -65,17 +66,39 @@ public final class TeeInputStreamTest {
         );
     }
 
-    private static String asString(final InputStream input) throws IOException {
-        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        while (true) {
-            final int data = input.read();
-            if (data < 0) {
-                break;
-            }
-            baos.write(data);
+    @Test
+    public void leftInputUnclosed() {
+        try (StringWriterMock write = new StringWriterMock()) {
+            new LengthOf(
+                new TeeInput(
+                    "foo",
+                    new OutputTo(write)
+                )
+            ).intValue();
+            MatcherAssert.assertThat(
+                "Can't use output after usage from TeeInput",
+                write.isClosed(),
+                new IsEqual<>(false)
+            );
         }
-        input.close();
-        return new String(baos.toByteArray(), StandardCharsets.UTF_8);
     }
 
+    /**
+     * Mock object around StringWriter for checking closing state.
+     */
+    private static final class StringWriterMock extends StringWriter {
+        /**
+         * Closing state.
+         */
+        private final AtomicBoolean closed = new AtomicBoolean(false);
+
+        @Override
+        public void close() {
+            this.closed.set(true);
+        }
+
+        public boolean isClosed() {
+            return this.closed.get();
+        }
+    }
 }

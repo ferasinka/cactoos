@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,8 +32,6 @@ import org.hamcrest.TypeSafeMatcher;
 
 /**
  * Matcher for collection.
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @param <E> Type of source item
  * @since 0.23
  * @checkstyle JavadocMethodCheck (500 lines)
@@ -60,6 +58,18 @@ public final class BehavesAsList<E> extends TypeSafeMatcher<List<E>>  {
         MatcherAssert.assertThat(
             list.indexOf(this.sample),
             Matchers.greaterThanOrEqualTo(0)
+        );
+        MatcherAssert.assertThat(
+            list.lastIndexOf(this.sample),
+            Matchers.greaterThanOrEqualTo(0)
+        );
+        MatcherAssert.assertThat(
+            list.listIterator().hasNext(),
+            Matchers.is(true)
+        );
+        MatcherAssert.assertThat(
+            list.subList(0, 1).iterator().hasNext(),
+            Matchers.is(true)
         );
         return new BehavesAsCollection<E>(this.sample).matchesSafely(list);
     }

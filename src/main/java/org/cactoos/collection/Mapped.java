@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,18 +27,24 @@ import java.util.Collection;
 import java.util.Iterator;
 import org.cactoos.Func;
 import org.cactoos.iterable.IterableOf;
+import org.cactoos.text.TextOf;
 
 /**
  * Mapped collection.
  *
  * <p>There is no thread-safety guarantee.
  *
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @param <X> Type of source item
  * @param <Y> Type of target item
  * @since 0.14
  */
+@SuppressWarnings
+    (
+        {
+            "PMD.TooManyMethods", "PMD.CyclomaticComplexity",
+            "PMD.StdCyclomaticComplexity", "PMD.ModifiedCyclomaticComplexity"
+        }
+    )
 public final class Mapped<X, Y> extends CollectionEnvelope<Y> {
 
     /**
@@ -75,11 +81,99 @@ public final class Mapped<X, Y> extends CollectionEnvelope<Y> {
      * Ctor.
      * @param src Source collection
      * @param fnc Func
+     * @checkstyle AnonInnerLengthCheck (140 lines)
      */
     public Mapped(final Func<X, Y> fnc, final Collection<X> src) {
-        super(() -> new CollectionOf<Y>(
-            new org.cactoos.iterable.Mapped<X, Y>(fnc, src)
-        ));
+        super(() -> new Collection<Y>() {
+            @Override
+            public int size() {
+                return src.size();
+            }
+            @Override
+            public boolean isEmpty() {
+                return src.isEmpty();
+            }
+            @Override
+            public boolean contains(final Object item) {
+                return new CollectionOf<>(
+                    new org.cactoos.iterator.Mapped<>(
+                        fnc, src.iterator()
+                    )
+                ).contains(item);
+            }
+            @Override
+            public Iterator<Y> iterator() {
+                return new org.cactoos.iterator.Mapped<>(
+                    fnc, src.iterator()
+                );
+            }
+            @Override
+            public Object[] toArray() {
+                return new CollectionOf<>(
+                    new org.cactoos.iterator.Mapped<>(
+                        fnc, src.iterator()
+                    )
+                ).toArray();
+            }
+            @Override
+            @SuppressWarnings("PMD.UseVarargs")
+            public <T> T[] toArray(final T[] array) {
+                return new CollectionOf<>(
+                    new org.cactoos.iterator.Mapped<>(
+                        fnc, src.iterator()
+                    )
+                ).toArray(array);
+            }
+
+            @Override
+            public boolean add(final Y item) {
+                throw new UnsupportedOperationException(
+                    "Collection is read-only, can't #add()"
+                );
+            }
+            @Override
+            public boolean remove(final Object item) {
+                throw new UnsupportedOperationException(
+                    "Collection is read-only, can't #remove()"
+                );
+            }
+            @Override
+            public boolean containsAll(final Collection<?> items) {
+                return new CollectionOf<>(
+                    new org.cactoos.iterator.Mapped<>(
+                        fnc, src.iterator()
+                    )
+                ).containsAll(items);
+            }
+            @Override
+            public boolean addAll(final Collection<? extends Y> items) {
+                throw new UnsupportedOperationException(
+                    "Collection is read-only, can't #addAll()"
+                );
+            }
+            @Override
+            public boolean removeAll(final Collection<?> items) {
+                throw new UnsupportedOperationException(
+                    "Collection is read-only, can't #removeAll()"
+                );
+            }
+            @Override
+            public boolean retainAll(final Collection<?> items) {
+                throw new UnsupportedOperationException(
+                    "Collection is read-only, can't #retainAll()"
+                );
+            }
+            @Override
+            public void clear() {
+                throw new UnsupportedOperationException(
+                    "Collection is read-only, can't #clear()"
+                );
+            }
+        });
     }
 
+    @Override
+    public String toString() {
+        return new TextOf(this).toString();
+    }
 }

@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,7 @@
 package org.cactoos.func;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.cactoos.Scalar;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -31,8 +32,6 @@ import org.junit.Test;
 /**
  * Test case for {@link BiFuncOf}.
  *
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @since 0.20
  * @checkstyle JavadocMethodCheck (500 lines)
  */
@@ -61,26 +60,14 @@ public final class BiFuncOfTest {
     }
 
     @Test
-    public void convertsProcWithNoResultIntoBiFunc() throws Exception {
-        final AtomicBoolean done = new AtomicBoolean(false);
-        MatcherAssert.assertThat(
-            new BiFuncOf<String, Integer, Boolean>(
-                input -> {
-                    done.set(true);
-                }
-            ).apply("hello you", 1),
-            Matchers.nullValue()
-        );
-    }
-
-    @Test
     public void convertsRunnableIntoBiFunc() throws Exception {
         final AtomicBoolean done = new AtomicBoolean(false);
         MatcherAssert.assertThat(
             new BiFuncOf<String, Integer, Boolean>(
-                () -> done.set(true)
+                () -> done.set(true),
+                true
             ).apply("hello, world", 1),
-            Matchers.nullValue()
+            Matchers.equalTo(true)
         );
     }
 
@@ -90,6 +77,15 @@ public final class BiFuncOfTest {
             new BiFuncOf<String, Integer, Boolean>(
                 true
             ).apply("hello, dude!", 1),
+            Matchers.equalTo(true)
+        );
+    }
+
+    @Test
+    public void convertsScalarIntoBiFunc() throws Exception {
+        final Scalar<Boolean> scalar = () -> true;
+        MatcherAssert.assertThat(
+            new BiFuncOf<Boolean, Boolean, Boolean>(scalar).apply(false, false),
             Matchers.equalTo(true)
         );
     }

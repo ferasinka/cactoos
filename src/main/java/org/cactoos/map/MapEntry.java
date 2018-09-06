@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,14 +24,14 @@
 package org.cactoos.map;
 
 import java.util.Map;
+import org.cactoos.text.FormattedText;
+import org.cactoos.text.UncheckedText;
 
 /**
  * MapEntry as {@link java.util.AbstractMap.Entry}.
  *
  * <p>There is no thread-safety guarantee.
  *
- * @author Fabricio Cabral (fabriciofx@gmail.com)
- * @version $Id$
  * @param <K> Key type
  * @param <V> Value type
  * @since 0.9
@@ -59,7 +59,13 @@ public final class MapEntry<K, V> implements Map.Entry<K, V> {
 
     @Override
     public String toString() {
-        return String.format("%s=%s", this.key, this.value);
+        return new UncheckedText(
+            new FormattedText(
+                "%s=%s",
+                this.key,
+                this.value
+            )
+        ).asString();
     }
 
     @Override

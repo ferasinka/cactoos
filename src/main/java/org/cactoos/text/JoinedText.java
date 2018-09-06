@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,8 +23,8 @@
  */
 package org.cactoos.text;
 
-import java.io.IOException;
 import java.util.StringJoiner;
+import org.cactoos.Scalar;
 import org.cactoos.Text;
 import org.cactoos.iterable.IterableOf;
 import org.cactoos.iterable.Mapped;
@@ -34,21 +34,9 @@ import org.cactoos.iterable.Mapped;
  *
  * <p>There is no thread-safety guarantee.
  *
- * @author Fabricio Cabral (fabriciofx@gmail.com)
- * @version $Id$
  * @since 0.9
  */
-public final class JoinedText implements Text {
-
-    /**
-     * The texts.
-     */
-    private final Iterable<Text> texts;
-
-    /**
-     * The delimiter.
-     */
-    private final Text delimiter;
+public final class JoinedText extends TextEnvelope {
 
     /**
      * Ctor.
@@ -67,9 +55,7 @@ public final class JoinedText implements Text {
     public JoinedText(final String delimit, final Iterable<String> strs) {
         this(
             new TextOf(delimit),
-            new Mapped<>(
-                text -> new TextOf(text), strs
-            )
+            new Mapped<>(TextOf::new, strs)
         );
     }
 
@@ -88,22 +74,13 @@ public final class JoinedText implements Text {
      * @param txts Texts to be joined
      */
     public JoinedText(final Text delimit, final Iterable<Text> txts) {
-        this.delimiter = delimit;
-        this.texts = txts;
+        super((Scalar<String>) () -> {
+            final StringJoiner joint =
+                new StringJoiner(delimit.asString());
+            for (final Text text : txts) {
+                joint.add(text.asString());
+            }
+            return joint.toString();
+        });
     }
-
-    @Override
-    public String asString() throws IOException {
-        final StringJoiner joint = new StringJoiner(this.delimiter.asString());
-        for (final Text text : this.texts) {
-            joint.add(text.asString());
-        }
-        return joint.toString();
-    }
-
-    @Override
-    public int compareTo(final Text text) {
-        return new UncheckedText(this).compareTo(text);
-    }
-
 }

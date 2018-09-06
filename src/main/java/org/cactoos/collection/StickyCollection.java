@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,8 +35,6 @@ import org.cactoos.scalar.StickyScalar;
  *
  * <p>There is no thread-safety guarantee.
  *
- * @author Mykola Yashchenko (vkont4@gmail.com)
- * @version $Id$
  * @param <E> Type of item
  * @since 0.16
  */

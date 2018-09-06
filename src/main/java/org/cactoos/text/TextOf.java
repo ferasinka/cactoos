@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,8 @@
 package org.cactoos.text;
 
 import java.io.File;
-import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URI;
 import java.net.URL;
@@ -34,27 +35,18 @@ import java.nio.file.Path;
 import org.cactoos.Bytes;
 import org.cactoos.Input;
 import org.cactoos.Scalar;
-import org.cactoos.Text;
 import org.cactoos.io.BytesOf;
 import org.cactoos.io.InputOf;
 import org.cactoos.iterable.Mapped;
-import org.cactoos.scalar.IoCheckedScalar;
 
 /**
  * TextOf
  *
  * <p>There is no thread-safety guarantee.
  *
- * @author Ix (ixmanuel@yahoo.com)
- * @version $Id$
  * @since 0.12
  */
-public final class TextOf implements Text {
-
-    /**
-     * The origin.
-     */
-    private final Scalar<String> origin;
+public final class TextOf extends TextEnvelope {
 
     /**
      * Ctor.
@@ -163,10 +155,10 @@ public final class TextOf implements Text {
     /**
      * Ctor.
      * @param rdr Reader
-     * @param cset Charset
      * @param max Buffer size
+     * @param cset Charset
      */
-    public TextOf(final Reader rdr, final Charset cset, final int max) {
+    public TextOf(final Reader rdr, final int max, final Charset cset) {
         this(new BytesOf(rdr, cset, max));
     }
 
@@ -210,11 +202,60 @@ public final class TextOf implements Text {
 
     /**
      * Ctor.
-     *
      * @param error The exception to serialize
      */
     public TextOf(final Throwable error) {
         this(new BytesOf(error));
+    }
+
+    /**
+     * Ctor.
+     * @param error The exception to serialize
+     * @param charset Charset
+     * @since 0.29
+     */
+    public TextOf(final Throwable error, final Charset charset) {
+        this(new BytesOf(error, charset));
+    }
+
+    /**
+     * Ctor.
+     * @param error The exception to serialize
+     * @param charset Charset
+     * @since 0.29
+     */
+    public TextOf(final Throwable error, final CharSequence charset) {
+        this(new BytesOf(error, charset));
+    }
+
+    /**
+     * Ctor.
+     * @param strace The stacktrace to serialize
+     * @since 0.29
+     */
+    public TextOf(final StackTraceElement... strace) {
+        this(new BytesOf(strace));
+    }
+
+    /**
+     * Ctor.
+     * @param strace The stacktrace to serialize
+     * @param charset Charset
+     * @since 0.29
+     */
+    public TextOf(final StackTraceElement[] strace, final Charset charset) {
+        this(new BytesOf(strace, charset));
+    }
+
+    /**
+     * Ctor.
+     * @param strace The stacktrace to serialize
+     * @param charset Charset
+     * @since 0.29
+     */
+    public TextOf(final StackTraceElement[] strace,
+        final CharSequence charset) {
+        this(new BytesOf(strace, charset));
     }
 
     /**
@@ -293,21 +334,20 @@ public final class TextOf implements Text {
 
     /**
      * Ctor.
+     * @param input The InputStream where the text is read from
+     * @since 0.21
+     */
+    public TextOf(final InputStream input) {
+        this(new InputOf(new InputStreamReader(input, StandardCharsets.UTF_8)));
+    }
+
+    /**
+     * Ctor.
      *
      * @param scalar The Scalar of String
      */
     private TextOf(final Scalar<String> scalar) {
-        this.origin = scalar;
-    }
-
-    @Override
-    public String asString() throws IOException {
-        return new IoCheckedScalar<>(this.origin).value();
-    }
-
-    @Override
-    public int compareTo(final Text text) {
-        return new UncheckedText(this).compareTo(text);
+        super(scalar);
     }
 
 }

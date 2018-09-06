@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,35 +24,61 @@
 
 package org.cactoos.bytes;
 
-import java.io.IOException;
+import java.util.Base64;
 import org.cactoos.io.BytesOf;
 import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
+import org.hamcrest.core.IsEqual;
 import org.junit.Test;
 
 /**
  * Test case for {@link org.cactoos.bytes.Base64Bytes}.
  *
- * @author Ilia Rogozhin (ilia.rogozhin@gmail.com)
- * @version $Id$
  * @since 0.20.2
+ * @checkstyle JavadocMethodCheck (500 lines)
  */
+@SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public final class Base64BytesTest {
 
-    /**
-     * Check bytes decodes using the Base64 encoding scheme.
-     * @throws IOException If fails.
-     */
     @Test
-    public void checkDecode() throws IOException {
+    public void checkDecodeBasicDecoder() throws Exception {
         MatcherAssert.assertThat(
-            "Can't decodes bytes using the Base64 encoding scheme",
+            "Can't decodes bytes using the Base64 encoding basic scheme.",
             new Base64Bytes(
                 new BytesOf(
                     "SGVsbG8h"
                 )
             ).asBytes(),
-            Matchers.equalTo(
+            new IsEqual<>(
+                new BytesOf("Hello!").asBytes()
+            )
+        );
+    }
+
+    @Test
+    public void checkDecodeUrlDecoder() throws Exception {
+        MatcherAssert.assertThat(
+            "Can't decodes bytes using the Base64 encoding url scheme",
+            new Base64Bytes(
+                new BytesOf(
+                    "SGVsbG8h"
+                ), Base64.getUrlDecoder()
+            ).asBytes(),
+            new IsEqual<>(
+                new BytesOf("Hello!").asBytes()
+            )
+        );
+    }
+
+    @Test
+    public void checkDecodeMimeDecoder() throws Exception {
+        MatcherAssert.assertThat(
+            "Can't decodes bytes using the Base64 encoding mime scheme",
+            new Base64Bytes(
+                new BytesOf(
+                    "SGVsbG8h"
+                ), Base64.getMimeDecoder()
+            ).asBytes(),
+            new IsEqual<>(
                 new BytesOf("Hello!").asBytes()
             )
         );

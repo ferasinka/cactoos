@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,6 @@
  */
 package org.cactoos.text;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Formatter;
@@ -36,8 +35,6 @@ import org.cactoos.list.ListOf;
  *
  * <p>There is no thread-safety guarantee.
  *
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @since 0.1
  */
 public final class FormattedText implements Text {
@@ -160,20 +157,14 @@ public final class FormattedText implements Text {
     }
 
     @Override
-    public String asString() throws IOException {
+    public String asString() throws Exception {
         final StringBuilder out = new StringBuilder(0);
         try (final Formatter fmt = new Formatter(out, this.locale)) {
             fmt.format(
                 this.pattern.asString(),
-                this.args.toArray(new Object[this.args.size()])
+                this.args.toArray(new Object[0])
             );
         }
         return out.toString();
     }
-
-    @Override
-    public int compareTo(final Text text) {
-        return new UncheckedText(this).compareTo(text);
-    }
-
 }

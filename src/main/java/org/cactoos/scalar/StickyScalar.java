@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,13 +39,20 @@ import org.cactoos.func.StickyFunc;
  * <p>This class implements {@link Scalar}, which throws a checked
  * {@link Exception}. This may not be convenient in many cases. To make
  * it more convenient and get rid of the checked exception you can
- * use {@link UncheckedScalar} or {@link IoCheckedScalar} decorators.</p>
+ * use the {@link UncheckedScalar} decorator. Or you may use
+ * {@link IoCheckedScalar} to wrap it in an IOException.</p>
+ *
+ * <pre>{@code
+ * final Scalar<Integer> scalar = new StickyScalar<>(
+ *     () -> {
+ *         System.out.println("Will be printed only once");
+ *         return new SecureRandom().nextInt();
+ *     }
+ * ).value()
+ * }</pre>
  *
  * <p>There is no thread-safety guarantee.
  *
- * @author Tim Hinkes (timmeey@timmeey.de)
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @param <T> Type of result
  * @see StickyFunc
  * @since 0.3

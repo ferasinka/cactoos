@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,28 +24,33 @@
 package org.cactoos.io;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import org.cactoos.TextHasString;
-import org.cactoos.func.MatcherOf;
 import org.cactoos.text.TextOf;
 import org.hamcrest.MatcherAssert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import org.llorllale.cactoos.matchers.MatcherOf;
+import org.llorllale.cactoos.matchers.TextHasString;
 
 /**
  * Test case for {@link OutputStreamTo}.
  *
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @since 0.13
  * @checkstyle JavadocMethodCheck (500 lines)
  * @checkstyle ClassDataAbstractionCouplingCheck (500 lines)
  */
 public final class OutputStreamToTest {
+    /**
+     * Temporary files and folders generator.
+     */
+    @Rule
+    public final TemporaryFolder folder = new TemporaryFolder();
 
     @Test
     public void writesLargeContentToFile() throws IOException {
-        final Path temp = Files.createTempFile("cactoos-1", "txt-1");
+        final Path temp = this.folder.newFile("cactoos-1.txt-1")
+            .toPath();
         MatcherAssert.assertThat(
             "Can't copy Input to Output and return Input",
             new TextOf(

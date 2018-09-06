@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,13 +27,16 @@ import java.util.Collection;
 import org.cactoos.list.ListOf;
 import org.hamcrest.Description;
 import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
+import org.hamcrest.collection.IsCollectionWithSize;
+import org.hamcrest.collection.IsEmptyCollection;
+import org.hamcrest.core.IsCollectionContaining;
+import org.hamcrest.core.IsEqual;
+import org.hamcrest.core.IsNot;
+import org.llorllale.cactoos.matchers.MatcherOf;
 
 /**
  * Matcher for collection.
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @param <E> Type of source item
  * @since 0.23
  * @checkstyle JavadocMethodCheck (500 lines)
@@ -58,22 +61,27 @@ public final class BehavesAsCollection<E> extends
     @Override
     @SuppressWarnings({ "unchecked", "PMD.ClassCastExceptionWithToArray" })
     public boolean matchesSafely(final Collection<E> col) {
-        MatcherAssert.assertThat(col, Matchers.hasItem(this.sample));
-        MatcherAssert.assertThat(col, Matchers.not(Matchers.emptyIterable()));
         MatcherAssert.assertThat(
-            col, Matchers.hasSize(Matchers.greaterThan(0))
+            col, new IsCollectionContaining<>(new IsEqual<>(this.sample))
+        );
+        MatcherAssert.assertThat(
+            col, new IsNot<>(new IsEmptyCollection<>())
+        );
+        MatcherAssert.assertThat(
+            col, new IsCollectionWithSize<>(new MatcherOf<>(s -> s > 0))
         );
         MatcherAssert.assertThat(
             new ListOf<>((E[]) col.toArray()),
-            Matchers.hasItem(this.sample)
+            new IsCollectionContaining<>(new IsEqual<>(this.sample))
         );
         final E[] array = (E[]) new Object[col.size()];
         col.toArray(array);
         MatcherAssert.assertThat(
-            new ListOf<>(array), Matchers.hasItem(this.sample)
+            new ListOf<>(array),
+            new IsCollectionContaining<>(new IsEqual<>(this.sample))
         );
         MatcherAssert.assertThat(
-            col.containsAll(new ListOf<>(this.sample)), Matchers.is(true)
+            col.containsAll(new ListOf<>(this.sample)), new IsEqual<>(true)
         );
         return true;
     }

@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -41,23 +41,26 @@ import org.cactoos.iterable.Mapped;
  * {@link java.util.stream.Stream#forEach(java.util.function.Consumer)}
  * works, but with an index provided for each item:</p>
  *
- * <pre> new And(
- *   new IterableOf("Mary", "John", "William", "Napkin"),
- *   new BiFuncOf<>(
- *     (text, index) -> System.out.printf("Name #%d: %s\n", index, text),
- *     true
- *   )
- * ).value();</pre>
+ * <pre>{@code
+ * new UncheckedScalar<>(
+ *     new AndWithIndex(
+ *         new IterableOf<>("Mary", "John", "William", "Napkin"),
+ *         new BiFuncOf<>((text, index) ->
+ *             System.out.printf("| idx #%d: name: %s ", index, text), true)
+ *     )
+ * ).value();
+ * // will print "| idx #0: name: Mary | idx #1: name: John |
+ * // idx #2: name: William | idx #3: name: Napkin " to console
+ * }</pre>
  *
  * <p>This class implements {@link Scalar}, which throws a checked
  * {@link Exception}. This may not be convenient in many cases. To make
  * it more convenient and get rid of the checked exception you can
- * use {@link UncheckedScalar} or {@link IoCheckedScalar} decorators.</p>
+ * use the {@link UncheckedScalar} decorator. Or you may use
+ * {@link IoCheckedScalar} to wrap it in an IOException.</p>
  *
  * <p>There is no thread-safety guarantee.
  *
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @since 0.20
  */
 public final class AndWithIndex implements Scalar<Boolean> {

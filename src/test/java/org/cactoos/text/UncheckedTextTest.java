@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,16 +24,11 @@
 package org.cactoos.text;
 
 import java.io.IOException;
-import org.cactoos.Text;
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 
 /**
  * Test case for {@link UncheckedText}.
  *
- * @author Fabricio Cabral (fabriciofx@gmail.com)
- * @version $Id$
  * @since 0.3
  * @checkstyle JavadocMethodCheck (500 lines)
  */
@@ -42,32 +37,10 @@ public final class UncheckedTextTest {
     @Test(expected = RuntimeException.class)
     public void rethrowsCheckedToUncheckedException() {
         new UncheckedText(
-            new Text() {
-                @Override
-                public String asString() throws IOException {
-                    throw new IOException("intended");
-                }
-
-                @Override
-                public int compareTo(final Text text) {
-                    throw new UnsupportedOperationException(
-                        "#compareTo() not supported"
-                    );
-                }
+            () -> {
+                throw new IOException("intended");
             }
         ).asString();
-    }
-
-    @Test
-    public void comparesToOtherUncheckedText() {
-        final String txt = "foobar";
-        MatcherAssert.assertThat(
-            "These UncheckedText are not equal",
-            new UncheckedText(
-                new TextOf(txt)
-            ).compareTo(new TextOf(txt)),
-            Matchers.equalTo(0)
-        );
     }
 
 }

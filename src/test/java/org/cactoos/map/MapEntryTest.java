@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,13 +25,12 @@ package org.cactoos.map;
 
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.hamcrest.core.IsEqual;
 import org.junit.Test;
 
 /**
  * Test case for {@link MapEntry}.
  *
- * @author Fabricio Cabral (fabriciofx@gmail.com)
- * @version $Id$
  * @since 0.9
  * @checkstyle JavadocMethodCheck (500 lines)
  */
@@ -85,4 +84,12 @@ public final class MapEntryTest {
         );
     }
 
+    @Test
+    public void toStringMethod() {
+        MatcherAssert.assertThat(
+            "ToString method returns unexpected value",
+            new MapEntry<>("somekey", "somevalue").toString(),
+            new IsEqual<>("somekey=somevalue")
+        );
+    }
 }

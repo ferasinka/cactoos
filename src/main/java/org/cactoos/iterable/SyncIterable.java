@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,7 @@
  */
 package org.cactoos.iterable;
 
-import org.cactoos.scalar.SyncScalar;
+import java.util.Iterator;
 
 /**
  * Synchronized iterable.
@@ -37,12 +37,19 @@ import org.cactoos.scalar.SyncScalar;
  *
  * <p>Objects of this class are thread-safe.</p>
  *
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @param <X> Type of item
  * @since 0.24
  */
-public final class SyncIterable<X> extends IterableEnvelope<X> {
+public final class SyncIterable<X> implements Iterable<X> {
+
+    /**
+     * The iterable.
+     */
+    private final Iterable<X> origin;
+    /**
+     * Sync lock.
+     */
+    private final Object lock;
 
     /**
      * Ctor.
@@ -55,10 +62,27 @@ public final class SyncIterable<X> extends IterableEnvelope<X> {
 
     /**
      * Ctor.
-     * @param iterable The iterable
+     * @param iterable The iterable synchronize access to.
      */
     public SyncIterable(final Iterable<X> iterable) {
-        super(new SyncScalar<>(() -> iterable));
+        this(iterable, new Object());
+    }
+
+    /**
+     * Ctor.
+     * @param iterable The iterable synchronize access to.
+     * @param lck The lock to synchronize with.
+     */
+    public SyncIterable(final Iterable<X> iterable, final Object lck) {
+        this.origin = iterable;
+        this.lock = lck;
+    }
+
+    @Override
+    public Iterator<X> iterator() {
+        synchronized (this.lock) {
+            return this.origin.iterator();
+        }
     }
 
 }

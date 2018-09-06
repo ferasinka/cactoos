@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,14 +26,13 @@ package org.cactoos.func;
 import java.util.concurrent.Callable;
 import org.cactoos.Func;
 import org.cactoos.Proc;
+import org.cactoos.Scalar;
 
 /**
  * Represents many possible inputs as {@link Func}.
  *
  * <p>There is no thread-safety guarantee.
  *
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @param <X> Type of input
  * @param <Y> Type of output
  * @since 0.12
@@ -64,17 +63,11 @@ public final class FuncOf<X, Y> implements Func<X, Y> {
     /**
      * Ctor.
      * @param runnable The runnable
+     * @param result Result to return
+     * @since 0.32
      */
-    public FuncOf(final Runnable runnable) {
-        this((Proc<X>) input -> runnable.run());
-    }
-
-    /**
-     * Ctor.
-     * @param proc The proc
-     */
-    public FuncOf(final Proc<X> proc) {
-        this(proc, null);
+    public FuncOf(final Runnable runnable, final Y result) {
+        this(input -> runnable.run(), result);
     }
 
     /**
@@ -89,6 +82,16 @@ public final class FuncOf<X, Y> implements Func<X, Y> {
                 return result;
             }
         );
+    }
+
+    /**
+     * Ctor.
+     * @param scalar Origin scalar
+     */
+    public FuncOf(final Scalar<Y> scalar) {
+        this(input -> {
+            return scalar.value();
+        });
     }
 
     /**

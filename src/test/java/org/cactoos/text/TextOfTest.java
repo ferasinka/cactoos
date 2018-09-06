@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,23 +23,21 @@
  */
 package org.cactoos.text;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
-import org.cactoos.TextHasString;
 import org.cactoos.io.BytesOf;
 import org.cactoos.io.InputOf;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
+import org.llorllale.cactoos.matchers.TextHasString;
 
 /**
  * Test case for {@link TextOf}.
  *
- * @author Ix (ixmanuel@yahoo.com)
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @author Vseslav Sekorin (vssekorin@gmail.com)
- * @version $Id$
  * @since 0.12
  * @checkstyle JavadocMethodCheck (500 lines)
  * @checkstyle ClassDataAbstractionCouplingCheck (500 lines)
@@ -48,7 +46,7 @@ import org.junit.Test;
 public final class TextOfTest {
 
     @Test
-    public void readsInputIntoText() throws IOException {
+    public void readsInputIntoText() throws Exception {
         MatcherAssert.assertThat(
             "Can't read text from Input",
             new SyncText(
@@ -65,7 +63,7 @@ public final class TextOfTest {
     }
 
     @Test
-    public void readsInputIntoTextWithDefaultCharset() throws IOException {
+    public void readsInputIntoTextWithDefaultCharset() throws Exception {
         MatcherAssert.assertThat(
             "Can't read text from Input with default charset",
             new TextOf(
@@ -79,7 +77,7 @@ public final class TextOfTest {
     }
 
     @Test
-    public void readsInputIntoTextWithSmallBuffer() throws IOException {
+    public void readsInputIntoTextWithSmallBuffer() throws Exception {
         MatcherAssert.assertThat(
             "Can't read text with a small reading buffer",
             new TextOf(
@@ -95,8 +93,18 @@ public final class TextOfTest {
     }
 
     @Test
+    public void readsReaderIntoTextWithSmallBuffer() {
+        final String text = "Hi there! with small buffer";
+        MatcherAssert.assertThat(
+            "Can't read text from Reader with a small reading buffer",
+            new TextOf(new StringReader(text), 2, StandardCharsets.UTF_8),
+            new TextHasString(text)
+        );
+    }
+
+    @Test
     public void readsInputIntoTextWithSmallBufferAndDefaultCharset()
-        throws IOException {
+        throws Exception {
         MatcherAssert.assertThat(
             "Can't read text with a small reading buffer and default charset",
             new TextOf(
@@ -144,7 +152,7 @@ public final class TextOfTest {
     }
 
     @Test
-    public void readsEncodedArrayOfCharsIntoText() throws IOException {
+    public void readsEncodedArrayOfCharsIntoText() throws Exception {
         MatcherAssert.assertThat(
             "Can't read array of encoded chars into text.",
             new TextOf(
@@ -171,21 +179,7 @@ public final class TextOfTest {
     }
 
     @Test
-    public void comparesWithASubtext() throws Exception {
-        MatcherAssert.assertThat(
-            "Can't compare sub texts",
-            new TextOf(
-                "here to there"
-            ).compareTo(
-                // @checkstyle MagicNumberCheck (1 line)
-                new SubText("from here to there", 5)
-            ),
-            Matchers.is(0)
-        );
-    }
-
-    @Test
-    public void readsStringBuilder() throws IOException {
+    public void readsStringBuilder() throws Exception {
         final String starts = "Name it, ";
         final String ends = "then it exists!";
         MatcherAssert.assertThat(
@@ -201,7 +195,7 @@ public final class TextOfTest {
     }
 
     @Test
-    public void readsStringBuffer() throws IOException {
+    public void readsStringBuffer() throws Exception {
         final String starts = "In our daily life, ";
         final String ends = "we can smile!";
         MatcherAssert.assertThat(
@@ -233,6 +227,87 @@ public final class TextOfTest {
                         "\tat org.cactoos.text.TextOfTest"
                     )
                 )
+            )
+        );
+    }
+
+    @Test
+    public void readsFromInputStream() throws Exception {
+        final String content = "line1";
+        final InputStream stream = new ByteArrayInputStream(
+            content.getBytes(StandardCharsets.UTF_8.name())
+        );
+        MatcherAssert.assertThat(
+            "Can't read inputStream",
+            new TextOf(stream).asString(),
+            Matchers.equalTo(
+                new String(content.getBytes(), StandardCharsets.UTF_8)
+            )
+        );
+    }
+
+    @Test
+    public void readsMultilineInputStream() throws Exception {
+        final String content = "line1-\nline2";
+        final InputStream stream = new ByteArrayInputStream(
+            content.getBytes(StandardCharsets.UTF_8.name())
+        );
+        MatcherAssert.assertThat(
+            "Can't read multiline inputStream",
+            new TextOf(stream).asString(),
+            Matchers.equalTo(content)
+        );
+    }
+
+    @Test
+    public void readsMultilineInputStreamWithCarriageReturn() throws Exception {
+        final String content = "line1-\rline2";
+        final InputStream stream = new ByteArrayInputStream(
+            content.getBytes(StandardCharsets.UTF_8.name())
+        );
+        MatcherAssert.assertThat(
+            "Can't read multiline inputStream with carriage return",
+            new TextOf(stream).asString(),
+            Matchers.equalTo(content)
+        );
+    }
+
+    @Test
+    public void readsClosedInputStream() throws Exception {
+        final String content = "content";
+        final InputStream stream = new ByteArrayInputStream(
+            content.getBytes(StandardCharsets.UTF_8.name())
+        );
+        stream.close();
+        MatcherAssert.assertThat(
+            "Can't read closed input stream",
+            new TextOf(stream).asString(),
+            Matchers.equalTo(content)
+        );
+    }
+
+    @Test
+    public void readsEmptyInputStream() throws Exception {
+        final String content = "";
+        final InputStream stream = new ByteArrayInputStream(
+            content.getBytes(StandardCharsets.UTF_8.name())
+        );
+        MatcherAssert.assertThat(
+            "Can't read empty input stream",
+            new TextOf(stream).asString(),
+            Matchers.equalTo(content)
+        );
+    }
+
+    @Test
+    public void printsStackTraceFromArray() {
+        MatcherAssert.assertThat(
+            "Can't print exception stacktrace from array",
+            new TextOf(
+                new IOException("").getStackTrace()
+            ),
+            new TextHasString(
+                Matchers.containsString("org.cactoos.text.TextOfTest")
             )
         );
     }

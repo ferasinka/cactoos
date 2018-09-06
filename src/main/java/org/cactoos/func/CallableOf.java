@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -40,8 +40,6 @@ import org.cactoos.Proc;
  *
  * <p>There is no thread-safety guarantee.
  *
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @param <X> Type of input
  * @param <T> Type of output
  * @since 0.12
@@ -61,19 +59,21 @@ public final class CallableOf<X, T> implements Callable<T> {
     /**
      * Ctor.
      * @param runnable Encapsulated proc
-     * @since 0.12
+     * @param result Result to return
+     * @since 0.32
      */
-    public CallableOf(final Runnable runnable) {
-        this(new FuncOf<>(runnable));
+    public CallableOf(final Runnable runnable, final T result) {
+        this(new FuncOf<>(runnable, result));
     }
 
     /**
      * Ctor.
      * @param proc Encapsulated proc
-     * @since 0.12
+     * @param result Result to return
+     * @since 0.32
      */
-    public CallableOf(final Proc<X> proc) {
-        this(new FuncOf<>(proc));
+    public CallableOf(final Proc<X> proc, final T result) {
+        this(new FuncOf<>(proc, result));
     }
 
     /**

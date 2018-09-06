@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,16 +23,14 @@
  */
 package org.cactoos.iterator;
 
-import java.util.Collections;
 import java.util.Iterator;
-import org.cactoos.ScalarHasValue;
+import java.util.NoSuchElementException;
 import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 
 /**
  * Test case for {@link Joined}.
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @since 0.14
  * @checkstyle JavadocMethodCheck (500 lines)
  */
@@ -43,15 +41,34 @@ public final class JoinedTest {
         MatcherAssert.assertThat(
             "Can't concatenate mapped iterators together",
             new LengthOf(
-                new Joined<Iterator<String>>(
-                    new Mapped<>(
-                        input -> Collections.singleton(input).iterator(),
-                        Collections.singleton("x").iterator()
+                new IteratorNoNulls<>(
+                    new Joined<Iterator<String>>(
+                        new Mapped<>(
+                            input -> new IteratorOf<>(input),
+                            new IteratorOf<>("x")
+                        )
                     )
                 )
-            ),
-            new ScalarHasValue<>(1)
+            ).intValue(),
+            Matchers.equalTo(1)
         );
+    }
+
+    @Test
+    public void callsNextDirectlyOnNonEmptyIterator() {
+        MatcherAssert.assertThat(
+            "Cannot call next method directly on non-empty iterator",
+            new Joined<Integer>(
+                new IteratorOf<>(1),
+                new IteratorOf<>(2)
+            ).next(),
+            Matchers.equalTo(1)
+        );
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void throwsExceptionWhenCallNextOnEmptyIterator() {
+        new Joined<Integer>(new IteratorOf<>()).next();
     }
 
 }

@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,17 +28,22 @@ import org.cactoos.Text;
 import org.cactoos.text.TextOf;
 
 /**
- * Text as {@link Float}.
+ * Text as {@link Number}.
+ *
+ * <pre>
+ * long value = new NumberOf("186789235425346").longValue();
+ * int value = new NumberOf("1867892354").intValue();
+ * double value = new NumberOf("185.65156465123").doubleValue();
+ * </pre>
  *
  * <p>There is no thread-safety guarantee.
  *
  * <p>This class implements {@link Scalar}, which throws a checked
  * {@link Exception}. This may not be convenient in many cases. To make
  * it more convenient and get rid of the checked exception you can
- * use {@link UncheckedScalar} or {@link IoCheckedScalar} decorators.</p>
+ * use the {@link UncheckedScalar} decorator. Or you may use
+ * {@link IoCheckedScalar} to wrap it in an IOException.</p>
  *
- * @author Kirill (g4s8.public@gmail.com)
- * @version $Id$
  * @since 0.2
  */
 public final class NumberOf extends Number implements Scalar<Number> {

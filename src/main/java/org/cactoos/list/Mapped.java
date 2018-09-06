@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,17 +23,16 @@
  */
 package org.cactoos.list;
 
-import java.util.Collection;
 import java.util.Iterator;
 import org.cactoos.Func;
+import org.cactoos.iterable.IterableOf;
+import org.cactoos.text.TextOf;
 
 /**
  * Mapped list.
  *
  * <p>There is no thread-safety guarantee.
  *
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @param <X> Type of source item
  * @param <Y> Type of target item
  * @since 0.14
@@ -47,27 +46,22 @@ public final class Mapped<X, Y> extends ListEnvelope<Y> {
      * @since 0.21
      */
     public Mapped(final Func<X, Y> fnc, final Iterator<X> src) {
-        this(fnc, new ListOf<>(src));
+        this(fnc, new IterableOf<>(src));
     }
 
     /**
      * Ctor.
-     * @param src Source list
+     * @param src Source iterable
      * @param fnc Func
      */
     public Mapped(final Func<X, Y> fnc, final Iterable<X> src) {
-        this(fnc, new ListOf<>(src));
-    }
-
-    /**
-     * Ctor.
-     * @param src Source list
-     * @param fnc Func
-     */
-    public Mapped(final Func<X, Y> fnc, final Collection<X> src) {
         super(() -> new ListOf<Y>(
-            new org.cactoos.collection.Mapped<>(fnc, src)
+            new org.cactoos.iterable.Mapped<>(fnc, src)
         ));
     }
 
+    @Override
+    public String toString() {
+        return new TextOf(this).toString();
+    }
 }

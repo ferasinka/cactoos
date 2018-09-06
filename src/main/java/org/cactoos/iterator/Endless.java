@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,6 @@ package org.cactoos.iterator;
 
 import java.util.Iterator;
 import org.cactoos.Scalar;
-import org.cactoos.iterable.IterableOf;
 import org.cactoos.scalar.UncheckedScalar;
 
 /**
@@ -34,8 +33,6 @@ import org.cactoos.scalar.UncheckedScalar;
  * <p>If you need to repeat certain amount of time,
  * use {@link Repeated}.</p>
  *
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @param <T> Element type
  * @since 0.4
  */
@@ -77,6 +74,6 @@ public final class Endless<T> implements Iterator<T> {
 
     @Override
     public T next() {
-        return new IterableOf<T>(this.origin.value()).iterator().next();
+        return this.origin.value();
     }
 }

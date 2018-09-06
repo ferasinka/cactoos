@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,15 +23,12 @@
  */
 package org.cactoos.iterable;
 
-import org.cactoos.ScalarHasValue;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
 /**
  * Test case for {@link Filtered}.
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @since 0.1
  * @checkstyle JavadocMethodCheck (500 lines)
  * @checkstyle MagicNumberCheck (500 lines)
@@ -49,8 +46,8 @@ public final class FilteredTest {
                         "hello", "world", "друг"
                     )
                 )
-            ),
-            new ScalarHasValue<>(2)
+            ).intValue(),
+            Matchers.equalTo(2)
         );
     }
 
@@ -60,10 +57,11 @@ public final class FilteredTest {
             "Can't calculate the length of an empty iterable",
             new LengthOf(
                 new Filtered<>(
-                    input -> input.length() > 1, new IterableOf<String>()
+                    input -> input.length() > 1,
+                    new IterableOf<String>()
                 )
-            ),
-            new ScalarHasValue<>(0)
+            ).intValue(),
+            Matchers.equalTo(0)
         );
     }
 

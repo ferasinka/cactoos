@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,12 +32,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Files in a directory.
+ * Files and folders in a directory.
  *
  * <p>There is no thread-safety guarantee.
  *
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @since 0.21
  */
 public final class Directory implements Iterable<Path> {
@@ -49,10 +47,10 @@ public final class Directory implements Iterable<Path> {
 
     /**
      * Ctor.
-     * @param path Path of the dir
+     * @param file File as a path to directory.
      */
-    public Directory(final File path) {
-        this(path.toPath());
+    public Directory(final File file) {
+        this(file.toPath());
     }
 
     /**

@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,15 +30,26 @@ import org.cactoos.func.RetryFunc;
 /**
  * Func that will try a few times before throwing an exception.
  *
+ * <pre>{@code
+ * new RetryScalar<>(
+ *     () -> {
+ *         if (new SecureRandom().nextDouble() > 0.3d) {
+ *             throw new IllegalArgumentException("May happen");
+ *         }
+ *         return 0;
+ *     },
+ *     5
+ * ).value() // will try to run 5 times before throwing an exception
+ * }</pre>
+ *
  * <p>There is no thread-safety guarantee.
  *
  * <p>This class implements {@link Scalar}, which throws a checked
  * {@link Exception}. This may not be convenient in many cases. To make
  * it more convenient and get rid of the checked exception you can
- * use {@link UncheckedScalar} or {@link IoCheckedScalar} decorators.</p>
+ * use the {@link UncheckedScalar} decorator. Or you may use
+ * {@link IoCheckedScalar} to wrap it in an IOException.</p>
  *
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @param <T> Type of output
  * @since 0.9
  */

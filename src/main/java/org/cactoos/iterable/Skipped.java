@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,10 +28,8 @@ package org.cactoos.iterable;
  *
  * <p>There is no thread-safety guarantee.</p>
  *
- * @author Ilia Rogozhin (ilia.rogozhin@gmail.com)
- * @version $Id$
  * @param <T> Element type
- * @since 0.8
+ * @since 0.34
  */
 public final class Skipped<T> extends IterableEnvelope<T> {
 
@@ -42,18 +40,18 @@ public final class Skipped<T> extends IterableEnvelope<T> {
      */
     @SafeVarargs
     public Skipped(final int skip, final T... src) {
-        this(skip, new IterableOf<>(src));
+        this(new IterableOf<>(src), skip);
     }
 
     /**
      * Ctor.
-     * @param skip Count skip elements
      * @param iterable Decorated iterable
+     * @param skip Count skip elements
      */
-    public Skipped(final int skip, final Iterable<T> iterable) {
+    public Skipped(final Iterable<T> iterable, final int skip) {
         super(() -> () -> new org.cactoos.iterator.Skipped<>(
-            skip, iterable.iterator()
+            iterable.iterator(),
+            skip
         ));
     }
-
 }

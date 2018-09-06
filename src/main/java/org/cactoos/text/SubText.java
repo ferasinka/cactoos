@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,6 @@
  */
 package org.cactoos.text;
 
-import java.io.IOException;
 import org.cactoos.Scalar;
 import org.cactoos.Text;
 import org.cactoos.scalar.UncheckedScalar;
@@ -32,27 +31,9 @@ import org.cactoos.scalar.UncheckedScalar;
  * Extract a substring from a Text.
  *
  * <p>There is no thread-safety guarantee.
- *
- * @author Fabricio Cabral (fabriciofx@gmail.com)
- * @version $Id$
  * @since 0.11
  */
-public final class SubText implements Text {
-
-    /**
-     * The text.
-     */
-    private final Text origin;
-
-    /**
-     * The start position in the text.
-     */
-    private final UncheckedScalar<Integer> start;
-
-    /**
-     * The end position in the text.
-     */
-    private final UncheckedScalar<Integer> end;
+public final class SubText extends TextEnvelope {
 
     /**
      * Ctor.
@@ -106,32 +87,24 @@ public final class SubText implements Text {
     /**
      * Ctor.
      * @param text The Text
-     * @param strt Start position in the text
-     * @param finish End position in the text
+     * @param start Start position in the text
+     * @param end End position in the text
      */
-    public SubText(final Text text, final UncheckedScalar<Integer> strt,
-        final UncheckedScalar<Integer> finish) {
-        this.origin = text;
-        this.start = strt;
-        this.end = finish;
-    }
-
-    @Override
-    public String asString() throws IOException {
-        int begin = this.start.value();
-        if (begin < 0) {
-            begin = 0;
-        }
-        int finish = this.end.value();
-        final String text = this.origin.asString();
-        if (text.length() < finish) {
-            finish = text.length();
-        }
-        return text.substring(begin, finish);
-    }
-
-    @Override
-    public int compareTo(final Text text) {
-        return new UncheckedText(this).compareTo(text);
+    @SuppressWarnings({"PMD.CallSuperInConstructor",
+        "PMD.ConstructorOnlyInitializesOrCallOtherConstructors"})
+    public SubText(final Text text, final UncheckedScalar<Integer> start,
+        final UncheckedScalar<Integer> end) {
+        super((Scalar<String>) () -> {
+            int begin = start.value();
+            if (begin < 0) {
+                begin = 0;
+            }
+            int finish = end.value();
+            final String origin = text.asString();
+            if (origin.length() < finish) {
+                finish = origin.length();
+            }
+            return origin.substring(begin, finish);
+        });
     }
 }

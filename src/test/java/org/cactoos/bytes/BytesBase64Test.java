@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,34 +24,60 @@
 
 package org.cactoos.bytes;
 
-import java.io.IOException;
+import java.util.Base64;
 import org.cactoos.io.BytesOf;
 import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
+import org.hamcrest.core.IsEqual;
 import org.junit.Test;
 
 /**
  * Test case for {@link org.cactoos.bytes.BytesBase64}.
- * @author Ilia Rogozhin (ilia.rogozhin@gmail.com)
- * @version $Id$
  * @since 0.20.2
+ * @checkstyle JavadocMethodCheck (500 lines)
  */
+@SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public final class BytesBase64Test {
 
-    /**
-     * Check bytes encodes using the Base64 encoding scheme.
-     * @throws IOException If fails.
-     */
     @Test
-    public void checkEncode() throws IOException {
+    public void checkEncodeBasic() throws Exception {
         MatcherAssert.assertThat(
-            "Can't encodes bytes using the Base64 encoding scheme",
+            "Can't encodes bytes using the Base64 basic encoding scheme",
             new BytesBase64(
                 new BytesOf(
                     "Hello!"
                 )
             ).asBytes(),
-            Matchers.equalTo(
+            new IsEqual<>(
+                new BytesOf("SGVsbG8h").asBytes()
+            )
+        );
+    }
+
+    @Test
+    public void checkEncodeUrl() throws Exception {
+        MatcherAssert.assertThat(
+            "Can't encodes bytes using the Base64 URL encoding scheme",
+            new BytesBase64(
+                new BytesOf(
+                    "Hello!"
+                ), Base64.getUrlEncoder()
+            ).asBytes(),
+            new IsEqual<>(
+                new BytesOf("SGVsbG8h").asBytes()
+            )
+        );
+    }
+
+    @Test
+    public void checkEncodeMime() throws Exception {
+        MatcherAssert.assertThat(
+            "Can't encodes bytes using the Base64 mime encoding scheme",
+            new BytesBase64(
+                new BytesOf(
+                    "Hello!"
+                ), Base64.getMimeEncoder()
+            ).asBytes(),
+            new IsEqual<>(
                 new BytesOf("SGVsbG8h").asBytes()
             )
         );

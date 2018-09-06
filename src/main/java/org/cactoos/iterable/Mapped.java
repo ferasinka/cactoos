@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,14 +25,13 @@ package org.cactoos.iterable;
 
 import java.util.Iterator;
 import org.cactoos.Func;
+import org.cactoos.text.TextOf;
 
 /**
  * Mapped iterable.
  *
  * <p>There is no thread-safety guarantee.
  *
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @param <X> Type of source item
  * @param <Y> Type of target item
  * @since 0.1
@@ -69,4 +68,8 @@ public final class Mapped<X, Y> extends IterableEnvelope<Y> {
         ));
     }
 
+    @Override
+    public String toString() {
+        return new TextOf(this).toString();
+    }
 }

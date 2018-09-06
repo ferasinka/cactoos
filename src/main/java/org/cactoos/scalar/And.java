@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,26 +33,48 @@ import org.cactoos.iterable.Mapped;
 
 /**
  * Logical conjunction.
+ * This class performs short-circuit evaluation in which arguments are
+ * executed only if the preceding argument does not suffice to determine
+ * the value of the expression.
  *
  * <p>This class can be effectively used to iterate through
  * a collection, just like
  * {@link java.util.stream.Stream#forEach(java.util.function.Consumer)}
  * works:</p>
  *
- * <pre> new And(
- *   new IterableOf("Mary", "John", "William", "Napkin"),
- *   name -> System.out.printf("The name: %s\n", name)
- * ).value();</pre>
+ * {@code
+ * new And(
+ *    new ProcOf<>(input -> System.out.printf("\'%s\' ", input)),
+ *    new IterableOf<>("Mary", "John", "William", "Napkin")
+ * ).value(); // will print 'Mary' 'John' 'William' 'Napkin' to standard output
+ *            // the result of this operation is always true
+ * }
+ *
+ * <p>This class could be also used for matching multiple boolean
+ * expressions:</p>
+ *
+ * {@code
+ * new And(
+ *    new True(),
+ *    new True(),
+ *    new True()
+ * ).value(); // the result is true
+ *
+ * new And(
+ *    new True(),
+ *    new False(),
+ *    new True()
+ * ).value(); // the result is false
+ * }
  *
  * <p>This class implements {@link Scalar}, which throws a checked
  * {@link Exception}. This may not be convenient in many cases. To make
  * it more convenient and get rid of the checked exception you can
- * use {@link UncheckedScalar} or {@link IoCheckedScalar} decorators.</p>
+ * use the {@link UncheckedScalar} decorator. Or you may use
+ * {@link IoCheckedScalar} to wrap it in an IOException.</p>
  *
  * <p>There is no thread-safety guarantee.
  *
- * @author Vseslav Sekorin (vssekorin@gmail.com)
- * @version $Id$
  * @see UncheckedScalar
  * @see IoCheckedScalar
  * @since 0.8
@@ -62,7 +84,7 @@ public final class And implements Scalar<Boolean> {
     /**
      * The iterator.
      */
-    private final Iterable<Scalar<Boolean>> iterable;
+    private final Iterable<Scalar<Boolean>> origin;
 
     /**
      * Ctor.
@@ -88,13 +110,13 @@ public final class And implements Scalar<Boolean> {
 
     /**
      * Ctor.
-     * @param src The iterable
+     * @param src The iterator
      * @param proc Proc to use
-     * @param <X> Type of items in the iterable
-     * @since 0.24
+     * @param <X> Type of items in the iterator
+     * @since 0.34
      */
     public <X> And(final Proc<X> proc, final Iterator<X> src) {
-        this(new FuncOf<>(proc, true), src);
+        this(proc, new IterableOf<>(src));
     }
 
     /**
@@ -110,10 +132,10 @@ public final class And implements Scalar<Boolean> {
 
     /**
      * Ctor.
-     * @param src The iterable
+     * @param src The iterator
      * @param func Func to map
-     * @param <X> Type of items in the iterable
-     * @since 0.24
+     * @param <X> Type of items in the iterator
+     * @since 0.34
      */
     public <X> And(final Func<X, Boolean> func, final Iterator<X> src) {
         this(func, new IterableOf<>(src));
@@ -136,34 +158,51 @@ public final class And implements Scalar<Boolean> {
 
     /**
      * Ctor.
-     * @param src The iterable
+     * @param subject The subject
+     * @param conditions Funcs to map
+     * @param <X> Type of items in the iterable
+     * @since 0.34
      */
     @SafeVarargs
-    public And(final Scalar<Boolean>... src) {
-        this(new IterableOf<>(src));
+    public <X> And(final X subject, final Func<X, Boolean>... conditions) {
+        this(
+            new Mapped<>(
+                item -> (Scalar<Boolean>) () -> item.apply(subject),
+                new IterableOf<>(conditions)
+            )
+        );
     }
 
     /**
      * Ctor.
-     * @param src The iterable
-     * @since 0.24
+     * @param scalar The Scalar.
      */
-    public And(final Iterator<Scalar<Boolean>> src) {
-        this(new IterableOf<>(src));
+    @SafeVarargs
+    public And(final Scalar<Boolean>... scalar) {
+        this(new IterableOf<>(scalar));
     }
 
     /**
      * Ctor.
-     * @param src The iterable
+     * @param iterator The iterator.
+     * @since 0.34
      */
-    public And(final Iterable<Scalar<Boolean>> src) {
-        this.iterable = src;
+    public And(final Iterator<Scalar<Boolean>> iterator) {
+        this(new IterableOf<>(iterator));
+    }
+
+    /**
+     * Ctor.
+     * @param iterable The iterable.
+     */
+    public And(final Iterable<Scalar<Boolean>> iterable) {
+        this.origin = iterable;
     }
 
     @Override
     public Boolean value() throws Exception {
         boolean result = true;
-        for (final Scalar<Boolean> item : this.iterable) {
+        for (final Scalar<Boolean> item : this.origin) {
             if (!item.value()) {
                 result = false;
                 break;
@@ -171,5 +210,4 @@ public final class And implements Scalar<Boolean> {
         }
         return result;
     }
-
 }

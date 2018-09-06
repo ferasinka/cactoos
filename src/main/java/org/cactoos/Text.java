@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,39 +23,32 @@
  */
 package org.cactoos;
 
-import java.io.IOException;
-import org.cactoos.text.UncheckedText;
-
 /**
  * Text.
  *
  * <p>If you don't want to have any checked exceptions being thrown
  * out of your {@link Text}, you can use
- * {@link UncheckedText} decorator.</p>
+ * {@link org.cactoos.text.UncheckedText} decorator.</p>
  *
  * <p>There is no thread-safety guarantee.
  *
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @see org.cactoos.text.TextOf
  * @since 0.1
  */
-public interface Text extends Comparable<Text> {
+public interface Text {
 
     /**
      * Convert it to the string.
      * @return The string
-     * @throws IOException If fails
+     * @throws Exception If fails
      */
-    String asString() throws IOException;
+    String asString() throws Exception;
 
     /**
      * Text check for no nulls.
      *
      * <p>There is no thread-safety guarantee.
      *
-     * @author Fabricio Cabral (fabriciofx@gmail.com)
-     * @version $Id$
      * @since 0.11
      */
     final class NoNulls implements Text {
@@ -63,6 +56,7 @@ public interface Text extends Comparable<Text> {
          * The origin text.
          */
         private final Text origin;
+
         /**
          * Ctor.
          * @param text The text
@@ -70,8 +64,9 @@ public interface Text extends Comparable<Text> {
         public NoNulls(final Text text) {
             this.origin = text;
         }
+
         @Override
-        public String asString() throws IOException {
+        public String asString() throws Exception {
             if (this.origin == null) {
                 throw new IllegalArgumentException(
                     "NULL instead of a valid text"
@@ -85,15 +80,5 @@ public interface Text extends Comparable<Text> {
             }
             return string;
         }
-        @Override
-        public int compareTo(final Text text) {
-            if (text == null) {
-                throw new IllegalArgumentException(
-                    "NULL parameter instead of a valid text"
-                );
-            }
-            return new UncheckedText(this).compareTo(text);
-        }
     }
-
 }

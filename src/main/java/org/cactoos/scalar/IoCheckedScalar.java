@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,21 +25,18 @@ package org.cactoos.scalar;
 
 import java.io.IOException;
 import org.cactoos.Scalar;
-import org.cactoos.func.IoCheckedFunc;
 
 /**
- * Scalar that doesn't throw checked {@link Exception}, but throws
+ * Scalar that doesn't throw {@link Exception}, but throws
  * {@link IOException} instead.
  *
  * <p>There is no thread-safety guarantee.
  *
  * <p>This class implements {@link Scalar}, which throws a checked
- * {@link Exception}. This may not be convenient in many cases. To make
+ * {@link IOException}. This may not be convenient in many cases. To make
  * it more convenient and get rid of the checked exception you can
- * use {@link UncheckedScalar} or {@link IoCheckedScalar} decorators.</p>
+ * use the {@link UncheckedScalar} decorator.</p>
  *
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @param <T> Type of result
  * @since 0.4
  */
@@ -60,9 +57,10 @@ public final class IoCheckedScalar<T> implements Scalar<T> {
 
     @Override
     public T value() throws IOException {
-        return new IoCheckedFunc<Scalar<T>, T>(
-            Scalar::value
-        ).apply(this.origin);
+        return new CheckedScalar<>(
+            this.origin,
+            IOException::new
+        ).value();
     }
 
 }

@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,7 @@
  */
 package org.cactoos.text;
 
-import java.io.IOException;
+import org.cactoos.Scalar;
 import org.cactoos.Text;
 
 /**
@@ -31,21 +31,9 @@ import org.cactoos.Text;
  *
  * <p>There is no thread-safety guarantee.
  *
- * @author Fabricio Cabral (fabriciofx@gmail.com)
- * @version $Id$
  * @since 0.9
  */
-public final class RepeatedText implements Text {
-
-    /**
-     * The text.
-     */
-    private final Text origin;
-
-    /**
-     * How many times repeat the Text.
-     */
-    private final int count;
+public final class RepeatedText extends TextEnvelope {
 
     /**
      * Ctor.
@@ -62,22 +50,12 @@ public final class RepeatedText implements Text {
      * @param count How many times repeat the Text
      */
     public RepeatedText(final Text text, final int count) {
-        this.origin = text;
-        this.count = count;
+        super((Scalar<String>) () -> {
+            final StringBuilder out = new StringBuilder();
+            for (int cnt = 0; cnt < count; ++cnt) {
+                out.append(text.asString());
+            }
+            return out.toString();
+        });
     }
-
-    @Override
-    public String asString() throws IOException {
-        final StringBuilder out = new StringBuilder();
-        for (int cnt = 0; cnt < this.count; ++cnt) {
-            out.append(this.origin.asString());
-        }
-        return out.toString();
-    }
-
-    @Override
-    public int compareTo(final Text text) {
-        return new UncheckedText(this).compareTo(text);
-    }
-
 }

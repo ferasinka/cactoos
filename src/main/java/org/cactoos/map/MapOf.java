@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,6 @@ package org.cactoos.map;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import org.cactoos.Func;
 import org.cactoos.iterable.IterableOf;
@@ -44,8 +43,6 @@ import org.cactoos.iterable.Mapped;
  *
  * <p>There is no thread-safety guarantee.
  *
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @param <X> Type of key
  * @param <Y> Type of value
  * @see StickyMap
@@ -144,14 +141,6 @@ public final class MapOf<X, Y> extends MapEnvelope<X, Y> {
                 src.entrySet(), list
             )
         );
-    }
-
-    /**
-     * Ctor.
-     * @param entries List of the entries
-     */
-    public MapOf(final Iterator<Map.Entry<X, Y>> entries) {
-        this(() -> entries);
     }
 
     /**

@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,17 +29,21 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.cactoos.iterable.IterableOf;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.hamcrest.core.IsEqual;
 import org.junit.Test;
 
 /**
  * Test case for {@link ListOf}.
  *
- * @author Kirill (g4s8.public@gmail.com)
- * @version $Id$
  * @since 0.1
  * @checkstyle JavadocMethodCheck (500 lines)
  * @checkstyle MagicNumberCheck (500 lines)
  */
+@SuppressWarnings(
+    {
+        "PMD.TooManyMethods", "PMD.AvoidDuplicateLiterals"
+    }
+)
 public final class ListOfTest {
 
     @Test
@@ -124,6 +128,51 @@ public final class ListOfTest {
         MatcherAssert.assertThat(
             "Can't turn a mapped iterable into a list, again",
             list, Matchers.iterableWithSize(4)
+        );
+    }
+
+    @Test
+    public void equalsComparesContentBothListEnvelopes() {
+        MatcherAssert.assertThat(
+            "Can't compare using equals.",
+            new ListOf<>(1, 2),
+            new IsEqual<>(new ListOf<>(1, 2))
+        );
+    }
+
+    @Test
+    public void equalsComparesContentListEnvelopeWithNormalList() {
+        MatcherAssert.assertThat(
+            "Can't compare using equals.",
+            new ListOf<>(1, 2),
+            new IsEqual<>(new ListOf<>(1, 2))
+        );
+    }
+
+    @Test
+    public void equalsComparesEmptyLists() {
+        MatcherAssert.assertThat(
+            "Can't compare using equals.",
+            new ListOf<>(),
+            new IsEqual<>(new ListOf<>())
+        );
+    }
+
+    @Test
+    public void toStringUsesListContent() {
+        MatcherAssert.assertThat(
+            "Can't print content using toString.",
+            new ListOf<>(1, 2).toString(),
+            new IsEqual<>("[1, 2]")
+        );
+    }
+
+    @Test
+    public void hashCodesListContent() {
+        MatcherAssert.assertThat(
+            "Can't create hashcode.",
+            new ListOf<>(1, 2).hashCode(),
+            new IsEqual<>(new ListOf<>(1, 2).hashCode())
         );
     }
 

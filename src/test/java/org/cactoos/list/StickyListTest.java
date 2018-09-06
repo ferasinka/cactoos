@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,6 @@
 package org.cactoos.list;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -36,9 +35,6 @@ import org.junit.Test;
 
 /**
  * Test case for {@link StickyList}.
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @author Mehmet Yildirim (memoyil@gmail.com)
- * @version $Id$
  * @since 0.8
  * @checkstyle JavadocMethodCheck (500 lines)
  * @checkstyle MagicNumberCheck (500 lines)
@@ -115,7 +111,7 @@ public final class StickyListTest {
     @Test
     public void testContainsAll() {
         MatcherAssert.assertThat(
-            new StickyList<>(1, 2).containsAll(Arrays.asList(1, 2)),
+            new StickyList<>(1, 2).containsAll(new ListOf<>(1, 2)),
             Matchers.equalTo(true)
         );
     }

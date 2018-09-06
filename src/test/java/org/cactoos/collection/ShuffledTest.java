@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,13 +26,12 @@ package org.cactoos.collection;
 import org.cactoos.iterable.IterableOf;
 import org.cactoos.list.ListOf;
 import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
+import org.hamcrest.core.IsCollectionContaining;
+import org.hamcrest.core.IsEqual;
 import org.junit.Test;
 
 /**
  * Test Case for {@link Shuffled}.
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @since 0.23
  * @checkstyle JavadocMethodCheck (500 lines)
  */
@@ -52,7 +51,7 @@ public final class ShuffledTest {
         MatcherAssert.assertThat(
             "Can't shuffle elements in collection",
             new Shuffled<>(new ListOf<Integer>(1, 2, 0, -1)),
-            Matchers.hasItem(-1)
+            new IsCollectionContaining<>(new IsEqual<>(-1))
         );
     }
 
@@ -61,7 +60,7 @@ public final class ShuffledTest {
         MatcherAssert.assertThat(
             "Can't shuffle elements in array",
             new Shuffled<>(1, 2, 0, -1),
-            Matchers.hasItem(-1)
+            new IsCollectionContaining<>(new IsEqual<>(-1))
         );
     }
 
@@ -70,7 +69,7 @@ public final class ShuffledTest {
         MatcherAssert.assertThat(
             "Can't shuffle elements in iterable",
             new Shuffled<>(new IterableOf<>(1, 2, 0, -1)),
-            Matchers.hasItem(-1)
+            new IsCollectionContaining<>(new IsEqual<>(-1))
         );
     }
 

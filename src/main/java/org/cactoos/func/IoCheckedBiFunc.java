@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,14 +25,13 @@ package org.cactoos.func;
 
 import java.io.IOException;
 import org.cactoos.BiFunc;
+import org.cactoos.scalar.IoCheckedScalar;
 
 /**
  * Func that doesn't throw checked {@link Exception}, but throws
  * {@link IOException} instead.
  *
  * <p>There is no thread-safety guarantee.
- * @author Mehmet Yildirim (memoyil@gmail.com)
- * @version $Id$
  * @param <X> Type of input
  * @param <Y> Type of input
  * @param <Z> Type of output
@@ -54,26 +53,10 @@ public final class IoCheckedBiFunc<X, Y, Z> implements BiFunc<X, Y, Z> {
     }
 
     @Override
-    @SuppressWarnings
-        (
-            {
-                "PMD.AvoidCatchingGenericException",
-                "PMD.AvoidRethrowingException"
-            }
-        )
     public Z apply(final X first, final Y second) throws IOException {
-        try {
-            return this.func.apply(first, second);
-            // @checkstyle IllegalCatchCheck (1 line)
-        } catch (final IOException | RuntimeException ex) {
-            throw ex;
-        } catch (final InterruptedException ex) {
-            Thread.currentThread().interrupt();
-            throw new IOException(ex);
-            // @checkstyle IllegalCatchCheck (1 line)
-        } catch (final Exception ex) {
-            throw new IOException(ex);
-        }
+        return new IoCheckedScalar<>(
+            () -> this.func.apply(first, second)
+        ).value();
     }
 
 }

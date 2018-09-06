@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,6 @@
  */
 package org.cactoos.text;
 
-import java.io.IOException;
 import java.util.Locale;
 import org.cactoos.Text;
 
@@ -32,8 +31,6 @@ import org.cactoos.Text;
  *
  * <p>There is no thread-safety guarantee.
  *
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @since 0.1
  */
 public final class UpperText implements Text {
@@ -47,6 +44,14 @@ public final class UpperText implements Text {
      * The locale.
      */
     private final Locale locale;
+
+    /**
+     * Ctor.
+     * @param text The text
+     */
+    public UpperText(final String text) {
+        this(new TextOf(text));
+    }
 
     /**
      * Ctor.
@@ -67,13 +72,8 @@ public final class UpperText implements Text {
     }
 
     @Override
-    public String asString() throws IOException {
+    public String asString() throws Exception {
         return this.origin.asString().toUpperCase(this.locale);
-    }
-
-    @Override
-    public int compareTo(final Text text) {
-        return new UncheckedText(this).compareTo(text);
     }
 
 }

@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,26 +26,67 @@ package org.cactoos.func;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.hamcrest.MatcherAssert;
 import org.junit.Test;
+import org.llorllale.cactoos.matchers.MatcherOf;
 
 /**
  * Test case for {@link RunnableOf}.
  *
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @since 0.2
  * @checkstyle JavadocMethodCheck (500 lines)
  */
 public final class RunnableOfTest {
 
     @Test
-    public void convertsFuncIntoRunnable() throws Exception {
+    public void convertsFuncIntoRunnable() {
         final AtomicBoolean done = new AtomicBoolean();
         MatcherAssert.assertThat(
-            "Can't execute Runnable",
+            "Can't execute Runnable with Func",
             new RunnableOf<>(
                 input -> {
                     done.set(true);
                     return 1;
+                }
+            ),
+            new MatcherOf<Runnable>(
+                input -> {
+                    input.run();
+                    return done.get();
+                }
+            )
+        );
+    }
+
+    @Test
+    public void convertsProcIntoRunnable() {
+        final AtomicBoolean done = new AtomicBoolean();
+        MatcherAssert.assertThat(
+            "Can't execute Runnable with ProcOf",
+            new RunnableOf<>(
+                new ProcOf<>(
+                    input -> {
+                        done.set(true);
+                        return 1;
+                    }
+                )
+            ),
+            new MatcherOf<Runnable>(
+                input -> {
+                    input.run();
+                    return done.get();
+                }
+            )
+        );
+    }
+
+    @Test
+    public void convertsCallableIntoRunnable() {
+        final AtomicBoolean done = new AtomicBoolean();
+        MatcherAssert.assertThat(
+            "Can't execute Runnable with Callable",
+            new RunnableOf<>(
+                () -> {
+                    done.set(true);
+                    return null;
                 }
             ),
             new MatcherOf<Runnable>(

@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,15 +24,12 @@
 package org.cactoos.iterable;
 
 import org.cactoos.Func;
-import org.cactoos.ScalarHasValue;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
 /**
  * Test case for {@link Joined}.
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @since 0.1
  * @checkstyle JavadocMethodCheck (500 lines)
  * @checkstyle MagicNumber (500 lines)
@@ -49,8 +46,8 @@ public final class JoinedTest {
                     new IterableOf<>("how", "are", "you"),
                     new IterableOf<>("what's", "up")
                 )
-            ),
-            new ScalarHasValue<>(8)
+            ).intValue(),
+            Matchers.equalTo(8)
         );
     }
 
@@ -84,6 +81,17 @@ public final class JoinedTest {
         MatcherAssert.assertThat(
             "Can't concatenate four iterables together, again",
             list, Matchers.iterableWithSize(10)
+        );
+    }
+
+    @Test
+    public void joinItemAndIterable() {
+        MatcherAssert.assertThat(
+            new Joined<>(
+                0,
+                new IterableOf<>(1, 2, 3)
+            ),
+            Matchers.contains(0, 1, 2, 3)
         );
     }
 

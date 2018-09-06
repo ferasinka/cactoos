@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,10 +34,18 @@ import org.cactoos.Scalar;
  * <p>This class implements {@link Scalar}, which throws a checked
  * {@link Exception}. This may not be convenient in many cases. To make
  * it more convenient and get rid of the checked exception you can
- * use {@link UncheckedScalar} or {@link IoCheckedScalar} decorators.</p>
+ * use the {@link UncheckedScalar} decorator. Or you may use
+ * {@link IoCheckedScalar} to wrap it in an IOException.</p>
  *
- * @author Vseslav Sekorin (vssekorin@gmail.com)
- * @version $Id$
+ * <pre>{@code
+ * new Ternary<>(
+ *     5,
+ *     input -> input > 3,
+ *     input -> input = 8,
+ *     input -> input = 2
+ * ).value() // will be equal to 8
+ * }</pre>
+ *
  * @param <T> Type of item.
  * @since 0.8
  */

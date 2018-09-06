@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,23 +23,16 @@
  */
 package org.cactoos.text;
 
-import java.io.IOException;
+import org.cactoos.Scalar;
 import org.cactoos.Text;
 
 /**
  * Normalize (replace sequences of whitespace characters by a single space)
  * a Text.
  *
- * @author Fabricio Cabral (fabriciofx@gmail.com)
- * @version $Id$
  * @since 0.9
  */
-public final class NormalizedText implements Text {
-
-    /**
-     * The text.
-     */
-    private final Text origin;
+public final class NormalizedText extends TextEnvelope {
 
     /**
      * Ctor.
@@ -54,18 +47,13 @@ public final class NormalizedText implements Text {
      * @param text A Text
      */
     public NormalizedText(final Text text) {
-        this.origin = text;
+        super(
+            (Scalar<String>) () -> new ReplacedText(
+                new TrimmedText(text),
+                "\\s+",
+                " "
+            ).asString()
+        );
     }
-
-    @Override
-    public String asString() throws IOException {
-        return new TrimmedText(this.origin).asString().replaceAll("\\s+", " ");
-    }
-
-    @Override
-    public int compareTo(final Text text) {
-        return new UncheckedText(this).compareTo(text);
-    }
-
 }
 

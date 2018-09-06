@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,7 @@
  */
 package org.cactoos.func;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -30,8 +31,6 @@ import org.junit.Test;
 /**
  * Test case for {@link CallableOf}.
  *
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @since 0.2
  * @checkstyle JavadocMethodCheck (500 lines)
  */
@@ -44,6 +43,58 @@ public final class CallableOfTest {
                 input -> 1
             ).call(),
             Matchers.equalTo(1)
+        );
+    }
+
+    @Test
+    public void convertsRunnableIntoCallable() throws Exception {
+        final AtomicBoolean flag = new AtomicBoolean(false);
+        new CallableOf<>(
+            () -> flag.set(true),
+            true
+        ).call();
+        MatcherAssert.assertThat(
+            flag.get(),
+            Matchers.is(true)
+        );
+    }
+
+    @Test(expected = Exception.class)
+    public void wrapsRuntimeErrorFromRunnable() throws Exception {
+        new CallableOf<>(
+            () -> {
+                throw new IllegalStateException();
+            },
+        true
+        ).call();
+    }
+
+    @Test
+    public void convertsProcIntoCallable() throws Exception {
+        final AtomicBoolean flag = new AtomicBoolean(false);
+        MatcherAssert.assertThat(
+            new CallableOf<>(
+                unused -> {
+                    flag.set(true);
+                },
+                true
+            ).call(),
+            Matchers.equalTo(true)
+        );
+        MatcherAssert.assertThat(
+            flag.get(),
+            Matchers.is(true)
+        );
+    }
+
+    @Test
+    public void convertsFuncWithInputIntoCallable() throws Exception {
+        MatcherAssert.assertThat(
+            new CallableOf<>(
+                num -> num + 1,
+                1
+            ).call(),
+            Matchers.equalTo(2)
         );
     }
 

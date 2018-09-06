@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,17 +24,16 @@
 
 package org.cactoos.text;
 
-import java.io.IOException;
 import org.cactoos.Text;
 import org.cactoos.bytes.Base64Bytes;
 import org.cactoos.io.BytesOf;
 
 /**
  * Decodes the origin text using the Base64 encoding scheme.
- *
- * @author Ilia Rogozhin (ilia.rogozhin@gmail.com)
- * @version $Id$
  * @since 0.20.2
+ * @todo #897:30min Continue refactoring all classes implementing Text to extend
+ *  TextEnvelope - asString() should be removed and implementation from
+ *  TextEnvelope should be used.
  */
 public final class Base64Text implements Text {
 
@@ -62,16 +61,11 @@ public final class Base64Text implements Text {
     }
 
     @Override
-    public String asString() throws IOException {
+    public String asString() throws Exception {
         return new TextOf(
             new Base64Bytes(
                 new BytesOf(this.origin)
             )
         ).asString();
-    }
-
-    @Override
-    public int compareTo(final Text text) {
-        return new UncheckedText(this).compareTo(text);
     }
 }

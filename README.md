@@ -1,7 +1,11 @@
 <img src="http://cf.jare.io/?u=http%3A%2F%2Fwww.yegor256.com%2Fimages%2Fbooks%2Felegant-objects%2Fcactus.svg" height="100px" />
 
-[![Managed by Zerocracy](http://www.0crat.com/badge/C63314D6Z.svg)](http://www.0crat.com/p/C63314D6Z)
+[![Donate via Zerocracy](https://www.0crat.com/contrib-badge/C63314D6Z.svg)](https://www.0crat.com/contrib/C63314D6Z)
+
+[![EO principles respected here](http://www.elegantobjects.org/badge.svg)](http://www.elegantobjects.org)
+[![Managed by Zerocracy](https://www.0crat.com/badge/C63314D6Z.svg)](https://www.0crat.com/p/C63314D6Z)
 [![DevOps By Rultor.com](http://www.rultor.com/b/yegor256/cactoos)](http://www.rultor.com/p/yegor256/cactoos)
+[![We recommend IntelliJ IDEA](http://www.elegantobjects.org/intellij-idea.svg)](https://www.jetbrains.com/idea/)
 
 [![Build Status](https://travis-ci.org/yegor256/cactoos.svg?branch=master)](https://travis-ci.org/yegor256/cactoos)
 [![Build status](https://ci.appveyor.com/api/projects/status/8vs8huy61og6jwif?svg=true)](https://ci.appveyor.com/project/yegor256/cactoos)
@@ -16,7 +20,8 @@
 
 **ATTENTION**: We're still in a very early alpha version, the API
 may and _will_ change frequently. Please, use it at your own risk,
-until we release version 1.0 (<del>July</del> <del>August</del> December 2017).
+until we release version 1.0. You can view our progress towards
+this release [here](https://github.com/yegor256/cactoos/milestone/1).
 
 Cactoos is a collection of object-oriented Java primitives.
 
@@ -30,17 +35,7 @@ but mostly through static methods. Cactoos is suggesting
 to do almost exactly the same, but through objects.
 
 **Principles**.
-There are a few design principles behind Cactoos:
-
-  * No `null` ([why?](http://www.yegor256.com/2014/05/13/why-null-is-bad.html))
-  * No code in constructors ([why?](http://www.yegor256.com/2015/05/07/ctors-must-be-code-free.html))
-  * No getters and setters ([why?](http://www.yegor256.com/2014/09/16/getters-and-setters-are-evil.html))
-  * No mutable objects ([why?](http://www.yegor256.com/2014/06/09/objects-should-be-immutable.html))
-  * No `static` methods, not even `private` ones ([why?](http://www.yegor256.com/2017/02/07/private-method-is-new-class.html))
-  * No `instanceof`, type casting, or reflection ([why?](http://www.yegor256.com/2015/04/02/class-casting-is-anti-pattern.html))
-  * No implementation inheritance ([why?](http://www.yegor256.com/2016/09/13/inheritance-is-procedural.html))
-  * No public methods without `@Override`
-  * No statements in test methods except `assertThat` ([why?](http://www.yegor256.com/2017/05/17/single-statement-unit-tests.html))
+These are the [design principles](http://www.elegantobjects.org#principles) behind Cactoos.
 
 **How to use**.
 The library has no dependencies. All you need is this
@@ -54,6 +49,8 @@ The library has no dependencies. All you need is this
 ```
 
 Java version required: 1.8+.
+
+StackOverflow tag is [cactoos](https://stackoverflow.com/questions/tagged/cactoos).
 
 ## Input/Output
 
@@ -76,7 +73,7 @@ new LengthOf(
     "Hello, world!",
     new File("/code/a.txt")
   )
-).value();
+).intValue();
 ```
 
 To read a binary file from classpath:
@@ -170,7 +167,7 @@ To count elements in an iterable:
 ```java
 int total = new LengthOf(
   "how", "are", "you"
-).value();
+).intValue();
 ```
 
 ## Funcs and Procs
@@ -212,6 +209,30 @@ new And(
     return !ready;
   }
 ).value();
+```
+
+## Dates and Times
+From our `org.cactoos.time` package.
+
+Our classes are divided in two groups: those that parse strings into date/time objects, and those that format those objects into strings.
+
+For example, this is the traditional way of parsing a string into an [OffsetDateTime](https://docs.oracle.com/javase/8/docs/api/java/time/OffsetDateTime.html):
+
+```java
+final OffsetDateTime date = OffsetDateTime.parse("2007-12-03T10:15:30+01:00");
+```
+
+Here is its object-oriented alternative (no static method calls!) using `OffsetDateTimeOf`, which is a `Scalar`:
+
+```java
+final OffsetDateTime date = new OffsetDateTimeOf("2007-12-03T10:15:30+01:00").value();
+```
+
+To format an `OffsetDateTime` into a `Text`:
+
+```java
+final OffsetDateTime date = ...;
+final OffsetDateTimeAsText text = new OffsetDateTimeAsText(date);
 ```
 
 ## Our objects vs. their static methods
@@ -271,11 +292,14 @@ Note: [Checkstyle](https://en.wikipedia.org/wiki/Checkstyle) is used as a static
   - [@alex-semenyuk](https://github.com/alex-semenyuk) as Alexey Semenyuk
   - [@smallcreep](https://github.com/smallcreep) as Ilia Rogozhin
   - [@memoyil](https://github.com/memoyil) as Mehmet Yildirim
-
+  - [@llorllale](https://github.com/llorllale) as George Aristy
+  - [@driver733](https://github.com/driver733) as Mikhail Yakushin
+  - [@izrik](https://github.com/izrik) as Richard Sartor
+  - [@Vatavuk](https://github.com/Vatavuk) as Vedran Grgo Vatavuk
 
 ## License (MIT)
 
-Copyright (c) 2017 Yegor Bugayenko
+Copyright (c) 2017-2018 Yegor Bugayenko
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,16 +33,48 @@ import org.cactoos.iterable.Mapped;
 
 /**
  * Logical disjunction.
+ * This class performs short-circuit evaluation in which arguments are
+ * executed only if the preceding argument does not suffice to determine
+ * the value of the expression.
+ *
+ * <p>This class can be effectively used to iterate through
+ * a collection, just like
+ * {@link java.util.stream.Stream#forEach(java.util.function.Consumer)}
+ * works:</p>
+ *
+ * {@code
+ * new Or(
+ *    new ProcOf<>(input -> System.out.printf("\'%s\' ", input) ),
+ *    new IterableOf<>("Mary", "John", "William", "Napkin")
+ * ).value(); // will print 'Mary' 'John' 'William' 'Napkin' to standard output
+ *            // the result of this operation is always false
+ * }
+ *
+ * <p>This class could be also used for matching multiple boolean
+ * expressions:</p>
+ *
+ * {@code
+ * new Or(
+ *    new False(),
+ *    new True(),
+ *    new True()
+ * ).value(); // the result is true
+ *
+ * new Or(
+ *    new False(),
+ *    new False(),
+ *    new False()
+ * ).value(); // the result is false
+ * }
  *
  * <p>There is no thread-safety guarantee.
  *
  * <p>This class implements {@link Scalar}, which throws a checked
  * {@link Exception}. This may not be convenient in many cases. To make
  * it more convenient and get rid of the checked exception you can
- * use {@link UncheckedScalar} or {@link IoCheckedScalar} decorators.</p>
+ * use the {@link UncheckedScalar} decorator. Or you may use
+ * {@link IoCheckedScalar} to wrap it in an IOException.</p>
  *
- * @author Vseslav Sekorin (vssekorin@gmail.com)
- * @version $Id$
  * @since 0.8
  */
 public final class Or implements Scalar<Boolean> {
@@ -123,6 +155,22 @@ public final class Or implements Scalar<Boolean> {
 
     /**
      * Ctor.
+     * @param subject The subject
+     * @param conditions Funcs to map
+     * @param <X> Type of items in the iterable
+     */
+    @SafeVarargs
+    public <X> Or(final X subject, final Func<X, Boolean>... conditions) {
+        this(
+            new Mapped<>(
+                item -> (Scalar<Boolean>) () -> item.apply(subject),
+                new IterableOf<>(conditions)
+            )
+        );
+    }
+
+    /**
+     * Ctor.
      * @param scalar The Scalar.
      */
     @SafeVarargs
@@ -132,11 +180,11 @@ public final class Or implements Scalar<Boolean> {
 
     /**
      * Ctor.
-     * @param iterable The iterable.
+     * @param iterator The iterator.
      * @since 0.24
      */
-    public Or(final Iterator<Scalar<Boolean>> iterable) {
-        this(new IterableOf<>(iterable));
+    public Or(final Iterator<Scalar<Boolean>> iterator) {
+        this(new IterableOf<>(iterator));
     }
 
     /**

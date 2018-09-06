@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,15 +24,15 @@
 package org.cactoos.func;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.cactoos.scalar.Constant;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.hamcrest.core.IsEqual;
 import org.junit.Test;
 
 /**
  * Test case for {@link FuncOf}.
  *
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @since 0.20
  * @checkstyle JavadocMethodCheck (500 lines)
  */
@@ -51,30 +51,6 @@ public final class FuncOfTest {
     }
 
     @Test
-    public void convertsProcWithNoResultIntoFunc() throws Exception {
-        final AtomicBoolean done = new AtomicBoolean(false);
-        MatcherAssert.assertThat(
-            new FuncOf<String, Boolean>(
-                input -> {
-                    done.set(true);
-                }
-            ).apply("hello you"),
-            Matchers.nullValue()
-        );
-    }
-
-    @Test
-    public void convertsRunnableIntoFunc() throws Exception {
-        final AtomicBoolean done = new AtomicBoolean(false);
-        MatcherAssert.assertThat(
-            new FuncOf<String, Boolean>(
-                () -> done.set(true)
-            ).apply("hello, world"),
-            Matchers.nullValue()
-        );
-    }
-
-    @Test
     public void convertsValueIntoFunc() throws Exception {
         MatcherAssert.assertThat(
             new FuncOf<String, Boolean>(
@@ -84,4 +60,13 @@ public final class FuncOfTest {
         );
     }
 
+    @Test
+    public void convertsScalarIntoFunc() throws Exception {
+        final Constant<Integer> scalar = new Constant<>(1);
+        MatcherAssert.assertThat(
+            "Result of func doesn't equal to the original value",
+            new FuncOf<>(scalar).apply(new Object()),
+            new IsEqual<>(scalar.value())
+        );
+    }
 }

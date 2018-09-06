@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,8 +27,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import org.cactoos.Func;
 import org.cactoos.Input;
+import org.cactoos.Text;
 import org.cactoos.func.IoCheckedFunc;
 import org.cactoos.text.FormattedText;
+import org.cactoos.text.TextOf;
 
 /**
  * Classpath resource.
@@ -38,8 +40,6 @@ import org.cactoos.text.FormattedText;
  * if you want to load a text file from {@code /com/example/Test.txt},
  * you must provide this name: {@code "com/example/Test.txt"}.</p>
  *
- * @author Kirill (g4s8.public@gmail.com)
- * @version $Id$
  * @see ClassLoader#getResource(String)
  * @since 0.1
  */
@@ -48,12 +48,12 @@ public final class ResourceOf implements Input {
     /**
      * Resource name.
      */
-    private final CharSequence path;
+    private final Text path;
 
     /**
      * Fallback.
      */
-    private final Func<CharSequence, Input> fallback;
+    private final Func<Text, Input> fallback;
 
     /**
      * Resource class loader.
@@ -66,6 +66,26 @@ public final class ResourceOf implements Input {
      */
     public ResourceOf(final CharSequence res) {
         this(res, Thread.currentThread().getContextClassLoader());
+    }
+
+    /**
+     * New resource input with specified {@link ClassLoader}.
+     * @param res Resource name
+     * @param ldr Resource class loader
+     */
+    public ResourceOf(final CharSequence res, final ClassLoader ldr) {
+        this(new TextOf(res), ldr);
+    }
+
+    /**
+     * New resource input with specified {@link ClassLoader}.
+     * @param res Resource name
+     * @param ldr Resource class loader
+     * @param fbk Fallback
+     */
+    public ResourceOf(final CharSequence res,
+        final Func<CharSequence, Input> fbk, final ClassLoader ldr) {
+        this(new TextOf(res), input -> fbk.apply(input.asString()), ldr);
     }
 
     /**
@@ -82,8 +102,9 @@ public final class ResourceOf implements Input {
      * @param res Resource name
      * @param fbk Fallback
      */
-    public ResourceOf(final CharSequence res, final Input fbk) {
-        this(res, input -> fbk);
+    public ResourceOf(final CharSequence res,
+        final Func<CharSequence, Input> fbk) {
+        this(res, fbk, Thread.currentThread().getContextClassLoader());
     }
 
     /**
@@ -91,9 +112,16 @@ public final class ResourceOf implements Input {
      * @param res Resource name
      * @param fbk Fallback
      */
-    public ResourceOf(final CharSequence res,
-        final Func<CharSequence, Input> fbk) {
-        this(res, fbk, Thread.currentThread().getContextClassLoader());
+    public ResourceOf(final CharSequence res, final Input fbk) {
+        this(res, input -> fbk);
+    }
+
+    /**
+     * New resource input with current context {@link ClassLoader}.
+     * @param res Resource name
+     */
+    public ResourceOf(final Text res) {
+        this(res, Thread.currentThread().getContextClassLoader());
     }
 
     /**
@@ -101,14 +129,14 @@ public final class ResourceOf implements Input {
      * @param res Resource name
      * @param ldr Resource class loader
      */
-    public ResourceOf(final CharSequence res, final ClassLoader ldr) {
+    public ResourceOf(final Text res, final ClassLoader ldr) {
         this(
             res,
             input -> {
                 throw new IOException(
                     new FormattedText(
                         "Resource \"%s\" was not found",
-                        input
+                        input.asString()
                     ).asString()
                 );
             },
@@ -117,22 +145,50 @@ public final class ResourceOf implements Input {
     }
 
     /**
+     * New resource input with current context {@link ClassLoader}.
+     * @param res Resource name
+     * @param fbk Fallback
+     */
+    public ResourceOf(final Text res, final Text fbk) {
+        this(res, input -> new InputOf(new BytesOf(fbk.asString())));
+    }
+
+    /**
+     * New resource input with current context {@link ClassLoader}.
+     * @param res Resource name
+     * @param fbk Fallback
+     */
+    public ResourceOf(final Text res, final Input fbk) {
+        this(res, input -> fbk);
+    }
+
+    /**
+     * New resource input with current context {@link ClassLoader}.
+     * @param res Resource name
+     * @param fbk Fallback
+     */
+    public ResourceOf(final Text res,
+        final Func<Text, Input> fbk) {
+        this(res, fbk, Thread.currentThread().getContextClassLoader());
+    }
+
+    /**
      * New resource input with specified {@link ClassLoader}.
      * @param res Resource name
      * @param ldr Resource class loader
      * @param fbk Fallback
      */
-    public ResourceOf(final CharSequence res,
-        final Func<CharSequence, Input> fbk, final ClassLoader ldr) {
+    public ResourceOf(final Text res,
+        final Func<Text, Input> fbk, final ClassLoader ldr) {
         this.path = res;
         this.loader = ldr;
         this.fallback = fbk;
     }
 
     @Override
-    public InputStream stream() throws IOException {
+    public InputStream stream() throws Exception {
         InputStream input = this.loader.getResourceAsStream(
-            this.path.toString()
+            this.path.asString()
         );
         if (input == null) {
             input = new IoCheckedFunc<>(this.fallback)

@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -42,11 +42,14 @@ import org.cactoos.Proc;
  *
  * <p>There is no thread-safety guarantee.
  *
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @param <X> Type of input
  * @param <Y> Type of output
  * @since 0.10
+ * @todo #861:30min Avoid usage of null value in ctor(Proc, ExecutorService),
+ *  ctor(Proc, ThreadFactory) and ctor(Proc) which is against design
+ *  principles.
+ *  Perhaps with a creation of AsyncProc or removal of this functionality?
+ *  Please take a look on #551 and #843 for more details.
  */
 public final class AsyncFunc<X, Y> implements Func<X, Future<Y>>, Proc<X> {
 
@@ -65,7 +68,7 @@ public final class AsyncFunc<X, Y> implements Func<X, Future<Y>>, Proc<X> {
      * @param proc The proc
      */
     public AsyncFunc(final Proc<X> proc) {
-        this(new FuncOf<>(proc));
+        this(new FuncOf<>(proc, null));
     }
 
     /**
@@ -82,7 +85,7 @@ public final class AsyncFunc<X, Y> implements Func<X, Future<Y>>, Proc<X> {
      * @param fct Factory
      */
     public AsyncFunc(final Proc<X> proc, final ThreadFactory fct) {
-        this(new FuncOf<>(proc), fct);
+        this(new FuncOf<>(proc, null), fct);
     }
 
     /**
@@ -101,7 +104,7 @@ public final class AsyncFunc<X, Y> implements Func<X, Future<Y>>, Proc<X> {
      * @since 0.17
      */
     public AsyncFunc(final Proc<X> proc, final ExecutorService exec) {
-        this(new FuncOf<>(proc), exec);
+        this(new FuncOf<>(proc, null), exec);
     }
 
     /**

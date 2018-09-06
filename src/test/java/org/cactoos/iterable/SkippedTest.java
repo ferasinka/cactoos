@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,22 +29,20 @@ import org.junit.Test;
 
 /**
  * Test Case for {@link Skipped}.
- * @author Ilia Rogozhin (ilia.rogozhin@gmail.com)
- * @version $Id$
- * @since 0.8
+ *
+ * @since 0.34
  * @checkstyle JavadocMethodCheck (500 lines)
  */
 public final class SkippedTest {
 
     @Test
     @SuppressWarnings("PMD.AvoidDuplicateLiterals")
-    public void skipIterable() throws Exception {
+    public void skipIterable() {
         MatcherAssert.assertThat(
             "Can't skip elements in iterable",
             new Skipped<>(
-                2, new IterableOf<>(
-                    "one", "two", "three", "four"
-                )
+                2,
+                "one", "two", "three", "four"
             ),
             Matchers.contains(
                 "three",
@@ -52,5 +50,4 @@ public final class SkippedTest {
             )
         );
     }
-
 }

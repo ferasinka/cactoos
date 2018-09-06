@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,11 +31,14 @@ import org.cactoos.Proc;
  *
  * <p>There is no thread-safety guarantee.
  *
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @param <X> Type of input
  * @param <Y> Type of output
  * @since 0.8
+ * @todo #861:30min Avoid usage of null value in ctor(Proc),
+ *  ctor(Proc, int), ctor(Proc, Func(Integer, Boolean)) which is against
+ *  design principles.
+ *  Perhaps in creating RetryProc?
+ *  Please take a look on #551 and #843 for more details.
  */
 public final class RetryFunc<X, Y> implements Func<X, Y> {
 
@@ -55,7 +58,7 @@ public final class RetryFunc<X, Y> implements Func<X, Y> {
      * @since 0.12
      */
     public RetryFunc(final Proc<X> proc) {
-        this(new FuncOf<>(proc));
+        this(new FuncOf<>(proc, null));
     }
 
     /**
@@ -65,7 +68,7 @@ public final class RetryFunc<X, Y> implements Func<X, Y> {
      * @since 0.12
      */
     public RetryFunc(final Proc<X> proc, final int attempts) {
-        this(new FuncOf<>(proc), attempts);
+        this(new FuncOf<>(proc, null), attempts);
     }
 
     /**
@@ -75,7 +78,7 @@ public final class RetryFunc<X, Y> implements Func<X, Y> {
      * @since 0.12
      */
     public RetryFunc(final Proc<X> proc, final Func<Integer, Boolean> ext) {
-        this(new FuncOf<>(proc), ext);
+        this(new FuncOf<>(proc, null), ext);
     }
 
     /**

@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,33 +32,42 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.cactoos.InputHasContent;
-import org.cactoos.TextHasString;
-import org.cactoos.func.MatcherOf;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import org.cactoos.text.TextOf;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import org.llorllale.cactoos.matchers.InputHasContent;
+import org.llorllale.cactoos.matchers.MatcherOf;
+import org.llorllale.cactoos.matchers.TextHasString;
 import org.takes.http.FtRemote;
 import org.takes.tk.TkHtml;
 
 /**
  * Test case for {@link InputOf}.
  *
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @author Kirill (g4s8.public@gmail.com)
- * @author Ix (ixmanuel@yahoo.com)
- * @version $Id$
  * @since 0.1
  * @checkstyle JavadocMethodCheck (500 lines)
  * @checkstyle ClassDataAbstractionCouplingCheck (500 lines)
  */
 @SuppressWarnings("PMD.TooManyMethods")
 public final class InputOfTest {
+    /**
+     * Temporary files and folders generator.
+     */
+    @Rule
+    public final TemporaryFolder folder = new TemporaryFolder();
 
     @Test
-    public void readsAlternativeInputForFileCase() throws IOException {
+    public void readsAlternativeInputForFileCase() {
         MatcherAssert.assertThat(
             "Can't read alternative source from file not found",
             new TextOf(
@@ -75,7 +84,8 @@ public final class InputOfTest {
 
     @Test
     public void readsSimpleFileContent() throws IOException {
-        final Path temp = Files.createTempFile("cactoos-1", "txt-1");
+        final Path temp = this.folder.newFile("cactoos-1.txt-1")
+            .toPath();
         final String content = "Hello, товарищ!";
         Files.write(temp, content.getBytes(StandardCharsets.UTF_8));
         MatcherAssert.assertThat(
@@ -86,7 +96,7 @@ public final class InputOfTest {
     }
 
     @Test
-    public void closesInputStream() throws IOException {
+    public void closesInputStream() throws Exception {
         final AtomicBoolean closed = new AtomicBoolean();
         final InputStream input = new ByteArrayInputStream(
             "how are you?".getBytes()
@@ -117,7 +127,7 @@ public final class InputOfTest {
     }
 
     @Test
-    public void readsFileContent() throws IOException {
+    public void readsFileContent() throws Exception {
         MatcherAssert.assertThat(
             "Can't read bytes from a file-system URL",
             new BytesOf(
@@ -168,7 +178,7 @@ public final class InputOfTest {
     }
 
     @Test
-    public void readsStringIntoBytes() throws IOException {
+    public void readsStringIntoBytes() throws Exception {
         MatcherAssert.assertThat(
             "Can't read bytes from Input",
             new String(
@@ -185,7 +195,7 @@ public final class InputOfTest {
     }
 
     @Test
-    public void readsStringBuilder() throws IOException {
+    public void readsStringBuilder() throws Exception {
         final String starts = "Name it, ";
         final String ends = "then it exists!";
         MatcherAssert.assertThat(
@@ -206,7 +216,7 @@ public final class InputOfTest {
     }
 
     @Test
-    public void readsStringBuffer() throws IOException {
+    public void readsStringBuffer() throws Exception {
         final String starts = "The future ";
         final String ends = "is now!";
         MatcherAssert.assertThat(
@@ -227,7 +237,7 @@ public final class InputOfTest {
     }
 
     @Test
-    public void readsArrayOfChars() throws IOException {
+    public void readsArrayOfChars() throws Exception {
         MatcherAssert.assertThat(
             "Can't read array of chars.",
             new String(
@@ -246,7 +256,7 @@ public final class InputOfTest {
     }
 
     @Test
-    public void readsEncodedArrayOfChars() throws IOException {
+    public void readsEncodedArrayOfChars() throws Exception {
         MatcherAssert.assertThat(
             "Can't read array of encoded chars.",
             new String(
@@ -312,11 +322,50 @@ public final class InputOfTest {
     }
 
     @Test
-    public void makesDataAvailable() throws IOException {
+    public void makesDataAvailable() throws Exception {
         final String content = "Hello,חבר!";
         MatcherAssert.assertThat(
             "Can't show that data is available",
             new InputOf(content).stream().available(),
+            Matchers.greaterThan(0)
+        );
+    }
+
+    @Test
+    // @checkstyle MethodBodyCommentsCheck (50 lines)
+    public void readsSecureUrlContent() throws Exception {
+        final TrustManager[] managers = {
+            new X509TrustManager() {
+                @Override
+                public X509Certificate[] getAcceptedIssuers() {
+                    return new X509Certificate[0];
+                }
+                @Override
+                public void checkClientTrusted(
+                    final X509Certificate[] cert, final String arg) {
+                    // nothing to do
+                }
+                @Override
+                public void checkServerTrusted(
+                    final X509Certificate[] cert, final String arg) {
+                    // nothing to do
+                }
+            },
+        };
+        final SSLContext context = SSLContext.getInstance("TLS");
+        context.init(null, managers, new SecureRandom());
+        HttpsURLConnection.setDefaultSSLSocketFactory(
+            context.getSocketFactory()
+        );
+        MatcherAssert.assertThat(
+            "Can't read bytes from HTTPS URL",
+            new BytesOf(
+                new InputOf(
+                    new URL(
+                        "https://www.yegor256.com/robots.txt"
+                    )
+                )
+            ).asBytes().length,
             Matchers.greaterThan(0)
         );
     }

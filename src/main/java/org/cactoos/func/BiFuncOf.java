@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,14 +28,13 @@ import org.cactoos.BiFunc;
 import org.cactoos.BiProc;
 import org.cactoos.Func;
 import org.cactoos.Proc;
+import org.cactoos.Scalar;
 
 /**
  * Represents many possible inputs as {@link BiFunc}.
  *
  * <p>There is no thread-safety guarantee.
  *
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @param <X> Type of input
  * @param <Y> Type of input
  * @param <Z> Type of output
@@ -58,18 +57,18 @@ public final class BiFuncOf<X, Y, Z> implements BiFunc<X, Y, Z> {
 
     /**
      * Ctor.
-     * @param fnc The func
+     * @param scalar The scalar
      */
-    public BiFuncOf(final Func<X, Z> fnc) {
-        this((first, second) -> fnc.apply(first));
+    public BiFuncOf(final Scalar<Z> scalar) {
+        this((first, second) -> scalar.value());
     }
 
     /**
      * Ctor.
-     * @param proc The proc
+     * @param fnc The func
      */
-    public BiFuncOf(final Proc<X> proc) {
-        this(proc, null);
+    public BiFuncOf(final Func<X, Z> fnc) {
+        this((first, second) -> fnc.apply(first));
     }
 
     /**
@@ -111,9 +110,11 @@ public final class BiFuncOf<X, Y, Z> implements BiFunc<X, Y, Z> {
     /**
      * Ctor.
      * @param runnable The runnable
+     * @param result Result to return
+     * @since 0.32
      */
-    public BiFuncOf(final Runnable runnable) {
-        this(new CallableOf<>(runnable));
+    public BiFuncOf(final Runnable runnable, final Z result) {
+        this(new CallableOf<>(runnable, result));
     }
 
     /**
@@ -128,4 +129,5 @@ public final class BiFuncOf<X, Y, Z> implements BiFunc<X, Y, Z> {
     public Z apply(final X first, final Y second) throws Exception {
         return this.func.apply(first, second);
     }
+
 }

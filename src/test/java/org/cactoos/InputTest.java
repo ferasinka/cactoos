@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,31 +23,28 @@
  */
 package org.cactoos;
 
-import java.io.IOException;
 import org.cactoos.io.DeadInput;
 import org.junit.Test;
 
 /**
  * Test case for {@link Input.NoNulls}.
- * @author Fabricio Cabral (fabriciofx@gmail.com)
- * @version $Id$
  * @since 0.10
  * @checkstyle JavadocMethodCheck (500 lines)
  */
 public final class InputTest {
 
-    @Test(expected = IOException.class)
-    public void failForNullInput() throws IOException {
+    @Test(expected = Exception.class)
+    public void failForNullInput() throws Exception {
         new Input.NoNulls(null).stream();
     }
 
-    @Test(expected = IOException.class)
-    public void failForNullStream() throws IOException {
+    @Test(expected = Exception.class)
+    public void failForNullStream() throws Exception {
         new Input.NoNulls(() -> null).stream();
     }
 
     @Test
-    public void okForNoNullInput() throws IOException {
+    public void okForNoNullInput() throws Exception {
         new Input.NoNulls(new DeadInput()).stream();
     }
 }

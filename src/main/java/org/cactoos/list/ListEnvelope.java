@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,13 +35,18 @@ import org.cactoos.scalar.UncheckedScalar;
  *
  * <p>There is no thread-safety guarantee.</p>
  *
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @param <T> Element type
  * @since 0.23
+ * @checkstyle AbstractClassNameCheck (500 lines)
  */
-@SuppressWarnings("PMD.TooManyMethods")
-class ListEnvelope<T> extends CollectionEnvelope<T> implements List<T> {
+@SuppressWarnings(
+    {
+        "PMD.TooManyMethods",
+        "PMD.AbstractNaming"
+    }
+)
+abstract class ListEnvelope<T> extends CollectionEnvelope<T> implements
+    List<T> {
 
     /**
      * Encapsulated list.
@@ -95,16 +100,25 @@ class ListEnvelope<T> extends CollectionEnvelope<T> implements List<T> {
 
     @Override
     public final ListIterator<T> listIterator() {
-        return this.list.value().listIterator();
+        return new org.cactoos.list.ListIterator<>(
+            this.list.value().listIterator()
+        );
     }
 
     @Override
     public final ListIterator<T> listIterator(final int index) {
-        return this.list.value().listIterator(index);
+        return new org.cactoos.list.ListIterator<>(
+            this.list.value().listIterator(index)
+        );
     }
 
     @Override
     public final List<T> subList(final int start, final int end) {
         return this.list.value().subList(start, end);
+    }
+
+    @Override
+    public String toString() {
+        return this.list.value().toString();
     }
 }

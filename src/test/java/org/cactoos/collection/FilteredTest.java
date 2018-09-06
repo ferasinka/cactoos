@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,21 +23,22 @@
  */
 package org.cactoos.collection;
 
-import java.util.Collections;
 import org.cactoos.iterable.IterableOf;
 import org.cactoos.iterable.LengthOf;
+import org.cactoos.list.ListOf;
 import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
+import org.hamcrest.collection.IsEmptyCollection;
+import org.hamcrest.core.IsEqual;
+import org.hamcrest.core.IsNot;
 import org.junit.Test;
 
 /**
  * Test case for {@link org.cactoos.collection.Filtered}.
  *
- * @author Vseslav Sekorin (vssekorin@gmail.com)
- * @version $Id$
  * @since 0.16
  * @checkstyle JavadocMethodCheck (500 lines)
  * @checkstyle MagicNumber (500 line)
+ * @checkstyle ClassDataAbstractionCouplingCheck (500 lines)
  */
 public final class FilteredTest {
 
@@ -45,7 +46,7 @@ public final class FilteredTest {
     public void behavesAsCollection() throws Exception {
         MatcherAssert.assertThat(
             "Can't behave as a collection",
-            new Filtered<>(i -> i < 2, 1, 2, 0, -1),
+            new Filtered<Integer>(i -> i < 2, 1, 2, 0, -1),
             new BehavesAsCollection<>(-1)
         );
     }
@@ -58,8 +59,8 @@ public final class FilteredTest {
                     input -> input.length() > 4,
                     new IterableOf<>("hello", "world", "друг")
                 )
-            ).value(),
-            Matchers.equalTo(2)
+            ).intValue(),
+            new IsEqual<>(2)
         );
     }
 
@@ -68,9 +69,9 @@ public final class FilteredTest {
         MatcherAssert.assertThat(
             new Filtered<String>(
                 input -> input.length() > 4,
-                Collections.emptyList()
+                new ListOf<>()
             ),
-            Matchers.emptyIterable()
+            new IsEmptyCollection<>()
         );
     }
 
@@ -81,7 +82,7 @@ public final class FilteredTest {
                 input -> input.length() >= 4,
                 new IterableOf<>("some", "text", "yes")
             ).size(),
-            Matchers.equalTo(2)
+            new IsEqual<>(2)
         );
     }
 
@@ -91,8 +92,8 @@ public final class FilteredTest {
             new Filtered<String>(
                 input -> input.length() > 4,
                 new IterableOf<>("first", "second")
-            ).isEmpty(),
-            Matchers.equalTo(false)
+            ),
+            new IsNot<>(new IsEmptyCollection<>())
         );
     }
 
@@ -102,8 +103,8 @@ public final class FilteredTest {
             new Filtered<String>(
                 input -> input.length() > 16,
                 new IterableOf<>("third", "fourth")
-            ).isEmpty(),
-            Matchers.equalTo(true)
+            ),
+            new IsEmptyCollection<>()
         );
     }
 }

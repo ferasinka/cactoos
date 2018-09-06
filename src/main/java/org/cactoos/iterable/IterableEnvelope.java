@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@ package org.cactoos.iterable;
 
 import java.util.Iterator;
 import org.cactoos.Scalar;
+import org.cactoos.iterator.Immutable;
 import org.cactoos.scalar.UncheckedScalar;
 
 /**
@@ -32,12 +33,12 @@ import org.cactoos.scalar.UncheckedScalar;
  *
  * <p>There is no thread-safety guarantee.
  *
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @param <X> Type of item
  * @since 0.24
+ * @checkstyle AbstractClassNameCheck (500 lines)
  */
-public class IterableEnvelope<X> implements Iterable<X> {
+@SuppressWarnings("PMD.AbstractNaming")
+public abstract class IterableEnvelope<X> implements Iterable<X> {
 
     /**
      * The iterable.
@@ -54,7 +55,9 @@ public class IterableEnvelope<X> implements Iterable<X> {
 
     @Override
     public final Iterator<X> iterator() {
-        return this.iterable.value().iterator();
+        return new Immutable<>(
+            this.iterable.value().iterator()
+        );
     }
 
 }

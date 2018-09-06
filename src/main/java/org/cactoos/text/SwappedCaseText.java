@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,49 +23,35 @@
  */
 package org.cactoos.text;
 
-import java.io.IOException;
+import org.cactoos.Scalar;
 import org.cactoos.Text;
 
 /**
  * Swaps the case of a Text changing upper and title case to lower case,
  * and lower case to upper case.
- * @author Mehmet Yildirim (memoyil@gmail.com)
- * @version $Id$
  * @since 0.13.3
  */
-public final class SwappedCaseText implements Text {
-
-    /**
-     * The text.
-     */
-    private final Text origin;
+public final class SwappedCaseText extends TextEnvelope {
 
     /**
      * Ctor.
      * @param text The text
      */
+    @SuppressWarnings({"PMD.CallSuperInConstructor",
+        "PMD.ConstructorOnlyInitializesOrCallOtherConstructors"})
     public SwappedCaseText(final Text text) {
-        this.origin = text;
-    }
-
-    @Override
-    public String asString() throws IOException {
-        final String text = this.origin.asString();
-        final char[] chars = text.toCharArray();
-        for (int idx = 0; idx < chars.length; idx += 1) {
-            final char chr = chars[idx];
-            if (Character.isUpperCase(chr)) {
-                chars[idx] = Character.toLowerCase(chr);
-            } else if (Character.isLowerCase(chr)) {
-                chars[idx] = Character.toUpperCase(chr);
+        super((Scalar<String>) () -> {
+            final String origin = text.asString();
+            final char[] chars = origin.toCharArray();
+            for (int idx = 0; idx < chars.length; idx += 1) {
+                final char chr = chars[idx];
+                if (Character.isUpperCase(chr)) {
+                    chars[idx] = Character.toLowerCase(chr);
+                } else if (Character.isLowerCase(chr)) {
+                    chars[idx] = Character.toUpperCase(chr);
+                }
             }
-        }
-        return new String(chars);
+            return new String(chars);
+        });
     }
-
-    @Override
-    public int compareTo(final Text text) {
-        return new UncheckedText(this).compareTo(text);
-    }
-
 }

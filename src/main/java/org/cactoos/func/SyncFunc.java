@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,8 +32,6 @@ import org.cactoos.Proc;
  *
  * <p>Objects of this class are thread safe.</p>
  *
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @param <X> Type of input
  * @param <Y> Type of output
  * @since 0.4
@@ -53,10 +51,11 @@ public final class SyncFunc<X, Y> implements Func<X, Y> {
     /**
      * Ctor.
      * @param runnable Func original
-     * @since 0.12
+     * @param result Result to return
+     * @since 0.32
      */
-    public SyncFunc(final Runnable runnable) {
-        this(new FuncOf<>(runnable));
+    public SyncFunc(final Runnable runnable, final Y result) {
+        this(new FuncOf<>(runnable, result));
     }
 
     /**
@@ -71,10 +70,11 @@ public final class SyncFunc<X, Y> implements Func<X, Y> {
     /**
      * Ctor.
      * @param proc Func original
-     * @since 0.12
+     * @param result Result to return
+     * @since 0.32
      */
-    public SyncFunc(final Proc<X> proc) {
-        this(new FuncOf<>(proc));
+    public SyncFunc(final Proc<X> proc, final Y result) {
+        this(new FuncOf<>(proc, result));
     }
 
     /**

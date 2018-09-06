@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,17 +24,14 @@
 package org.cactoos.io;
 
 import java.nio.charset.StandardCharsets;
-import org.cactoos.ScalarHasValue;
 import org.cactoos.text.TextOf;
 import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 
 /**
  * Test case for {@link SlowInput}.
  *
- * @author Vseslav Sekorin (vssekorin@gmail.com)
- * @author Ix (ixmanuel@yahoo.com)
- * @version $Id$
  * @since 0.12
  * @checkstyle JavadocMethodCheck (500 lines)
  */
@@ -51,10 +48,8 @@ public final class SlowInputTest {
                         new TextOf(text)
                     )
                 )
-            ),
-            new ScalarHasValue<>(
-                (long) text.getBytes(StandardCharsets.UTF_8).length
-            )
+            ).intValue(),
+            Matchers.equalTo(text.getBytes(StandardCharsets.UTF_8).length)
         );
     }
 
@@ -65,8 +60,8 @@ public final class SlowInputTest {
             "Can't calculate length if the input is slow",
             new LengthOf(
                 new SlowInput(size)
-            ),
-            new ScalarHasValue<>(size)
+            ).longValue(),
+            Matchers.equalTo(size)
         );
     }
 

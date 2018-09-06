@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,10 +31,8 @@ import java.util.NoSuchElementException;
  *
  * <p>There is no thread-safety guarantee.</p>
  *
- * @author Ilia Rogozhin (ilia.rogozhin@gmail.com)
- * @version $Id$
  * @param <T> Element type
- * @since 0.8
+ * @since 0.34
  */
 public final class Skipped<T> implements Iterator<T> {
 
@@ -46,34 +44,42 @@ public final class Skipped<T> implements Iterator<T> {
     /**
      * Count skip elements.
      */
-    private int omit;
+    private int skip;
 
     /**
      * Ctor.
      * @param iterator Decorated iterator
-     * @param skip Count skip elements
+     * @param skp Count skip elements
      */
-    public Skipped(final int skip, final Iterator<T> iterator) {
+    public Skipped(final Iterator<T> iterator, final int skp) {
         this.origin = iterator;
-        this.omit = skip;
+        this.skip = skp;
     }
 
     @Override
     public boolean hasNext() {
-        while (this.omit > 0 && this.origin.hasNext()) {
-            this.origin.next();
-            --this.omit;
-        }
+        this.omit();
         return this.origin.hasNext();
     }
 
     @Override
     public T next() {
+        this.omit();
         if (!this.hasNext()) {
             throw new NoSuchElementException(
                 "The iterator doesn't have items any more"
             );
         }
         return this.origin.next();
+    }
+
+    /**
+     * Skip first N items.
+     */
+    private void omit() {
+        while (this.skip > 0 && this.origin.hasNext()) {
+            this.origin.next();
+            --this.skip;
+        }
     }
 }

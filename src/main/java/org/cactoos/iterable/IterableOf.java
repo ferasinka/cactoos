@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,10 +23,10 @@
  */
 package org.cactoos.iterable;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import org.cactoos.Scalar;
+import org.cactoos.iterator.IteratorOf;
 import org.cactoos.scalar.UncheckedScalar;
 
 /**
@@ -34,8 +34,6 @@ import org.cactoos.scalar.UncheckedScalar;
  *
  * <p>There is no thread-safety guarantee.
  *
- * @author Ix (ixmanuel@yahoo.com)
- * @version $Id$
  * @param <X> Type of item
  * @since 0.12
  */
@@ -47,7 +45,7 @@ public final class IterableOf<X> extends IterableEnvelope<X> {
      */
     @SafeVarargs
     public IterableOf(final X... items) {
-        this(() -> Arrays.asList(items).iterator());
+        this(() -> new IteratorOf<>(items));
     }
 
     /**

@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,59 +24,117 @@
 package org.cactoos.func;
 
 import java.io.IOException;
-import org.cactoos.FuncApplies;
-import org.cactoos.Proc;
+import java.util.IllegalFormatException;
+import java.util.IllegalFormatWidthException;
+import org.cactoos.iterable.IterableOf;
+import org.cactoos.scalar.FallbackFrom;
 import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
 import org.junit.Test;
+import org.llorllale.cactoos.matchers.FuncApplies;
 
 /**
  * Test case for {@link FuncWithFallback}.
  *
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @since 0.2
  * @checkstyle JavadocMethodCheck (500 lines)
  */
+@SuppressWarnings("unchecked")
 public final class FuncWithFallbackTest {
 
     @Test
     public void usesMainFunc() throws Exception {
+        final String expected = "It's success";
         MatcherAssert.assertThat(
             "Can't use the main function if no exception",
             new FuncWithFallback<>(
-                input -> "It's success",
-                ex -> "In case of failure..."
+                input -> expected,
+                new FallbackFrom<>(
+                    Exception.class,
+                    ex -> "In case of failure..."
+                )
             ),
-            new FuncApplies<>(1, Matchers.containsString("success"))
+            new FuncApplies<>(1, expected)
         );
     }
 
     @Test
-    public void usesCallback() throws Exception {
+    public void usesFallback() throws Exception {
+        final String expected = "Never mind";
         MatcherAssert.assertThat(
             "Can't use the callback in case of exception",
             new FuncWithFallback<>(
-                (Proc<Integer>) input -> {
+                input -> {
                     throw new IOException("Failure");
                 },
-                ex -> "Never mind"
+                new FallbackFrom<>(IOException.class, ex -> expected)
             ),
-            new FuncApplies<>(1, Matchers.containsString("Never"))
+            new FuncApplies<>(1, expected)
         );
     }
 
     @Test
     public void usesFollowUp() throws Exception {
+        final String expected = "follow up";
         MatcherAssert.assertThat(
             "Can't use the follow-up func",
             new FuncWithFallback<>(
                 input -> "works fine",
-                ex -> "won't happen",
-                input -> "follow up"
+                new FallbackFrom<>(Exception.class, ex -> "won't happen"),
+                input -> expected
             ),
-            new FuncApplies<>(1, Matchers.containsString("follow"))
+            new FuncApplies<>(1, expected)
         );
+    }
+
+    @Test
+    public void usesFallbackOfInterruptedException() throws Exception {
+        final String expected = "Fallback from InterruptedException";
+        MatcherAssert.assertThat(
+            "Can't use a fallback from Interrupted in case of exception",
+            new FuncWithFallback<>(
+                input -> {
+                    throw new InterruptedException(
+                        "Failure with InterruptedException"
+                    );
+                },
+                new FallbackFrom<>(InterruptedException.class, exp -> expected)
+            ),
+            new FuncApplies<>(1, expected)
+        );
+    }
+
+    @Test
+    public void usesTheClosestFallback() throws Exception {
+        final String expected = "Fallback from IllegalFormatException";
+        MatcherAssert.assertThat(
+            "Can't find the closest fallback",
+            new FuncWithFallback<>(
+                input -> {
+                    throw new IllegalFormatWidthException(1);
+                },
+                new IterableOf<>(
+                    new FallbackFrom<>(
+                        IllegalArgumentException.class,
+                        exp -> "Fallback from IllegalArgumentException"
+                    ),
+                    new FallbackFrom<>(
+                        IllegalFormatException.class,
+                        exp -> expected
+                    )
+                )
+            ),
+            new FuncApplies<>(1, expected)
+        );
+    }
+
+    @Test(expected = Exception.class)
+    public void noFallbackIsProvided() throws Exception {
+        new FuncWithFallback<>(
+            input -> {
+                throw new IllegalFormatWidthException(1);
+            },
+            new IterableOf<>()
+        ).apply(1);
     }
 
 }

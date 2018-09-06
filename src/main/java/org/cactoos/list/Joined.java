@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,8 +32,6 @@ import java.util.stream.Collectors;
  *
  * <p>There is no thread-safety guarantee.
  *
- * @author Vseslav Sekorin (vssekorin@gmail.com)
- * @version $Id$
  * @param <X> Type of source item
  * @since 0.20
  */
@@ -47,6 +45,16 @@ public final class Joined<X> extends ListEnvelope<X> {
     @SuppressWarnings("PMD.UseVarargs")
     public Joined(final List<X>... src) {
         this(new ListOf<>(src));
+    }
+
+    /**
+     * Ctor.
+     * @param item First item
+     * @param items List
+     * @since 0.32
+     */
+    public Joined(final X item, final List<X> items) {
+        super(() -> new Joined<X>(new ListOf<X>(item), items));
     }
 
     /**

@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@ package org.cactoos.io;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.Reader;
 import java.nio.charset.Charset;
@@ -40,10 +40,6 @@ import org.cactoos.Text;
  *
  * <p>There is no thread-safety guarantee.
  *
- * @author Ix (ixmanuel@yahoo.com)
- * @author Vseslav Sekorin (vssekorin@gmail.com)
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @since 0.12
  */
 public final class BytesOf implements Bytes {
@@ -59,6 +55,15 @@ public final class BytesOf implements Bytes {
      */
     public BytesOf(final Input input) {
         this(new InputAsBytes(input));
+    }
+
+    /**
+     * Ctor.
+     * @param input The input
+     * @since 0.29.2
+     */
+    public BytesOf(final InputStream input) {
+        this(new InputAsBytes(new InputOf(input)));
     }
 
     /**
@@ -269,6 +274,52 @@ public final class BytesOf implements Bytes {
 
     /**
      * Ctor.
+     * @param strace The stack trace
+     * @since 0.29
+     */
+    public BytesOf(final StackTraceElement... strace) {
+        this(strace, StandardCharsets.UTF_8);
+    }
+
+    /**
+     * Ctor.
+     * @param strace The stack trace
+     * @param charset Charset
+     * @since 0.29
+     */
+    public BytesOf(final StackTraceElement[] strace, final Charset charset) {
+        this(strace, charset.name());
+    }
+
+    /**
+     * Ctor.
+     * @param strace The stack trace
+     * @param charset Charset
+     * @since 0.29
+     */
+    public BytesOf(final StackTraceElement[] strace,
+        final CharSequence charset) {
+        this(
+            () -> {
+                try (
+                    final ByteArrayOutputStream baos =
+                        new ByteArrayOutputStream();
+                    final PrintStream stream = new PrintStream(
+                        baos, true, charset.toString()
+                    )
+                ) {
+                    for (final StackTraceElement element : strace) {
+                        stream.append(element.toString());
+                        stream.append("\n");
+                    }
+                    return baos.toByteArray();
+                }
+            }
+        );
+    }
+
+    /**
+     * Ctor.
      *
      * @param bytes Bytes to encapsulate
      */
@@ -286,7 +337,7 @@ public final class BytesOf implements Bytes {
     }
 
     @Override
-    public byte[] asBytes() throws IOException {
+    public byte[] asBytes() throws Exception {
         return this.origin.asBytes();
     }
 }

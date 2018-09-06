@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,17 +23,14 @@
  */
 package org.cactoos.func;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import org.cactoos.BiFunc;
+import org.cactoos.scalar.UncheckedScalar;
 
 /**
  * BiFunc that doesn't throw checked {@link Exception}.
  *
  * <p>There is no thread-safety guarantee.
  *
- * @author Mehmet Yildirim (memoyil@gmail.com)
- * @version $Id$
  * @param <X> Type of input
  * @param <Y> Type of input
  * @param <Z> Type of output
@@ -56,10 +53,8 @@ public final class UncheckedBiFunc<X, Y, Z> implements BiFunc<X, Y, Z> {
 
     @Override
     public Z apply(final X first, final Y second) {
-        try {
-            return new IoCheckedBiFunc<>(this.func).apply(first, second);
-        } catch (final IOException ex) {
-            throw new UncheckedIOException(ex);
-        }
+        return new UncheckedScalar<>(
+            () -> this.func.apply(first, second)
+        ).value();
     }
 }

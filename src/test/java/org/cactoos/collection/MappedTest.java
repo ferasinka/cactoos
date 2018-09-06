@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,22 +23,26 @@
  */
 package org.cactoos.collection;
 
-import java.io.IOException;
-import java.util.Collections;
+import java.util.AbstractCollection;
+import java.util.Iterator;
 import org.cactoos.Text;
 import org.cactoos.iterable.IterableOf;
+import org.cactoos.iterator.Endless;
+import org.cactoos.list.ListOf;
 import org.cactoos.text.TextOf;
 import org.cactoos.text.UpperText;
 import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
+import org.hamcrest.collection.IsCollectionWithSize;
+import org.hamcrest.collection.IsEmptyCollection;
+import org.hamcrest.core.IsEqual;
 import org.junit.Test;
 
 /**
  * Test case for {@link Mapped}.
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @since 0.14
  * @checkstyle JavadocMethodCheck (500 lines)
+ * @checkstyle MagicNumberCheck (500 lines)
+ * @checkstyle ClassDataAbstractionCouplingCheck (500 lines)
  */
 public final class MappedTest {
 
@@ -55,14 +59,14 @@ public final class MappedTest {
     }
 
     @Test
-    public void transformsList() throws IOException {
+    public void transformsList() throws Exception {
         MatcherAssert.assertThat(
             "Can't transform an iterable",
             new Mapped<String, Text>(
                 input -> new UpperText(new TextOf(input)),
                 new IterableOf<>("hello", "world", "друг")
             ).iterator().next().asString(),
-            Matchers.equalTo("HELLO")
+            new IsEqual<>("HELLO")
         );
     }
 
@@ -72,9 +76,41 @@ public final class MappedTest {
             "Can't transform an empty iterable",
             new Mapped<String, Text>(
                 input -> new UpperText(new TextOf(input)),
-                Collections.emptyList()
+                new ListOf<>()
             ),
-            Matchers.emptyIterable()
+            new IsEmptyCollection<>()
+        );
+    }
+
+    @Test
+    public void string() {
+        MatcherAssert.assertThat(
+            "Can't convert to string",
+            new Mapped<Integer, Integer>(
+                x -> x * 2,
+                new ListOf<>(1, 2, 3)
+            ).toString(),
+            new IsEqual<>("2, 4, 6")
+        );
+    }
+
+    @Test
+    public void transformsEndlessCollection() {
+        MatcherAssert.assertThat(
+            new Mapped<>(
+                String::trim,
+                new AbstractCollection<String>() {
+                    @Override
+                    public Iterator<String> iterator() {
+                        return new Endless<>("something");
+                    }
+                    @Override
+                    public int size() {
+                        return 1;
+                    }
+                }
+            ),
+            new IsCollectionWithSize<>(new IsEqual<>(1))
         );
     }
 

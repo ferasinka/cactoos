@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,10 +30,11 @@ import org.cactoos.Proc;
  *
  * <p>There is no thread-safety guarantee.
  *
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @param <X> Type of input
  * @since 0.2
+ * @todo #861:30min Avoid usage of null value in UncheckedProc.exec(X) which is
+ *  against design principles.
+ *  Please take a look on #551 and #843 for more details.
  */
 public final class UncheckedProc<X> implements Proc<X> {
 
@@ -52,7 +53,7 @@ public final class UncheckedProc<X> implements Proc<X> {
 
     @Override
     public void exec(final X input) {
-        new UncheckedFunc<>(new FuncOf<>(this.proc)).apply(input);
+        new UncheckedFunc<>(new FuncOf<>(this.proc, null)).apply(input);
     }
 
 }

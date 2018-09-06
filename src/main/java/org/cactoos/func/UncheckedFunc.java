@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,16 +23,14 @@
  */
 package org.cactoos.func;
 
-import org.cactoos.BiFunc;
 import org.cactoos.Func;
+import org.cactoos.scalar.UncheckedScalar;
 
 /**
  * Func that doesn't throw checked {@link Exception}.
  *
  * <p>There is no thread-safety guarantee.
  *
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @param <X> Type of input
  * @param <Y> Type of output
  * @since 0.2
@@ -54,9 +52,9 @@ public final class UncheckedFunc<X, Y> implements Func<X, Y> {
 
     @Override
     public Y apply(final X input) {
-        return new UncheckedBiFunc<>(
-            (BiFunc<X, Boolean, Y>) (first, second) -> this.func.apply(first)
-        ).apply(input, true);
+        return new UncheckedScalar<>(
+            () -> this.func.apply(input)
+        ).value();
     }
 
 }

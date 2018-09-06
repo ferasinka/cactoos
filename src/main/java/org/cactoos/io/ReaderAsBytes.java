@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,6 @@
  */
 package org.cactoos.io;
 
-import java.io.IOException;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -36,9 +35,6 @@ import org.cactoos.Bytes;
  *
  * <p>There is no thread-safety guarantee.
  *
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @author Ix (ixmanuel@yahoo.com)
- * @version $Id$
  * @since 0.12
  */
 final class ReaderAsBytes implements Bytes {
@@ -125,7 +121,7 @@ final class ReaderAsBytes implements Bytes {
     }
 
     @Override
-    public byte[] asBytes() throws IOException {
+    public byte[] asBytes() throws Exception {
         final char[] buffer = new char[this.size];
         final StringBuilder builder = new StringBuilder(this.size);
         while (true) {
@@ -135,6 +131,7 @@ final class ReaderAsBytes implements Bytes {
             }
             builder.append(buffer, 0, done);
         }
+        this.reader.close();
         return builder.toString().getBytes(this.charset.toString());
     }
 

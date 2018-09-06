@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,17 +32,15 @@ import org.cactoos.Proc;
  *
  * <p>There is no thread-safety guarantee.
  *
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @param <X> Type of input
  * @since 0.12
  */
 public final class RunnableOf<X> implements Runnable {
 
     /**
-     * Original func.
+     * Original proc.
      */
-    private final Func<X, ?> func;
+    private final Proc<X> proc;
 
     /**
      * The input.
@@ -63,7 +61,7 @@ public final class RunnableOf<X> implements Runnable {
      * @param proc Encapsulated proc
      */
     public RunnableOf(final Proc<X> proc) {
-        this(new FuncOf<>(proc));
+        this(proc, null);
     }
 
     /**
@@ -80,12 +78,22 @@ public final class RunnableOf<X> implements Runnable {
      * @param ipt Input
      */
     public RunnableOf(final Func<X, ?> fnc, final X ipt) {
-        this.func = fnc;
+        this(new ProcOf<>(fnc), ipt);
+    }
+
+    /**
+     * Ctor.
+     * @param proc Encapsulated proc
+     * @param ipt Input
+     * @since 0.32
+     */
+    public RunnableOf(final Proc<X> proc, final X ipt) {
+        this.proc = proc;
         this.input = ipt;
     }
 
     @Override
     public void run() {
-        new UncheckedFunc<>(this.func).apply(this.input);
+        new UncheckedProc<>(this.proc).exec(this.input);
     }
 }

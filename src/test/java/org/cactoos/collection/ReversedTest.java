@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,18 +24,17 @@
 package org.cactoos.collection;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import org.cactoos.iterable.IterableOf;
 import org.cactoos.list.ListOf;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.hamcrest.collection.IsEmptyCollection;
+import org.hamcrest.core.IsEqual;
 import org.junit.Test;
 
 /**
  * Test case for {@link org.cactoos.collection.Reversed}.
  *
- * @author Vseslav Sekorin (vssekorin@gmail.com)
- * @version $Id$
  * @since 0.16
  * @checkstyle JavadocMethodCheck (500 lines)
  * @checkstyle MagicNumber (500 line)
@@ -47,8 +46,10 @@ public final class ReversedTest {
     public void behavesAsCollection() throws Exception {
         MatcherAssert.assertThat(
             "Can't behave as a collection",
-            new Reversed<>(
-                new IterableOf<Integer>(0, -1, 2)
+            new CollectionNoNulls<>(
+                new Reversed<>(
+                    new IterableOf<Integer>(0, -1, 2)
+                )
             ),
             new BehavesAsCollection<>(0)
         );
@@ -63,7 +64,7 @@ public final class ReversedTest {
                     "item", last
                 )
             ).iterator().next(),
-            Matchers.equalTo(last)
+            new IsEqual<>(last)
         );
     }
 
@@ -71,9 +72,9 @@ public final class ReversedTest {
     public void reverseEmptyList() throws Exception {
         MatcherAssert.assertThat(
             new Reversed<>(
-                Collections.emptyList()
+                new ListOf<>()
             ),
-            Matchers.emptyIterable()
+            new IsEmptyCollection<>()
         );
     }
 

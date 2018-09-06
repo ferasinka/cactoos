@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,8 +23,6 @@
  */
 package org.cactoos.text;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import org.cactoos.Func;
 import org.cactoos.Text;
 import org.cactoos.func.UncheckedFunc;
@@ -34,8 +32,6 @@ import org.cactoos.func.UncheckedFunc;
  *
  * <p>There is no thread-safety guarantee.
  *
- * @author Fabricio Cabral (fabriciofx@gmail.com)
- * @version $Id$
  * @since 0.3
  */
 public final class UncheckedText implements Text {
@@ -48,7 +44,7 @@ public final class UncheckedText implements Text {
     /**
      * Fallback.
      */
-    private final Func<IOException, String> fallback;
+    private final Func<Exception, String> fallback;
 
     /**
      * Ctor.
@@ -63,11 +59,12 @@ public final class UncheckedText implements Text {
      * Ctor.
      * @param txt Encapsulated text
      */
+    @SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
     public UncheckedText(final Text txt) {
         this(
             txt,
             error -> {
-                throw new UncheckedIOException(error);
+                throw new RuntimeException(error);
             }
         );
     }
@@ -75,30 +72,25 @@ public final class UncheckedText implements Text {
     /**
      * Ctor.
      * @param txt Encapsulated text
-     * @param fbk Fallback func if {@link IOException} happens
+     * @param fbk Fallback func if {@link Exception} happens
      * @since 0.5
      */
-    public UncheckedText(final Text txt, final Func<IOException, String> fbk) {
+    public UncheckedText(final Text txt, final Func<Exception, String> fbk) {
         this.text = txt;
         this.fallback = fbk;
     }
 
     @Override
+    @SuppressWarnings("PMD.AvoidCatchingGenericException")
     public String asString() {
         String txt;
         try {
             txt = this.text.asString();
-        } catch (final IOException ex) {
+            // @checkstyle IllegalCatchCheck (1 line)
+        } catch (final Exception ex) {
             txt = new UncheckedFunc<>(this.fallback).apply(ex);
         }
         return txt;
-    }
-
-    @Override
-    public int compareTo(final Text txt) {
-        return this.asString().compareTo(
-            new UncheckedText(txt).asString()
-        );
     }
 
 }

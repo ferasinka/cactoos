@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,16 +23,14 @@
  */
 package org.cactoos.iterable;
 
-import org.cactoos.RunsInThreads;
 import org.cactoos.Scalar;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
+import org.llorllale.cactoos.matchers.RunsInThreads;
 
 /**
  * Test Case for {@link SolidIterable}.
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @since 0.24
  * @checkstyle JavadocMethodCheck (500 lines)
  * @checkstyle MagicNumber (500 lines)
@@ -40,7 +38,7 @@ import org.junit.Test;
 public final class SolidIterableTest {
 
     @Test
-    public void makesListFromMappedIterable() throws Exception {
+    public void makesListFromMappedIterable() {
         final Iterable<Integer> list = new SolidIterable<>(
             new org.cactoos.list.Mapped<>(
                 i -> i + 1,
@@ -58,7 +56,7 @@ public final class SolidIterableTest {
     }
 
     @Test
-    public void mapsToSameObjects() throws Exception {
+    public void mapsToSameObjects() {
         final Iterable<Scalar<Integer>> list = new SolidIterable<>(
             new org.cactoos.list.Mapped<>(
                 i -> (Scalar<Integer>) () -> i,
@@ -69,6 +67,13 @@ public final class SolidIterableTest {
             "Can't map only once",
             list.iterator().next(), Matchers.equalTo(list.iterator().next())
         );
+    }
+
+    @Test
+    public void worksInThreadsMultipleTimes() {
+        for (int count = 0; count < 100; ++count) {
+            this.worksInThreads();
+        }
     }
 
     @Test

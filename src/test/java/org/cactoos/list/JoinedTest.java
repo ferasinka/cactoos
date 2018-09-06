@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,8 +30,6 @@ import org.junit.Test;
 /**
  * Test case for {@link org.cactoos.collection.Joined}.
  *
- * @author Vseslav Sekorin (vssekorin@gmail.com)
- * @version $Id$
  * @since 0.20
  * @checkstyle JavadocMethodCheck (500 lines)
  * @checkstyle MagicNumber (500 line)
@@ -202,6 +200,17 @@ public final class JoinedTest {
                 new ListOf<>("elem3", "elem4")
             ).subList(1, 3).iterator().next(),
             Matchers.equalTo(element)
+        );
+    }
+
+    @Test
+    public void itemAndList() {
+        MatcherAssert.assertThat(
+            new Joined<>(
+                0,
+                new ListOf<>(1, 2, 3)
+            ),
+            Matchers.contains(0, 1, 2, 3)
         );
     }
 }

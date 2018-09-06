@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,22 +23,15 @@
  */
 package org.cactoos.text;
 
-import java.io.IOException;
+import org.cactoos.Scalar;
 import org.cactoos.Text;
 
 /**
  * Reverse the Text.
  *
- * @author Mehmet Yildirim (memoyil@gmail.com)
- * @version $Id$
  * @since 0.2
  */
-public final class ReversedText implements Text {
-
-    /**
-     * The text.
-     */
-    private final Text origin;
+public final class ReversedText extends TextEnvelope {
 
     /**
      * Ctor.
@@ -46,17 +39,9 @@ public final class ReversedText implements Text {
      * @param text The text
      */
     public ReversedText(final Text text) {
-        this.origin = text;
+        super((Scalar<String>) () -> new StringBuilder(
+            text.asString()
+            ).reverse().toString()
+        );
     }
-
-    @Override
-    public String asString() throws IOException {
-        return new StringBuilder(this.origin.asString()).reverse().toString();
-    }
-
-    @Override
-    public int compareTo(final Text text) {
-        return new UncheckedText(this).compareTo(text);
-    }
-
 }

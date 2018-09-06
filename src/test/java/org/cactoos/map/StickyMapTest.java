@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.cactoos.iterable.IterableOf;
 import org.cactoos.iterator.Repeated;
+import org.cactoos.text.FormattedText;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -36,8 +37,6 @@ import org.junit.Test;
 /**
  * Test case for {@link StickyMap}.
  *
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @version $Id$
  * @since 0.8
  * @checkstyle JavadocMethodCheck (500 lines)
  * @checkstyle ClassDataAbstractionCouplingCheck (500 lines)
@@ -62,7 +61,8 @@ public final class StickyMapTest {
         final Map<Integer, Integer> map = new StickyMap<>(
             new MapOf<>(
                 () -> new Repeated<>(
-                    size.incrementAndGet(), () -> new MapEntry<>(
+                    size.incrementAndGet(),
+                    () -> new MapEntry<>(
                         new SecureRandom().nextInt(),
                         1
                     )
@@ -127,7 +127,7 @@ public final class StickyMapTest {
         MatcherAssert.assertThat(
             "Can't transform and decorate a list of entries with two funcs",
             new StickyMap<String, String>(
-                color -> String.format("[%s]", color),
+                color -> new FormattedText("[%s]", color).asString(),
                 String::toUpperCase,
                 new StickyMap<String, String>(
                     new MapEntry<>("black!", "Black!"),
@@ -138,5 +138,4 @@ public final class StickyMapTest {
             Matchers.hasValue(Matchers.equalTo("BLUE!"))
         );
     }
-
 }

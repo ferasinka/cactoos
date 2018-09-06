@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@ package org.cactoos.io;
 
 import java.io.IOException;
 import java.util.Arrays;
+import org.cactoos.text.FormattedText;
 import org.cactoos.text.TextOf;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -33,8 +34,6 @@ import org.junit.Test;
 /**
  * Test case for {@link ResourceOf}.
  *
- * @author Kirill (g4s8.public@gmail.com)
- * @version $Id$
  * @since 0.1
  * @checkstyle JavadocMethodCheck (500 lines)
  */
@@ -99,6 +98,32 @@ public final class ResourceOfTest {
                 "bar/this-resource-is-definitely-absent.txt"
             )
         ).asString();
+    }
+
+    @Test
+    public void acceptsTextAsResourceName() throws Exception {
+        MatcherAssert.assertThat(
+            new TextOf(
+                new ResourceOf(
+                    new TextOf("org/cactoos/small-text.txt")
+                )
+            ).asString(),
+            Matchers.endsWith("ex ea commodo")
+        );
+    }
+
+    @Test
+    public void acceptsTextsAsResourceNameAndFallback() throws Exception {
+        MatcherAssert.assertThat(
+            "Can't use Texts as parameters",
+            new TextOf(
+                new ResourceOf(
+                    new FormattedText("%s/absent.txt", "baz"),
+                    new TextOf("another replacement")
+                )
+            ).asString(),
+            Matchers.startsWith("another")
+        );
     }
 
 }

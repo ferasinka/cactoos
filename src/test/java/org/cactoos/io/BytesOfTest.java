@@ -1,7 +1,7 @@
-/**
+/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Yegor Bugayenko
+ * Copyright (c) 2017-2018 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,23 +30,19 @@ import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.cactoos.Text;
-import org.cactoos.TextHasString;
-import org.cactoos.func.MatcherOf;
 import org.cactoos.iterable.Endless;
-import org.cactoos.iterable.Limited;
+import org.cactoos.iterable.HeadOf;
 import org.cactoos.text.JoinedText;
 import org.cactoos.text.TextOf;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
+import org.llorllale.cactoos.matchers.MatcherOf;
+import org.llorllale.cactoos.matchers.TextHasString;
 
 /**
  * Test case for {@link BytesOf}.
  *
- * @author Yegor Bugayenko (yegor256@gmail.com)
- * @author Vseslav Sekorin (vssekorin@gmail.com)
- * @author Ix (ixmanuel@yahoo.com)
- * @version $Id$
  * @since 0.12
  * @checkstyle JavadocMethodCheck (500 lines)
  * @checkstyle ClassDataAbstractionCouplingCheck (500 lines)
@@ -54,7 +50,7 @@ import org.junit.Test;
 public final class BytesOfTest {
 
     @Test
-    public void readsLargeInMemoryContent() throws IOException {
+    public void readsLargeInMemoryContent() throws Exception {
         final int multiplier = 5_000;
         final String body = "1234567890";
         MatcherAssert.assertThat(
@@ -63,7 +59,7 @@ public final class BytesOfTest {
                 new InputOf(
                     new JoinedText(
                         "",
-                        new Limited<>(
+                        new HeadOf<>(
                             multiplier, new Endless<>(body)
                         )
                     )
@@ -74,7 +70,7 @@ public final class BytesOfTest {
     }
 
     @Test
-    public void readsInputIntoBytes() throws IOException {
+    public void readsInputIntoBytes() throws Exception {
         MatcherAssert.assertThat(
             "Can't read bytes from Input",
             new String(
@@ -91,7 +87,7 @@ public final class BytesOfTest {
     }
 
     @Test
-    public void readsFromReader() throws IOException {
+    public void readsFromReader() throws Exception {
         final String source = "hello, друг!";
         MatcherAssert.assertThat(
             "Can't read string through a reader",
@@ -108,7 +104,7 @@ public final class BytesOfTest {
     }
 
     @Test
-    public void readsInputIntoBytesWithSmallBuffer() throws IOException {
+    public void readsInputIntoBytesWithSmallBuffer() throws Exception {
         MatcherAssert.assertThat(
             "Can't read bytes from Input with a small reading buffer",
             new String(
@@ -128,7 +124,7 @@ public final class BytesOfTest {
     }
 
     @Test
-    public void closesInputStream() throws IOException {
+    public void closesInputStream() throws Exception {
         final AtomicBoolean closed = new AtomicBoolean();
         final InputStream input = new ByteArrayInputStream(
             "how are you?".getBytes()
@@ -160,7 +156,7 @@ public final class BytesOfTest {
     }
 
     @Test
-    public void asBytes() throws IOException {
+    public void asBytes() throws Exception {
         final Text text = new TextOf("Hello!");
         MatcherAssert.assertThat(
             "Can't convert text into bytes",
@@ -192,6 +188,21 @@ public final class BytesOfTest {
                         "\tat org.cactoos.io.BytesOfTest"
                     )
                 )
+            )
+        );
+    }
+
+    @Test
+    public void printsStackTraceFromArray() {
+        MatcherAssert.assertThat(
+            "Can't print exception stacktrace from array",
+            new TextOf(
+                new BytesOf(
+                    new IOException("").getStackTrace()
+                )
+            ),
+            new TextHasString(
+                Matchers.containsString("org.cactoos.io.BytesOfTest")
             )
         );
     }
