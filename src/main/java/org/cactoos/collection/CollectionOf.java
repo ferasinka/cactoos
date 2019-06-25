@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017-2018 Yegor Bugayenko
+ * Copyright (c) 2017-2019 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,6 @@
 package org.cactoos.collection;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import org.cactoos.iterable.IterableOf;
 
@@ -36,12 +35,12 @@ import org.cactoos.iterable.IterableOf;
  * method call. It doesn't cache the data anyhow.
  * If you don't need this {@link Collection} to re-fresh
  * its content on every call, by doing round-trips to
- * the encapsulated iterable, use {@link StickyCollection}.</p>
+ * the encapsulated iterable, use {@link Sticky}.</p>
  *
  * <p>There is no thread-safety guarantee.
  *
  * @param <T> List type
- * @see StickyCollection
+ * @see Sticky
  * @since 0.1
  */
 public final class CollectionOf<T> extends CollectionEnvelope<T> {
@@ -54,15 +53,6 @@ public final class CollectionOf<T> extends CollectionEnvelope<T> {
     @SafeVarargs
     public CollectionOf(final T... array) {
         this(new IterableOf<>(array));
-    }
-
-    /**
-     * Ctor.
-     * @param src An {@link Iterator}
-     * @since 0.21
-     */
-    public CollectionOf(final Iterator<T> src) {
-        this(new IterableOf<>(src));
     }
 
     /**

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017-2018 Yegor Bugayenko
+ * Copyright (c) 2017-2019 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -67,20 +67,6 @@ public final class FuncWithFallbackTest {
                     throw new IOException("Failure");
                 },
                 new FallbackFrom<>(IOException.class, ex -> expected)
-            ),
-            new FuncApplies<>(1, expected)
-        );
-    }
-
-    @Test
-    public void usesFollowUp() throws Exception {
-        final String expected = "follow up";
-        MatcherAssert.assertThat(
-            "Can't use the follow-up func",
-            new FuncWithFallback<>(
-                input -> "works fine",
-                new FallbackFrom<>(Exception.class, ex -> "won't happen"),
-                input -> expected
             ),
             new FuncApplies<>(1, expected)
         );

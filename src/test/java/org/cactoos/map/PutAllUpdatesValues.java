@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017-2018 Yegor Bugayenko
+ * Copyright (c) 2017-2019 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,6 @@ package org.cactoos.map;
 import java.util.Map;
 import org.hamcrest.Description;
 import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
 
 /**
@@ -67,10 +66,11 @@ public final class PutAllUpdatesValues<K, V> extends
                 new MapEntry<>(this.key, this.value)
             )
         );
-        MatcherAssert.assertThat(map, Matchers.hasKey(this.key));
-        MatcherAssert.assertThat(map, Matchers.hasValue(this.value));
-        MatcherAssert.assertThat(map.keySet(), Matchers.hasItem(this.key));
-        MatcherAssert.assertThat(map.values(), Matchers.hasItem(this.value));
+        MatcherAssert.assertThat(
+            "Can't behave as a map after putAll",
+            map,
+            new BehavesAsMap<K, V>(this.key, this.value)
+        );
         return true;
     }
 

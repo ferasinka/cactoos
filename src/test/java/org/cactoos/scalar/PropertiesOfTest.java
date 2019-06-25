@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017-2018 Yegor Bugayenko
+ * Copyright (c) 2017-2019 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +30,7 @@ import org.cactoos.io.InputOf;
 import org.cactoos.iterator.Repeated;
 import org.cactoos.map.MapEntry;
 import org.cactoos.map.MapOf;
-import org.cactoos.map.StickyMap;
+import org.cactoos.map.Sticky;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -89,7 +89,7 @@ public final class PropertiesOfTest {
         MatcherAssert.assertThat(
             "Can't convert map to properties",
             new PropertiesOf(
-                new StickyMap<>(
+                new Sticky<>(
                     new MapOf<Integer, String>(
                         new MapEntry<>(0, "hello, world"),
                         new MapEntry<>(1, "how are you?")

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017-2018 Yegor Bugayenko
+ * Copyright (c) 2017-2019 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,9 +25,9 @@ package org.cactoos.iterator;
 
 import java.util.NoSuchElementException;
 import org.cactoos.iterable.IterableOf;
-import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
+import org.llorllale.cactoos.matchers.Assertion;
 
 /**
  * Test Case for {@link Skipped}.
@@ -40,28 +40,30 @@ public final class SkippedTest {
     @Test
     @SuppressWarnings("PMD.AvoidDuplicateLiterals")
     public void skipIterator() {
-        MatcherAssert.assertThat(
+        new Assertion<>(
             "Can't skip elements in iterator",
-            () -> new Skipped<>(
-                new IterableOf<>(
-                    "one", "two", "three", "four"
-                ).iterator(),
-                2
+            new IterableOf<>(
+                new Skipped<>(
+                    2,
+                    new IteratorOf<>(
+                        "one", "two", "three", "four"
+                    )
+                )
             ),
             Matchers.contains(
                 "three",
                 "four"
             )
-        );
+        ).affirm();
     }
 
     @Test(expected = NoSuchElementException.class)
     public void errorSkippedMoreThanExists() {
         new Skipped<>(
-            new IterableOf<>(
+            2,
+            new IteratorOf<>(
                 "one", "two"
-            ).iterator(),
-            2
+            )
         ).next();
     }
 }

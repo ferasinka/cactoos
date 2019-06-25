@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017-2018 Yegor Bugayenko
+ * Copyright (c) 2017-2019 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.cactoos.Text;
 import org.cactoos.iterable.Endless;
 import org.cactoos.iterable.HeadOf;
-import org.cactoos.text.JoinedText;
+import org.cactoos.text.Joined;
 import org.cactoos.text.TextOf;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -57,7 +57,7 @@ public final class BytesOfTest {
             "Can't read large content from in-memory Input",
             new BytesOf(
                 new InputOf(
-                    new JoinedText(
+                    new Joined(
                         "",
                         new HeadOf<>(
                             multiplier, new Endless<>(body)
@@ -181,12 +181,10 @@ public final class BytesOfTest {
                 )
             ),
             new TextHasString(
-                Matchers.allOf(
-                    Matchers.containsString("java.io.IOException"),
-                    Matchers.containsString("doesn't work at all"),
-                    Matchers.containsString(
-                        "\tat org.cactoos.io.BytesOfTest"
-                    )
+                new Joined(
+                    System.lineSeparator(),
+                    "java.io.IOException: It doesn't work at all",
+                    "\tat org.cactoos.io.BytesOfTest"
                 )
             )
         );
@@ -201,9 +199,7 @@ public final class BytesOfTest {
                     new IOException("").getStackTrace()
                 )
             ),
-            new TextHasString(
-                Matchers.containsString("org.cactoos.io.BytesOfTest")
-            )
+            new TextHasString("org.cactoos.io.BytesOfTest")
         );
     }
 

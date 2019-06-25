@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017-2018 Yegor Bugayenko
+ * Copyright (c) 2017-2019 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,6 @@ package org.cactoos.list;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -36,12 +35,12 @@ import java.util.List;
  * with the collection. Every time you touch it, it will fetch the
  * entire list from the encapsulated object and sort it. If you
  * want to avoid that "side-effect", decorate it with
- * {@link StickyList}.</p>
+ * {@link Sticky}.</p>
  *
  * <p>There is no thread-safety guarantee.</p>
  *
  * @param <T> Element type
- * @see StickyList
+ * @see Sticky
  * @since 0.23
  */
 public final class Shuffled<T> extends ListEnvelope<T> {
@@ -53,14 +52,6 @@ public final class Shuffled<T> extends ListEnvelope<T> {
     @SafeVarargs
     public Shuffled(final T... src) {
         this(new ListOf<>(src));
-    }
-
-    /**
-     * Ctor.
-     * @param src The underlying collection
-     */
-    public Shuffled(final Iterator<T> src) {
-        this(() -> src);
     }
 
     /**

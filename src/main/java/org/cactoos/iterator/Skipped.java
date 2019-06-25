@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017-2018 Yegor Bugayenko
+ * Copyright (c) 2017-2019 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -51,7 +51,7 @@ public final class Skipped<T> implements Iterator<T> {
      * @param iterator Decorated iterator
      * @param skp Count skip elements
      */
-    public Skipped(final Iterator<T> iterator, final int skp) {
+    public Skipped(final int skp, final Iterator<T> iterator) {
         this.origin = iterator;
         this.skip = skp;
     }

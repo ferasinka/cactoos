@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017-2018 Yegor Bugayenko
+ * Copyright (c) 2017-2019 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,11 @@ package org.cactoos.iterable;
 import java.util.Iterator;
 import org.cactoos.Scalar;
 import org.cactoos.iterator.Immutable;
-import org.cactoos.scalar.UncheckedScalar;
+import org.cactoos.scalar.And;
+import org.cactoos.scalar.Folded;
+import org.cactoos.scalar.Or;
+import org.cactoos.scalar.SumOfInt;
+import org.cactoos.scalar.Unchecked;
 
 /**
  * Iterable envelope.
@@ -43,14 +47,14 @@ public abstract class IterableEnvelope<X> implements Iterable<X> {
     /**
      * The iterable.
      */
-    private final UncheckedScalar<Iterable<X>> iterable;
+    private final Unchecked<Iterable<X>> iterable;
 
     /**
      * Ctor.
      * @param scalar The source
      */
     public IterableEnvelope(final Scalar<Iterable<X>> scalar) {
-        this.iterable = new UncheckedScalar<>(scalar);
+        this.iterable = new Unchecked<>(scalar);
     }
 
     @Override
@@ -60,4 +64,41 @@ public abstract class IterableEnvelope<X> implements Iterable<X> {
         );
     }
 
+    @Override
+    public final boolean equals(final Object other) {
+        return new Unchecked<>(
+            new Or(
+                () -> other == this,
+                new And(
+                    () -> other != null,
+                    () -> Iterable.class.isAssignableFrom(other.getClass()),
+                    () -> {
+                        final Iterable<?> compared = (Iterable<?>) other;
+                        final Iterator<?> iterator = compared.iterator();
+                        return new Unchecked<>(
+                            new And(
+                                (X input) -> input.equals(iterator.next()),
+                                this
+                            )
+                        ).value();
+                    }
+                )
+            )
+        ).value();
+    }
+
+    // @checkstyle MagicNumberCheck (30 lines)
+    @Override
+    public final int hashCode() {
+        return new Unchecked<>(
+            new Folded<>(
+                42,
+                (hash, entry) -> new SumOfInt(
+                    () -> 37 * hash,
+                    entry::hashCode
+                ).value(),
+                this
+            )
+        ).value();
+    }
 }

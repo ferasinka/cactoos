@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017-2018 Yegor Bugayenko
+ * Copyright (c) 2017-2019 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -36,7 +36,7 @@ import org.cactoos.iterable.IterableOf;
  * with the collection. Every time you touch it, it will fetch the
  * entire collection from the encapsulated object and reverse it. If you
  * want to avoid that "side-effect", decorate it with
- * {@link StickyCollection}.</p>
+ * {@link Sticky}.</p>
  *
  * <p>There is no thread-safety guarantee.
  *

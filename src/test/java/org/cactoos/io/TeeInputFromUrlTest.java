@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017-2018 Yegor Bugayenko
+ * Copyright (c) 2017-2019 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,11 +28,10 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import org.cactoos.text.TextOf;
-import org.hamcrest.MatcherAssert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.llorllale.cactoos.matchers.TeeInputHasResult;
+import org.llorllale.cactoos.matchers.Assertion;
 
 /**
  * Test case for {@link TeeInput}. Cases for ctors which use
@@ -59,7 +58,8 @@ public final class TeeInputFromUrlTest {
             message.getBytes(StandardCharsets.UTF_8)
         );
         final File output = this.folder.newFile();
-        MatcherAssert.assertThat(
+        new Assertion<>(
+            "Must copy from URL to path.",
             new TeeInput(
                 input
                     .toURI()
@@ -70,7 +70,7 @@ public final class TeeInputFromUrlTest {
                 message,
                 new TextOf(output)
             )
-        );
+        ).affirm();
     }
 
     @Test
@@ -83,7 +83,8 @@ public final class TeeInputFromUrlTest {
             message.getBytes(StandardCharsets.UTF_8)
         );
         final File output = this.folder.newFile();
-        MatcherAssert.assertThat(
+        new Assertion<>(
+            "Must copy from URL to file.",
             new TeeInput(
                 input
                     .toURI()
@@ -94,7 +95,7 @@ public final class TeeInputFromUrlTest {
                 message,
                 new TextOf(output)
             )
-        );
+        ).affirm();
     }
 
     @Test
@@ -107,7 +108,8 @@ public final class TeeInputFromUrlTest {
             message.getBytes(StandardCharsets.UTF_8)
         );
         final File output = this.folder.newFile();
-        MatcherAssert.assertThat(
+        new Assertion<>(
+            "Must copy from URL to output.",
             new TeeInput(
                 input
                     .toURI()
@@ -118,6 +120,6 @@ public final class TeeInputFromUrlTest {
                 message,
                 new TextOf(output)
             )
-        );
+        ).affirm();
     }
 }

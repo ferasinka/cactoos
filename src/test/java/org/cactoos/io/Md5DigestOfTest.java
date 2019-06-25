@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017-2018 Yegor Bugayenko
+ * Copyright (c) 2017-2019 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -72,10 +72,12 @@ public final class Md5DigestOfTest {
             "Can't calculate the file's MD5 checksum",
             new HexOf(
                 new Md5DigestOf(
-                    new InputOf(
-                        new ResourceOf(
-                            "org/cactoos/digest-calculation.txt"
-                        ).stream()
+                    new Sticky(
+                        new InputOf(
+                            new ResourceOf(
+                                "org/cactoos/digest-calculation.txt"
+                            ).stream()
+                        )
                     )
                 )
             ),

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017-2018 Yegor Bugayenko
+ * Copyright (c) 2017-2019 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,8 @@ package org.cactoos.iterator;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import org.cactoos.iterable.IterableOf;
+import org.cactoos.scalar.LengthOf;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -41,11 +43,13 @@ public final class JoinedTest {
         MatcherAssert.assertThat(
             "Can't concatenate mapped iterators together",
             new LengthOf(
-                new IteratorNoNulls<>(
-                    new Joined<Iterator<String>>(
-                        new Mapped<>(
-                            input -> new IteratorOf<>(input),
-                            new IteratorOf<>("x")
+                new org.cactoos.iterable.NoNulls<>(
+                    new IterableOf<>(
+                        new Joined<Iterator<String>>(
+                            new Mapped<>(
+                                input -> new IteratorOf<>(input),
+                                new IteratorOf<>("x")
+                            )
                         )
                     )
                 )

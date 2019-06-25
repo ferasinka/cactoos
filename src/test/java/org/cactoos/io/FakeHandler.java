@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017-2018 Yegor Bugayenko
+ * Copyright (c) 2017-2019 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
-import org.cactoos.text.JoinedText;
+import org.cactoos.text.Joined;
 import org.cactoos.text.UncheckedText;
 
 /**
@@ -64,7 +64,7 @@ public final class FakeHandler extends Handler {
     @Override
     public String toString() {
         return new UncheckedText(
-            new JoinedText(
+            new Joined(
                 System.lineSeparator(),
                 this.entries
             )

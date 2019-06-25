@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017-2018 Yegor Bugayenko
+ * Copyright (c) 2017-2019 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,8 +26,8 @@ package org.cactoos.map;
 import java.util.Map;
 import org.hamcrest.Description;
 import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
+import org.hamcrest.core.IsEqual;
 
 /**
  * Check a clear method.
@@ -43,7 +43,8 @@ public final class ClearDeletesAllValues<K, V> extends
     public boolean matchesSafely(final Map<K, V> map) {
         map.clear();
         MatcherAssert.assertThat(
-            map.isEmpty(), Matchers.is(true)
+            "Can't be cleared",
+            map.isEmpty(), new IsEqual<>(true)
         );
         return true;
     }

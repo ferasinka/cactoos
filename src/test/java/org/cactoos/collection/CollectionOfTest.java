@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017-2018 Yegor Bugayenko
+ * Copyright (c) 2017-2019 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,60 +23,60 @@
  */
 package org.cactoos.collection;
 
+import org.cactoos.iterable.IterableOf;
 import org.cactoos.list.ListOf;
-import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.IsEqual;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.llorllale.cactoos.matchers.Assertion;
 
 /**
  * Test Case for {@link CollectionOf}.
  *
  * @since 0.23
- * @todo #588:30min The test buildsCollectionFromIterator was changed
- *  to use BehavesAsCollection instead of Matchers.hasItem
- *  and it seems that actually, a CollectionOf built from an Iterator
- *  does not behave as a collection. This should be fixed and the @Ignore
- *  tag on the buildsCollectionFromIterator method removed.
  * @checkstyle JavadocMethodCheck (500 lines)
  */
 public final class CollectionOfTest {
 
     @Test
-    public void behavesAsCollection() throws Exception {
-        MatcherAssert.assertThat(
+    public void behavesAsCollection() {
+        new Assertion<>(
             "Can't behave as a collection",
             new CollectionOf<>(1, 2, 0, -1),
             new BehavesAsCollection<>(-1)
-        );
+        ).affirm();
     }
 
-    @Ignore
     @Test
-    public void buildsCollectionFromIterator() throws Exception {
-        MatcherAssert.assertThat(
-            "Can't build a collection from iterator",
-            new CollectionOf<>(new ListOf<>(1, 2, 0, -1).iterator()),
+    public void buildsCollectionFromIterable() {
+        new Assertion<>(
+            "Can't build a collection from iterable",
+            new CollectionOf<>(
+                new ListOf<>(
+                    new IterableOf<>(1, 2, 0, -1)
+                )
+            ),
             new BehavesAsCollection<>(-1)
-        );
+        ).affirm();
     }
 
     @Test
-    public void testToString() throws Exception {
-        MatcherAssert.assertThat(
+    public void testToString() {
+        new Assertion<>(
             "Wrong toString output. Expected \"[1, 2, 0, -1]\".",
-            new CollectionOf<>(new ListOf<>(1, 2, 0, -1)).toString(),
+            new CollectionOf<>(
+                new ListOf<>(1, 2, 0, -1)
+            ).toString(),
             new IsEqual<>("[1, 2, 0, -1]")
-        );
+        ).affirm();
     }
 
     @Test
-    public void testToStringEmpty() throws Exception {
-        MatcherAssert.assertThat(
+    public void testToStringEmpty() {
+        new Assertion<>(
             "Wrong toString output. Expected \"[]\".",
             new CollectionOf<>(new ListOf<>()).toString(),
             new IsEqual<>("[]")
-        );
+        ).affirm();
     }
 
 }

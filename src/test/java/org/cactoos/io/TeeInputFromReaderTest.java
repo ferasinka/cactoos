@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017-2018 Yegor Bugayenko
+ * Copyright (c) 2017-2019 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,11 +27,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import org.cactoos.text.TextOf;
-import org.hamcrest.MatcherAssert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.llorllale.cactoos.matchers.TeeInputHasResult;
+import org.llorllale.cactoos.matchers.Assertion;
 
 /**
  * Test case for {@link TeeInput}. Cases for ctors which use
@@ -54,7 +53,8 @@ public final class TeeInputFromReaderTest {
         final String input =
             "Hello, товарищ file #1 äÄ üÜ öÖ and ß";
         final File output = this.folder.newFile();
-        MatcherAssert.assertThat(
+        new Assertion<>(
+            "Must copy from reader to file.",
             new TeeInput(
                 new ReaderOf(input),
                 output
@@ -63,7 +63,7 @@ public final class TeeInputFromReaderTest {
                 input,
                 new TextOf(output)
             )
-        );
+        ).affirm();
     }
 
     @Test
@@ -71,7 +71,8 @@ public final class TeeInputFromReaderTest {
         final String input =
             "Hello, товарищ file #2 äÄ üÜ öÖ and ß";
         final File output = this.folder.newFile();
-        MatcherAssert.assertThat(
+        new Assertion<>(
+            "Must copy from reader with size to file.",
             new TeeInput(
                 new ReaderOf(input),
                 output,
@@ -81,7 +82,7 @@ public final class TeeInputFromReaderTest {
                 input,
                 new TextOf(output)
             )
-        );
+        ).affirm();
     }
 
     @Test
@@ -89,7 +90,8 @@ public final class TeeInputFromReaderTest {
         final String input =
             "Hello, товарищ file #3 äÄ üÜ öÖ and ß";
         final File output = this.folder.newFile();
-        MatcherAssert.assertThat(
+        new Assertion<>(
+            "Must copy from reader with charset to file.",
             new TeeInput(
                 new ReaderOf(input),
                 output,
@@ -99,7 +101,7 @@ public final class TeeInputFromReaderTest {
                 input,
                 new TextOf(output)
             )
-        );
+        ).affirm();
     }
 
     @Test
@@ -107,7 +109,8 @@ public final class TeeInputFromReaderTest {
         final String input =
             "Hello, товарищ file #4 äÄ üÜ öÖ and ß";
         final File output = this.folder.newFile();
-        MatcherAssert.assertThat(
+        new Assertion<>(
+            "Must copy from reader with charset and size to file.",
             new TeeInput(
                 new ReaderOf(input),
                 output,
@@ -118,7 +121,7 @@ public final class TeeInputFromReaderTest {
                 input,
                 new TextOf(output)
             )
-        );
+        ).affirm();
     }
 
     @Test
@@ -126,7 +129,8 @@ public final class TeeInputFromReaderTest {
         final String input =
             "Hello, товарищ file #5 äÄ üÜ öÖ and ß";
         final File output = this.folder.newFile();
-        MatcherAssert.assertThat(
+        new Assertion<>(
+            "Must copy from reader with charset by name to file.",
             new TeeInput(
                 new ReaderOf(input),
                 output,
@@ -136,7 +140,7 @@ public final class TeeInputFromReaderTest {
                 input,
                 new TextOf(output)
             )
-        );
+        ).affirm();
     }
 
     @Test
@@ -145,7 +149,8 @@ public final class TeeInputFromReaderTest {
         final String input =
             "Hello, товарищ file #6 äÄ üÜ öÖ and ß";
         final File output = this.folder.newFile();
-        MatcherAssert.assertThat(
+        new Assertion<>(
+            "Must copy from reader with charset by name and size to file.",
             new TeeInput(
                 new ReaderOf(input),
                 output,
@@ -156,7 +161,7 @@ public final class TeeInputFromReaderTest {
                 input,
                 new TextOf(output)
             )
-        );
+        ).affirm();
     }
 
     @Test
@@ -164,7 +169,8 @@ public final class TeeInputFromReaderTest {
         final String input =
             "Hello, товарищ path #1 äÄ üÜ öÖ and ß";
         final File output = this.folder.newFile();
-        MatcherAssert.assertThat(
+        new Assertion<>(
+            "Must copy from reader to path.",
             new TeeInput(
                 new ReaderOf(input),
                 output.toPath()
@@ -173,7 +179,7 @@ public final class TeeInputFromReaderTest {
                 input,
                 new TextOf(output)
             )
-        );
+        ).affirm();
     }
 
     @Test
@@ -181,7 +187,8 @@ public final class TeeInputFromReaderTest {
         final String input =
             "Hello, товарищ path #2 äÄ üÜ öÖ and ß";
         final File output = this.folder.newFile();
-        MatcherAssert.assertThat(
+        new Assertion<>(
+            "Must copy from reader with size to path",
             new TeeInput(
                 new ReaderOf(input),
                 output.toPath(),
@@ -191,7 +198,7 @@ public final class TeeInputFromReaderTest {
                 input,
                 new TextOf(output)
             )
-        );
+        ).affirm();
     }
 
     @Test
@@ -199,7 +206,8 @@ public final class TeeInputFromReaderTest {
         final String input =
             "Hello, товарищ path #3 äÄ üÜ öÖ and ß";
         final File output = this.folder.newFile();
-        MatcherAssert.assertThat(
+        new Assertion<>(
+            "Must copy from reader with charset to path.",
             new TeeInput(
                 new ReaderOf(input),
                 output.toPath(),
@@ -209,7 +217,7 @@ public final class TeeInputFromReaderTest {
                 input,
                 new TextOf(output)
             )
-        );
+        ).affirm();
     }
 
     @Test
@@ -217,7 +225,8 @@ public final class TeeInputFromReaderTest {
         final String input =
             "Hello, товарищ path #4 äÄ üÜ öÖ and ß";
         final File output = this.folder.newFile();
-        MatcherAssert.assertThat(
+        new Assertion<>(
+            "Must copy from reader with charset and size to path.",
             new TeeInput(
                 new ReaderOf(input),
                 output.toPath(),
@@ -228,7 +237,7 @@ public final class TeeInputFromReaderTest {
                 input,
                 new TextOf(output)
             )
-        );
+        ).affirm();
     }
 
     @Test
@@ -236,7 +245,8 @@ public final class TeeInputFromReaderTest {
         final String input =
             "Hello, товарищ path #5 äÄ üÜ öÖ and ß";
         final File output = this.folder.newFile();
-        MatcherAssert.assertThat(
+        new Assertion<>(
+            "Must copy from reader with charset by name to path.",
             new TeeInput(
                 new ReaderOf(input),
                 output.toPath(),
@@ -246,7 +256,7 @@ public final class TeeInputFromReaderTest {
                 input,
                 new TextOf(output)
             )
-        );
+        ).affirm();
     }
 
     @Test
@@ -255,7 +265,8 @@ public final class TeeInputFromReaderTest {
         final String input =
             "Hello, товарищ path #6 äÄ üÜ öÖ and ß";
         final File output = this.folder.newFile();
-        MatcherAssert.assertThat(
+        new Assertion<>(
+            "Must copy from reader with charset by name and size to path.",
             new TeeInput(
                 new ReaderOf(input),
                 output.toPath(),
@@ -266,7 +277,7 @@ public final class TeeInputFromReaderTest {
                 input,
                 new TextOf(output)
             )
-        );
+        ).affirm();
     }
 
     @Test
@@ -274,7 +285,8 @@ public final class TeeInputFromReaderTest {
         final String input =
             "Hello, товарищ output #1 äÄ üÜ öÖ and ß";
         final File output = this.folder.newFile();
-        MatcherAssert.assertThat(
+        new Assertion<>(
+            "Must copy from reader to output.",
             new TeeInput(
                 new ReaderOf(input),
                 new OutputTo(output)
@@ -283,7 +295,7 @@ public final class TeeInputFromReaderTest {
                 input,
                 new TextOf(output)
             )
-        );
+        ).affirm();
     }
 
     @Test
@@ -291,7 +303,8 @@ public final class TeeInputFromReaderTest {
         final String input =
             "Hello, товарищ output #2 äÄ üÜ öÖ and ß";
         final File output = this.folder.newFile();
-        MatcherAssert.assertThat(
+        new Assertion<>(
+            "Must copy from reader with size to output.",
             new TeeInput(
                 new ReaderOf(input),
                 new OutputTo(output),
@@ -301,7 +314,7 @@ public final class TeeInputFromReaderTest {
                 input,
                 new TextOf(output)
             )
-        );
+        ).affirm();
     }
 
     @Test
@@ -309,7 +322,8 @@ public final class TeeInputFromReaderTest {
         final String input =
             "Hello, товарищ output #3 äÄ üÜ öÖ and ß";
         final File output = this.folder.newFile();
-        MatcherAssert.assertThat(
+        new Assertion<>(
+            "Must copy from reader with charset to output.",
             new TeeInput(
                 new ReaderOf(input),
                 new OutputTo(output),
@@ -319,7 +333,7 @@ public final class TeeInputFromReaderTest {
                 input,
                 new TextOf(output)
             )
-        );
+        ).affirm();
     }
 
     @Test
@@ -328,7 +342,8 @@ public final class TeeInputFromReaderTest {
         final String input =
             "Hello, товарищ output #4 äÄ üÜ öÖ and ß";
         final File output = this.folder.newFile();
-        MatcherAssert.assertThat(
+        new Assertion<>(
+            "Must copy from reader with charset and size to output.",
             new TeeInput(
                 new ReaderOf(input),
                 new OutputTo(output),
@@ -339,7 +354,7 @@ public final class TeeInputFromReaderTest {
                 input,
                 new TextOf(output)
             )
-        );
+        ).affirm();
     }
 
     @Test
@@ -347,7 +362,8 @@ public final class TeeInputFromReaderTest {
         final String input =
             "Hello, товарищ output #5 äÄ üÜ öÖ and ß";
         final File output = this.folder.newFile();
-        MatcherAssert.assertThat(
+        new Assertion<>(
+            "Must copy from reader with charset by name to output.",
             new TeeInput(
                 new ReaderOf(input),
                 new OutputTo(output),
@@ -357,7 +373,7 @@ public final class TeeInputFromReaderTest {
                 input,
                 new TextOf(output)
             )
-        );
+        ).affirm();
     }
 
     @Test
@@ -366,7 +382,8 @@ public final class TeeInputFromReaderTest {
         final String input =
             "Hello, товарищ output #6 äÄ üÜ öÖ and ß";
         final File output = this.folder.newFile();
-        MatcherAssert.assertThat(
+        new Assertion<>(
+            "Must copy from reader with charset by name and size to output.",
             new TeeInput(
                 new ReaderOf(input),
                 new OutputTo(output),
@@ -377,6 +394,6 @@ public final class TeeInputFromReaderTest {
                 input,
                 new TextOf(output)
             )
-        );
+        ).affirm();
     }
 }

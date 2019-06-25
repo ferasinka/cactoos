@@ -2,10 +2,10 @@
 
 [![Donate via Zerocracy](https://www.0crat.com/contrib-badge/C63314D6Z.svg)](https://www.0crat.com/contrib/C63314D6Z)
 
-[![EO principles respected here](http://www.elegantobjects.org/badge.svg)](http://www.elegantobjects.org)
+[![EO principles respected here](https://www.elegantobjects.org/badge.svg)](https://www.elegantobjects.org)
 [![Managed by Zerocracy](https://www.0crat.com/badge/C63314D6Z.svg)](https://www.0crat.com/p/C63314D6Z)
 [![DevOps By Rultor.com](http://www.rultor.com/b/yegor256/cactoos)](http://www.rultor.com/p/yegor256/cactoos)
-[![We recommend IntelliJ IDEA](http://www.elegantobjects.org/intellij-idea.svg)](https://www.jetbrains.com/idea/)
+[![We recommend IntelliJ IDEA](https://www.elegantobjects.org/intellij-idea.svg)](https://www.jetbrains.com/idea/)
 
 [![Build Status](https://travis-ci.org/yegor256/cactoos.svg?branch=master)](https://travis-ci.org/yegor256/cactoos)
 [![Build status](https://ci.appveyor.com/api/projects/status/8vs8huy61og6jwif?svg=true)](https://ci.appveyor.com/project/yegor256/cactoos)
@@ -17,6 +17,9 @@
 [![jpeek report](http://i.jpeek.org/org.cactoos/cactoos/badge.svg)](http://i.jpeek.org/org.cactoos/cactoos/)
 [![Test Coverage](https://img.shields.io/codecov/c/github/yegor256/cactoos.svg)](https://codecov.io/github/yegor256/cactoos?branch=master)
 [![SonarQube](https://img.shields.io/badge/sonar-ok-green.svg)](https://sonarcloud.io/dashboard?id=org.cactoos%3Acactoos)
+[![Hits-of-Code](https://hitsofcode.com/github/yegor256/cactoos)](https://hitsofcode.com/view/github/yegor256/cactoos)
+
+Project architect: [@llorllale](https://github.com/llorllale)
 
 **ATTENTION**: We're still in a very early alpha version, the API
 may and _will_ change frequently. Please, use it at your own risk,
@@ -35,17 +38,25 @@ but mostly through static methods. Cactoos is suggesting
 to do almost exactly the same, but through objects.
 
 **Principles**.
-These are the [design principles](http://www.elegantobjects.org#principles) behind Cactoos.
+These are the [design principles](https://www.elegantobjects.org#principles) behind Cactoos.
 
 **How to use**.
 The library has no dependencies. All you need is this
 (get the latest version [here](https://github.com/yegor256/cactoos/releases)):
 
+Maven:
 ```xml
 <dependency>
   <groupId>org.cactoos</groupId>
   <artifactId>cactoos</artifactId>
 </dependency>
+```
+
+Gradle:
+```groovy
+dependencies {
+    compile 'org.cactoos:cactoos:<version>'
+}
 ```
 
 Java version required: 1.8+.
@@ -99,11 +110,11 @@ To manipulate with a text:
 
 ```java
 // To lower case
-new LowerText(
+new Lowered(
 	new TextOf("Hello")
 );
 // To upper case
-new UpperText(
+new Upper(
 	new TextOf("Hello")
 );
 ```
@@ -121,6 +132,33 @@ Collection<String> filtered = new ListOf<>(
     new IterableOf<>("hello", "world", "dude")
   )
 );
+```
+
+To flatten one iterable:
+```java
+new Joined<>(
+  new Mapped<>(
+    iter -> new IterableOf<>(
+      new CollectionOf<>(iter).toArray(new Integer[]{})
+    ),
+    new IterableOf<>(new IterableOf<>(1, 2, 3, 4, 5, 6))
+  )
+);    // Iterable<Integer>
+```
+
+To flatten and join several iterables:
+```java
+new Joined<>(
+  new Mapped<>(
+    iter -> new IterableOf<>(
+      new CollectionOf<>(iter).toArray(new Integer[]{})
+    ),
+    new Joined<>(
+      new IterableOf<>(new IterableOf<>(1, 2, 3)),
+      new IterableOf<>(new IterableOf<>(4, 5, 6))
+    )
+  )
+);    // Iterable<Integer>
 ```
 
 To iterate a collection:
@@ -152,7 +190,7 @@ To sort a list of words in the file:
 ```java
 List<String> sorted = new ListOf<>(
   new Sorted<>(
-    new SplitText(
+    new Split(
       new TextOf(
         new File("/tmp/names.txt")
       ),
@@ -243,24 +281,24 @@ Cactoos | Guava | Apache Commons | JDK 8
 `Filtered` | `Iterables.filter()` | ? | -
 `FormattedText` | - | - | `String.format()`
 `IsBlank` | - | `StringUtils.isBlank()`| -
-`JoinedText` | - | - | `String.join()`
+`Joined` | - | - | `String.join()`
 `LengthOf` | - | - | `String#length()`
-`LowerText` | - | - | `String#toLowerCase()`
-`NormalizedText` | - | `StringUtils.normalize()` | -
+`Lowered` | - | - | `String#toLowerCase()`
+`Normalized` | - | `StringUtils.normalize()` | -
 `Or` | `Iterables.any()` | - | -
-`RepeatedText` | - | `StringUtils.repeat()` | -
-`ReplacedText` | - | - | `String#replace()`
-`ReversedText` | - | - | `StringBuilder#reverse()`
-`RotatedText` | - | `StringUtils.rotate()`| -
-`SplitText` | - | - | `String#split()`
+`Repeated` | - | `StringUtils.repeat()` | -
+`Replaced` | - | - | `String#replace()`
+`Reversed` | - | - | `StringBuilder#reverse()`
+`Rotated` | - | `StringUtils.rotate()`| -
+`Split` | - | - | `String#split()`
 `StickyList` | `Lists.newArrayList()` | ? | `Arrays.asList()`
-`SubText` | - | - | `String#substring()`
-`SwappedCaseText` | - | `StringUtils.swapCase()` | -
+`Sub` | - | - | `String#substring()`
+`SwappedCase` | - | `StringUtils.swapCase()` | -
 `TextOf` | ? | `IOUtils.toString()` | -
-`TrimmedLeftText` | - | `StringUtils.stripStart()` | -
-`TrimmedRightText` | - | `StringUtils.stripEnd()` | -
-`TrimmedText` | - | `StringUtils.stripAll()` | `String#trim()`
-`UpperText` | - | - | `String#toUpperCase()`
+`TrimmedLeft` | - | `StringUtils.stripStart()` | -
+`TrimmedRight` | - | `StringUtils.stripEnd()` | -
+`Trimmed` | - | `StringUtils.stripAll()` | `String#trim()`
+`Upper` | - | - | `String#toUpperCase()`
 
 ## Questions
 
@@ -275,6 +313,9 @@ Make sure your branch builds without any warnings/issues:
 ```
 mvn clean install -Pqulice
 ```
+
+We also lint the git commit log. We highly recommend you install [this](https://github.com/llorllale/go-gitlint)
+tool and set up a `commit-msg` git hooks per the instructions.
 
 Note: [Checkstyle](https://en.wikipedia.org/wiki/Checkstyle) is used as a static code analyze tool with
 [checks list](http://checkstyle.sourceforge.net/checks.html) in GitHub precommits.
@@ -296,25 +337,4 @@ Note: [Checkstyle](https://en.wikipedia.org/wiki/Checkstyle) is used as a static
   - [@driver733](https://github.com/driver733) as Mikhail Yakushin
   - [@izrik](https://github.com/izrik) as Richard Sartor
   - [@Vatavuk](https://github.com/Vatavuk) as Vedran Grgo Vatavuk
-
-## License (MIT)
-
-Copyright (c) 2017-2018 Yegor Bugayenko
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included
-in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+  - [@dgroup](https://github.com/dgroup) as Yurii Dubinka

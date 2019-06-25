@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017-2018 Yegor Bugayenko
+ * Copyright (c) 2017-2019 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,6 @@
  */
 package org.cactoos;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import org.cactoos.io.OutputTo;
 import org.cactoos.io.TeeInput;
@@ -45,7 +44,7 @@ import org.cactoos.io.TeeInput;
  * <p>Here {@link OutputTo} implements {@link Output} and behaves like
  * one, providing write-only access to the encapsulated
  * {@link java.io.File}. The {@link TeeInput} copies the content of the
- * input to the output. The {@link org.cactoos.io.LengthOf}
+ * input to the output. The {@link org.cactoos.scalar.LengthOf}
  * calculates the size of the copied data.</p>
  *
  * <p>There is no thread-safety guarantee.
@@ -62,33 +61,4 @@ public interface Output {
      */
     OutputStream stream() throws Exception;
 
-    /**
-     * Output check for no nulls.
-     *
-     * @since 0.10
-     */
-    final class NoNulls implements Output {
-        /**
-         * The output.
-         */
-        private final Output origin;
-        /**
-         * Ctor.
-         * @param output The output
-         */
-        public NoNulls(final Output output) {
-            this.origin = output;
-        }
-        @Override
-        public OutputStream stream() throws Exception {
-            if (this.origin == null) {
-                throw new IOException("NULL instead of a valid output");
-            }
-            final OutputStream stream = this.origin.stream();
-            if (stream == null) {
-                throw new IOException("NULL instead of a valid stream");
-            }
-            return stream;
-        }
-    }
 }

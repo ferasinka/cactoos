@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017-2018 Yegor Bugayenko
+ * Copyright (c) 2017-2019 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,8 @@
  */
 package org.cactoos.scalar;
 
+import java.util.Collection;
+import org.cactoos.collection.CollectionOf;
 import org.cactoos.iterable.IterableOf;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.IsEqual;
@@ -108,6 +110,15 @@ public final class SumOfTest {
     }
 
     @Test
+    public void withIterableOfInts() {
+        final Collection<Integer> ints = new CollectionOf<>(1, 2, 3, 4);
+        MatcherAssert.assertThat(
+            new SumOf(ints).intValue(),
+            new IsEqual<>(10)
+        );
+    }
+
+    @Test
     public void overflowIntFromLongValues() {
         MatcherAssert.assertThat(
             new SumOf((Integer.MAX_VALUE + 1L) * 2L, 10L).intValue(),
@@ -134,5 +145,4 @@ public final class SumOfTest {
             new IsEqual<>(4294967300f)
         );
     }
-
 }

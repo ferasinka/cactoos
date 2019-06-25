@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017-2018 Yegor Bugayenko
+ * Copyright (c) 2017-2019 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,10 +28,10 @@ import java.util.List;
 import java.util.ListIterator;
 import org.cactoos.Scalar;
 import org.cactoos.collection.CollectionEnvelope;
-import org.cactoos.scalar.UncheckedScalar;
+import org.cactoos.scalar.Unchecked;
 
 /**
- * List envelope.
+ * {@link List} envelope that doesn't allow mutations.
  *
  * <p>There is no thread-safety guarantee.</p>
  *
@@ -45,21 +45,21 @@ import org.cactoos.scalar.UncheckedScalar;
         "PMD.AbstractNaming"
     }
 )
-abstract class ListEnvelope<T> extends CollectionEnvelope<T> implements
+public abstract class ListEnvelope<T> extends CollectionEnvelope<T> implements
     List<T> {
 
     /**
      * Encapsulated list.
      */
-    private final UncheckedScalar<List<T>> list;
+    private final Unchecked<List<T>> list;
 
     /**
      * Ctor.
      * @param src Source
      */
-    ListEnvelope(final Scalar<List<T>> src) {
+    public ListEnvelope(final Scalar<List<T>> src) {
         super(src::value);
-        this.list = new UncheckedScalar<>(src);
+        this.list = new Unchecked<>(src);
     }
 
     @Override
@@ -100,25 +100,22 @@ abstract class ListEnvelope<T> extends CollectionEnvelope<T> implements
 
     @Override
     public final ListIterator<T> listIterator() {
-        return new org.cactoos.list.ListIterator<>(
+        return new ListIteratorOf<>(
             this.list.value().listIterator()
         );
     }
 
     @Override
     public final ListIterator<T> listIterator(final int index) {
-        return new org.cactoos.list.ListIterator<>(
+        return new ListIteratorOf<>(
             this.list.value().listIterator(index)
         );
     }
 
     @Override
     public final List<T> subList(final int start, final int end) {
-        return this.list.value().subList(start, end);
-    }
-
-    @Override
-    public String toString() {
-        return this.list.value().toString();
+        return new ListEnvelope<T>(
+            () -> this.list.value().subList(start, end)
+        ) { };
     }
 }

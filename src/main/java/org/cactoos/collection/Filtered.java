@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017-2018 Yegor Bugayenko
+ * Copyright (c) 2017-2019 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,6 @@
  */
 package org.cactoos.collection;
 
-import java.util.Iterator;
 import org.cactoos.Func;
 import org.cactoos.iterable.IterableOf;
 
@@ -45,16 +44,6 @@ public final class Filtered<X> extends CollectionEnvelope<X> {
      */
     @SafeVarargs
     public Filtered(final Func<X, Boolean> func, final X... src) {
-        this(func, new IterableOf<>(src));
-    }
-
-    /**
-     * Ctor.
-     * @param src Source collection
-     * @param func Filter function
-     * @since 0.23
-     */
-    public Filtered(final Func<X, Boolean> func, final Iterator<X> src) {
         this(func, new IterableOf<>(src));
     }
 

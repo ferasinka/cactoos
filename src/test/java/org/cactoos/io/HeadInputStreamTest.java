@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017-2018 Yegor Bugayenko
+ * Copyright (c) 2017-2019 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,9 @@ import org.cactoos.text.TextOf;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.IsEqual;
 import org.junit.Test;
-import org.llorllale.cactoos.matchers.TextHasString;
+import org.llorllale.cactoos.matchers.Assertion;
+import org.llorllale.cactoos.matchers.InputHasContent;
+import org.llorllale.cactoos.matchers.TextIs;
 
 /**
  * Test cases for {@link HeadInputStream}.
@@ -35,6 +37,7 @@ import org.llorllale.cactoos.matchers.TextHasString;
  * @since 0.31
  * @checkstyle JavadocMethodCheck (500 lines)
  * @checkstyle MagicNumberCheck (500 lines)
+ * @checkstyle ClassDataAbstractionCouplingCheck (500 lines)
  */
 public final class HeadInputStreamTest {
 
@@ -45,11 +48,11 @@ public final class HeadInputStreamTest {
             5
         );
         stream.skip(3L);
-        MatcherAssert.assertThat(
+        new Assertion<>(
             "Incorrect head of the input stream has been read",
-            new TextOf(stream),
-            new TextHasString("tS")
-        );
+            new InputOf(stream),
+            new InputHasContent("tS")
+        ).affirm();
     }
 
     @Test
@@ -59,11 +62,12 @@ public final class HeadInputStreamTest {
             5
         );
         stream.skip(7L);
-        MatcherAssert.assertThat(
+        final String input = new TextOf(stream).asString();
+        new Assertion<>(
             "The result text wasn't empty",
-            new TextOf(stream),
-            new TextHasString("")
-        );
+            new TextOf(input),
+            new TextIs("")
+        ).affirm();
     }
 
     @Test
@@ -74,11 +78,11 @@ public final class HeadInputStreamTest {
         );
         stream.skip(7L);
         stream.reset();
-        MatcherAssert.assertThat(
+        new Assertion<>(
             "Reset didn't change the state",
-            new TextOf(stream),
-            new TextHasString("testR")
-        );
+            new InputOf(stream),
+            new InputHasContent("testR")
+        ).affirm();
     }
 
     @Test

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017-2018 Yegor Bugayenko
+ * Copyright (c) 2017-2019 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,14 +30,15 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import org.cactoos.scalar.LengthOf;
 import org.cactoos.text.TextOf;
-import org.hamcrest.MatcherAssert;
+import org.hamcrest.core.IsNot;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.llorllale.cactoos.matchers.MatcherOf;
-import org.llorllale.cactoos.matchers.ScalarHasValue;
-import org.llorllale.cactoos.matchers.TextHasString;
+import org.llorllale.cactoos.matchers.Assertion;
+import org.llorllale.cactoos.matchers.InputHasContent;
+import org.llorllale.cactoos.matchers.IsTrue;
 
 /**
  * Test case for {@link WriterAsOutputStream}.
@@ -56,35 +57,27 @@ public final class WriterAsOutputStreamTest {
 
     @Test
     public void writesToByteArray() {
-        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         final String content = "Hello, товарищ! How are you?";
-        MatcherAssert.assertThat(
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        new Assertion<>(
             "Can't copy Input to Writer",
-            new TextOf(
-                new TeeInput(
-                    new InputOf(content),
-                    new OutputTo(
-                        new WriterAsOutputStream(
-                            new OutputStreamWriter(
-                                baos, StandardCharsets.UTF_8
-                            ),
-                            StandardCharsets.UTF_8,
-                            // @checkstyle MagicNumber (1 line)
-                            13
-                        )
+            new TeeInput(
+                new InputOf(content),
+                new OutputTo(
+                    new WriterAsOutputStream(
+                        new OutputStreamWriter(
+                            baos, StandardCharsets.UTF_8
+                        ),
+                        StandardCharsets.UTF_8,
+                        // @checkstyle MagicNumber (1 line)
+                        13
                     )
                 )
             ),
-            new TextHasString(
-                new MatcherOf<>(
-                    str -> {
-                        return new String(
-                            baos.toByteArray(), StandardCharsets.UTF_8
-                        ).equals(str);
-                    }
-                )
+            new InputHasContent(
+                new TextOf(baos::toByteArray, StandardCharsets.UTF_8)
             )
-        );
+        ).affirm();
     }
 
     @Test
@@ -94,29 +87,23 @@ public final class WriterAsOutputStreamTest {
         try (final OutputStreamWriter writer = new OutputStreamWriter(
             new FileOutputStream(temp.toFile()), StandardCharsets.UTF_8
         )) {
-            MatcherAssert.assertThat(
+            new Assertion<>(
                 "Can't copy Input to Output and return Input",
-                new TextOf(
-                    new TeeInput(
-                        new ResourceOf("org/cactoos/large-text.txt"),
-                        new OutputTo(
-                            new WriterAsOutputStream(
-                                writer,
-                                StandardCharsets.UTF_8,
-                                // @checkstyle MagicNumber (1 line)
-                                345
-                            )
+                new TeeInput(
+                    new ResourceOf("org/cactoos/large-text.txt"),
+                    new OutputTo(
+                        new WriterAsOutputStream(
+                            writer,
+                            StandardCharsets.UTF_8,
+                            // @checkstyle MagicNumber (1 line)
+                            345
                         )
                     )
                 ),
-                new TextHasString(
-                    new MatcherOf<>(
-                        str -> {
-                            return new TextOf(temp).asString().equals(str);
-                        }
-                    )
+                new InputHasContent(
+                    new TextOf(temp)
                 )
-            );
+            ).affirm();
         }
     }
 
@@ -142,9 +129,10 @@ public final class WriterAsOutputStreamTest {
             ).value();
         }
         Files.delete(temp);
-        MatcherAssert.assertThat(
-            () -> Files.exists(temp),
-            new ScalarHasValue<>(new MatcherOf<Boolean>(value -> !value))
-        );
+        new Assertion<>(
+            "file must not exist anymore",
+            Files.exists(temp),
+            new IsNot<>(new IsTrue())
+        ).affirm();
     }
 }

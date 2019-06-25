@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017-2018 Yegor Bugayenko
+ * Copyright (c) 2017-2019 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,19 +23,15 @@
  */
 package org.cactoos.collection;
 
-import java.util.AbstractCollection;
-import java.util.Iterator;
-import org.cactoos.Text;
 import org.cactoos.iterable.IterableOf;
-import org.cactoos.iterator.Endless;
 import org.cactoos.list.ListOf;
 import org.cactoos.text.TextOf;
-import org.cactoos.text.UpperText;
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.collection.IsCollectionWithSize;
+import org.cactoos.text.Upper;
 import org.hamcrest.collection.IsEmptyCollection;
 import org.hamcrest.core.IsEqual;
 import org.junit.Test;
+import org.llorllale.cactoos.matchers.Assertion;
+import org.llorllale.cactoos.matchers.TextIs;
 
 /**
  * Test case for {@link Mapped}.
@@ -47,71 +43,62 @@ import org.junit.Test;
 public final class MappedTest {
 
     @Test
-    public void behavesAsCollection() throws Exception {
-        MatcherAssert.assertThat(
-            "Can't behave as a collection",
-            new Mapped<Integer, Integer>(
+    public void behavesAsCollection() {
+        new Assertion<>(
+            "Behave as a collection",
+            new Mapped<>(
                 i -> i + 1,
                 new IterableOf<>(-1, 1, 2)
             ),
             new BehavesAsCollection<>(0)
-        );
+        ).affirm();
     }
 
     @Test
-    public void transformsList() throws Exception {
-        MatcherAssert.assertThat(
-            "Can't transform an iterable",
-            new Mapped<String, Text>(
-                input -> new UpperText(new TextOf(input)),
+    public void transformsArray() {
+        new Assertion<>(
+            "Transforms an array",
+            new Mapped<>(
+                input -> new Upper(new TextOf(input)),
+                "a", "b", "c"
+            ).iterator().next(),
+            new TextIs("A")
+        ).affirm();
+    }
+
+    @Test
+    public void transformsList() {
+        new Assertion<>(
+            "Transforms an iterable",
+            new Mapped<>(
+                input -> new Upper(new TextOf(input)),
                 new IterableOf<>("hello", "world", "друг")
-            ).iterator().next().asString(),
-            new IsEqual<>("HELLO")
-        );
+            ).iterator().next(),
+            new TextIs("HELLO")
+        ).affirm();
     }
 
     @Test
     public void transformsEmptyList() {
-        MatcherAssert.assertThat(
-            "Can't transform an empty iterable",
-            new Mapped<String, Text>(
-                input -> new UpperText(new TextOf(input)),
+        new Assertion<>(
+            "Transforms an empty iterable",
+            new Mapped<>(
+                (String input) -> new Upper(new TextOf(input)),
                 new ListOf<>()
             ),
             new IsEmptyCollection<>()
-        );
+        ).affirm();
     }
 
     @Test
     public void string() {
-        MatcherAssert.assertThat(
-            "Can't convert to string",
-            new Mapped<Integer, Integer>(
+        new Assertion<>(
+            "Converts to string",
+            new Mapped<>(
                 x -> x * 2,
                 new ListOf<>(1, 2, 3)
             ).toString(),
-            new IsEqual<>("2, 4, 6")
-        );
+            new IsEqual<>("[2, 4, 6]")
+        ).affirm();
     }
-
-    @Test
-    public void transformsEndlessCollection() {
-        MatcherAssert.assertThat(
-            new Mapped<>(
-                String::trim,
-                new AbstractCollection<String>() {
-                    @Override
-                    public Iterator<String> iterator() {
-                        return new Endless<>("something");
-                    }
-                    @Override
-                    public int size() {
-                        return 1;
-                    }
-                }
-            ),
-            new IsCollectionWithSize<>(new IsEqual<>(1))
-        );
-    }
-
 }

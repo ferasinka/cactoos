@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017-2018 Yegor Bugayenko
+ * Copyright (c) 2017-2019 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,8 +26,10 @@ package org.cactoos.text;
 import java.io.IOException;
 import org.cactoos.Scalar;
 import org.cactoos.Text;
-import org.cactoos.scalar.IoCheckedScalar;
-import org.cactoos.scalar.UncheckedScalar;
+import org.cactoos.scalar.And;
+import org.cactoos.scalar.IoChecked;
+import org.cactoos.scalar.Or;
+import org.cactoos.scalar.Unchecked;
 
 /**
  * Text envelope that provides {@link #equals(Object)} and {@link #hashCode()}
@@ -40,14 +42,14 @@ public abstract class TextEnvelope implements Text {
     /**
      * String value of the envelope.
      */
-    private final IoCheckedScalar<String> origin;
+    private final IoChecked<String> origin;
 
     /**
      * Ctor.
      * @param text Text representing the text value.
      */
     public TextEnvelope(final Text text) {
-        this(new IoCheckedScalar<>(text::asString));
+        this(new IoChecked<>(text::asString));
     }
 
     /**
@@ -55,7 +57,7 @@ public abstract class TextEnvelope implements Text {
      * @param scalar Scalar representing the text value.
      */
     public TextEnvelope(final Scalar<String> scalar) {
-        this.origin = new IoCheckedScalar<>(scalar);
+        this.origin = new IoChecked<>(scalar);
     }
 
     @Override
@@ -70,11 +72,21 @@ public abstract class TextEnvelope implements Text {
 
     @Override
     public final int hashCode() {
-        return new UncheckedScalar<>(this.origin).value().hashCode();
+        return new Unchecked<>(this.origin).value().hashCode();
     }
 
     @Override
     public final boolean equals(final Object obj) {
-        return new UncheckedScalar<>(this.origin).value().equals(obj);
+        return new Unchecked<>(
+            new Or(
+                () -> this == obj,
+                new And(
+                    () -> obj instanceof Text,
+                    () -> new UncheckedText(this)
+                        .asString()
+                        .equals(new UncheckedText((Text) obj).asString())
+                )
+            )
+        ).value();
     }
 }

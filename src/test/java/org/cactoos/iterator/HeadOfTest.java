@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017-2018 Yegor Bugayenko
+ * Copyright (c) 2017-2019 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@ package org.cactoos.iterator;
 
 import java.util.NoSuchElementException;
 import org.cactoos.iterable.IterableOf;
+import org.cactoos.scalar.LengthOf;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -44,9 +45,9 @@ public final class HeadOfTest {
             "Can't skip elements in iterator",
             () -> new HeadOf<>(
                 2,
-                new IterableOf<>(
+                new IteratorOf<>(
                     "one", "two", "three", "four"
-                ).iterator()
+                )
             ),
             Matchers.contains(
                 "one",
@@ -59,11 +60,13 @@ public final class HeadOfTest {
     public void returnsIntactIterator() throws Exception {
         MatcherAssert.assertThat(
             new LengthOf(
-                new HeadOf<>(
-                    3,
-                    new IterableOf<>(
-                        "one", "two"
-                    ).iterator()
+                new IterableOf<>(
+                    new HeadOf<>(
+                        3,
+                        new IteratorOf<>(
+                            "one", "two"
+                        )
+                    )
                 )
             ).intValue(),
             Matchers.equalTo(2)
@@ -74,9 +77,9 @@ public final class HeadOfTest {
     public void returnsEmptyIterator() throws Exception {
         new HeadOf<>(
             0,
-            new IterableOf<>(
+            new IteratorOf<>(
                 "one", "two"
-            ).iterator()
+            )
         ).next();
     }
 
@@ -84,9 +87,9 @@ public final class HeadOfTest {
     public void emptyIteratorForNegativeSize() throws Exception {
         new HeadOf<>(
             -1,
-            new IterableOf<>(
+            new IteratorOf<>(
                 "one", "two"
-            ).iterator()
+            )
         ).next();
     }
 }

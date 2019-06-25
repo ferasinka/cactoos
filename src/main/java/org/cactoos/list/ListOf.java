@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017-2018 Yegor Bugayenko
+ * Copyright (c) 2017-2019 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,12 +37,12 @@ import org.cactoos.iterable.IterableOf;
  * method call. It doesn't cache the data anyhow. If you don't
  * need this {@link List} to re-fresh its content on every call,
  * by doing round-trips to the encapsulated iterable, decorate it with
- * {@link StickyList}.</p>
+ * {@link Sticky}.</p>
  *
  * <p>There is no thread-safety guarantee.
  *
  * @param <T> List type
- * @see StickyList
+ * @see Sticky
  * @since 0.1
  */
 public final class ListOf<T> extends ListEnvelope<T> {

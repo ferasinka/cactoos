@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017-2018 Yegor Bugayenko
+ * Copyright (c) 2017-2019 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,6 @@
  */
 package org.cactoos.scalar;
 
-import java.util.Iterator;
 import org.cactoos.Func;
 import org.cactoos.Proc;
 import org.cactoos.Scalar;
@@ -70,13 +69,13 @@ import org.cactoos.iterable.Mapped;
  * <p>This class implements {@link Scalar}, which throws a checked
  * {@link Exception}. This may not be convenient in many cases. To make
  * it more convenient and get rid of the checked exception you can
- * use the {@link UncheckedScalar} decorator. Or you may use
- * {@link IoCheckedScalar} to wrap it in an IOException.</p>
+ * use the {@link Unchecked} decorator. Or you may use
+ * {@link IoChecked} to wrap it in an IOException.</p>
  *
  * <p>There is no thread-safety guarantee.
  *
- * @see UncheckedScalar
- * @see IoCheckedScalar
+ * @see Unchecked
+ * @see IoChecked
  * @since 0.8
  */
 public final class And implements Scalar<Boolean> {
@@ -110,17 +109,6 @@ public final class And implements Scalar<Boolean> {
 
     /**
      * Ctor.
-     * @param src The iterator
-     * @param proc Proc to use
-     * @param <X> Type of items in the iterator
-     * @since 0.34
-     */
-    public <X> And(final Proc<X> proc, final Iterator<X> src) {
-        this(proc, new IterableOf<>(src));
-    }
-
-    /**
-     * Ctor.
      * @param src The iterable
      * @param proc Proc to use
      * @param <X> Type of items in the iterable
@@ -128,17 +116,6 @@ public final class And implements Scalar<Boolean> {
      */
     public <X> And(final Proc<X> proc, final Iterable<X> src) {
         this(new FuncOf<>(proc, true), src);
-    }
-
-    /**
-     * Ctor.
-     * @param src The iterator
-     * @param func Func to map
-     * @param <X> Type of items in the iterator
-     * @since 0.34
-     */
-    public <X> And(final Func<X, Boolean> func, final Iterator<X> src) {
-        this(func, new IterableOf<>(src));
     }
 
     /**
@@ -180,15 +157,6 @@ public final class And implements Scalar<Boolean> {
     @SafeVarargs
     public And(final Scalar<Boolean>... scalar) {
         this(new IterableOf<>(scalar));
-    }
-
-    /**
-     * Ctor.
-     * @param iterator The iterator.
-     * @since 0.34
-     */
-    public And(final Iterator<Scalar<Boolean>> iterator) {
-        this(new IterableOf<>(iterator));
     }
 
     /**

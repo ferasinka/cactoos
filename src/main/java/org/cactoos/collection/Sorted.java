@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017-2018 Yegor Bugayenko
+ * Copyright (c) 2017-2019 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,6 @@ package org.cactoos.collection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import org.cactoos.list.ListOf;
 
@@ -37,7 +36,7 @@ import org.cactoos.list.ListOf;
  * with the collection. Every time you touch it, it will fetch the
  * entire collection from the encapsulated object and sort it. If you
  * want to avoid that "side-effect", decorate it with
- * {@link StickyCollection}.</p>
+ * {@link Sticky}.</p>
  *
  * <p>There is no thread-safety guarantee.</p>
  *
@@ -79,16 +78,6 @@ public final class Sorted<T> extends CollectionEnvelope<T> {
      */
     @SafeVarargs
     public Sorted(final Comparator<T> cmp, final T... src) {
-        this(cmp, new CollectionOf<>(src));
-    }
-
-    /**
-     * Ctor.
-     * @param src The underlying collection
-     * @param cmp The comparator
-     * @since 0.23
-     */
-    public Sorted(final Comparator<T> cmp, final Iterator<T> src) {
         this(cmp, new CollectionOf<>(src));
     }
 

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017-2018 Yegor Bugayenko
+ * Copyright (c) 2017-2019 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,14 +23,17 @@
  */
 package org.cactoos.collection;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import org.cactoos.list.ListOf;
-import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.IsEqual;
 import org.hamcrest.core.IsNot;
 import org.junit.Test;
+import org.llorllale.cactoos.matchers.Assertion;
 
 /**
  * Test case for {@link CollectionEnvelope}.
@@ -56,92 +59,125 @@ public final class CollectionEnvelopeTest {
 
     @Test
     public void notEqualToObjectOfAnotherType() {
-        MatcherAssert.assertThat(
+        new Assertion<>(
             "Collection is equal to object of different type",
             new CollectionOf<>(),
             new IsNot<>(new IsEqual<>("a"))
-        );
+        ).affirm();
     }
 
     @Test
     public void notEqualToCollectionOfDifferentSize() {
-        MatcherAssert.assertThat(
+        new Assertion<>(
             "Collection is equal to a collection of different size",
             new CollectionOf<>(),
             new IsNot<>(new IsEqual<>(new CollectionOf<>("b")))
-        );
+        ).affirm();
     }
 
     @Test
     public void notEqualToCollectionOfDifferentElements() {
-        MatcherAssert.assertThat(
+        new Assertion<>(
             "Collection is equal to a collection with different content",
             new CollectionOf<>("a", "b"),
             new IsNot<>(new IsEqual<>(new CollectionOf<>("a", "c")))
-        );
+        ).affirm();
+    }
+
+    @Test
+    public void equalToItself() {
+        final CollectionOf<String> col = new CollectionOf<>("val1", "val2");
+        new Assertion<>(
+            "Collection is not equal to itself",
+            col,
+            new IsEqual<>(col)
+        ).affirm();
     }
 
     @Test
     public void equalToCollectionWithIdenticalContent() {
-        MatcherAssert.assertThat(
+        new Assertion<>(
             "Collection is not equal to a collection with identical content",
             new CollectionOf<>("val1", "val2"),
             new IsEqual<>(new CollectionOf<>("val1", "val2"))
-        );
+        ).affirm();
     }
 
     @Test
     public void equalToListWithIdenticalContent() {
-        MatcherAssert.assertThat(
+        new Assertion<>(
             "Collection not equal to a list with identical content",
             new CollectionOf<>("a"),
             new IsEqual<>(new ListOf<>("a"))
-        );
+        ).affirm();
     }
 
     @Test
     public void equalToDerivedCollection() {
-        MatcherAssert.assertThat(
+        new Assertion<>(
             "Collection not equal to derived collection with identical content",
             new CollectionOf<>("a"),
             new IsEqual<>(new CollectionEnvelopeTest.CustomCollection("a"))
-        );
+        ).affirm();
     }
 
     @Test
     public void equalToEmptyCollection() {
-        MatcherAssert.assertThat(
+        new Assertion<>(
             "Empty collection not equal with empty collection",
             new CollectionOf<>(),
             new IsEqual<>(new CollectionOf<>())
-        );
+        ).affirm();
     }
 
     @Test
     public void notEqualToNull() {
-        MatcherAssert.assertThat(
+        new Assertion<>(
             "Empty collection equal to null",
             new CollectionOf<>(),
             new IsNot<>(new IsEqual<>(null))
-        );
+        ).affirm();
     }
 
     @Test
     public void hashCodeEqual() {
-        MatcherAssert.assertThat(
+        new Assertion<>(
             "HashCode returns different results for same entries",
             new CollectionOf<>("a", "b").hashCode(),
             new IsEqual<>(new CollectionOf<>("a", "b").hashCode())
-        );
+        ).affirm();
     }
 
     @Test
     public void differentHashCode() {
-        MatcherAssert.assertThat(
+        new Assertion<>(
             "HashCode returns identical results for different entries",
             new CollectionOf<>("a", "b").hashCode(),
             new IsNot<>(new IsEqual<>(new CollectionOf<>("b", "a").hashCode()))
-        );
+        ).affirm();
+    }
+
+    @Test
+    public void emptyCollectionEnvelopeShouldBeEqualToEmptyCollection() {
+        final CollectionEnvelope<String> envelope = new CollectionOf<>();
+        final Collection<String> collection = Collections.emptyList();
+        new Assertion<>(
+            "Empty envelope and collection should be equal",
+            envelope,
+            new IsEqual<>(collection)
+        ).affirm();
+    }
+
+    @Test
+    public void collectionEnvelopeShouldBeEqualToCollection() {
+        final CollectionEnvelope<String> envelope = new CollectionOf<>("a");
+        final Collection<String> collection = new ArrayList<>(1);
+        collection.add("a");
+        new Assertion<>(
+            "Envelope and collection should be equal",
+            envelope,
+            new IsEqual<>(collection)
+        ).affirm();
     }
 
     /**

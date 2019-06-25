@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017-2018 Yegor Bugayenko
+ * Copyright (c) 2017-2019 Yegor Bugayenko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,7 @@ package org.cactoos.scalar;
 import org.cactoos.Scalar;
 
 /**
- * Calculates number of superclasses between base and derived class.
+ * The number of superclasses between base and derived class.
  *
  * <p>This class is thread safe.
  *
